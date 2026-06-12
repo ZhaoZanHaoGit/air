@@ -1,3 +1,16 @@
-*.fbx filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.exr filter=lfs diff=lfs merge=lfs -text
+# ====================================================================
+# Unity 核心资产：取消 LFS 追踪，改用 Git 原生二进制文件管理
+# 防止 Git 在合并代码时将其作为文本文件处理而导致文件损坏
+# ====================================================================
+*.fbx binary
+*.png binary
+*.exr binary
+
+# 其他常见的多媒体或二进制开发资产（可根据项目情况取消注释）
+# *.jpg binary
+# *.mp4 binary
+# *.wav binary
+# *.mat binary
+# *.prefab binary
+# *.asset binary
+# *.unity binary
