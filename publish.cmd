@@ -1,0 +1,1 @@
+scp -r Build/* root@app:/root/rf3dviewer/dist/

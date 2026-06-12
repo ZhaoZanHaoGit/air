@@ -1,0 +1,214 @@
+[
+  {
+    "id": 1,
+    "questions": "人防门加强梁是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中横梁应横跨墙面。"
+  },
+  {
+    "id": 2,
+    "questions": "人防吊钩预埋设置是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 0,
+    "explain": "本示例中正确设置吊钩。"
+  },
+  {
+    "id": 3,
+    "questions": "此处防护密闭墙存在PVC套管是否符合设计规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中临空墙、防护密闭墙、密闭墙和临战封堵上部梁等有防护密闭要求的人防墙体均不得使用PVC套管。"
+  },
+  {
+    "id": 4,
+    "questions": "战时密闭通道处预埋套管是否预埋到位？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中套管未预埋到位。"
+  },
+  {
+    "id": 5,
+    "questions": "人防工程标识标牌设置是否符合要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中缺少人防车位地面标识及悬挂标识。"
+  },
+  {
+    "id": 6,
+    "questions": "穿越人防围护结构的给排水管在人防区内侧加设防护阀门是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中给排水管应设有阀门。"
+  },
+  {
+    "id": 7,
+    "questions": "悬摆活门标识是否完整？",
+    "answers": [
+      "缺启闭标识",
+      "缺少铭牌",
+      "缺少启闭标识和铭牌",
+      "什么都不缺"
+    ],
+    "correctAnswer": 2,
+    "explain": "本示例中悬摆活门应当包含操作标识及铭牌。"
+  },
+  {
+    "id": 8,
+    "questions": "扩散室内的墙体是否光面处理？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 0,
+    "explain": "本示例中墙体已光面处理。"
+  },
+  {
+    "id": 9,
+    "questions": "是否正确安装防爆地漏？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中防爆地漏突出，未正确安装。"
+  },
+  {
+    "id": 10,
+    "questions": "战时人员出入口部、进风机房、单元间联通口、防化值班室等部位的三色信号灯安装是否符合要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中缺少安装三色信号灯。"
+  },
+  {
+    "id": 11,
+    "questions": "马凳是否设置到位？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中马凳材质应为钢筋而非木材。"
+  },
+  {
+    "id": 12,
+    "questions": "人防门吊钩设置是否符合要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中吊钩设置位置不正确，应当贴近顶面弯折，并且捆绑至少3根钢筋。"
+  },
+  {
+    "id": 13,
+    "questions": "人防门吊钩设置是否符合要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中吊钩设置不正确，未做牛角形弯锚。"
+  },
+  {
+    "id": 14,
+    "questions": "跨越人防围护结构的电气线路设置防爆过路盒是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中防爆过路盒未设置。"
+  },
+  {
+    "id": 15,
+    "questions": "拉结筋是否按设计及规范要求设置？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中拉结筋未设置。"
+  },
+  {
+    "id": 16,
+    "questions": "人防门槛斜向加强筋是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中人防门槛斜向加强筋未设置。"
+  },
+  {
+    "id": 17,
+    "questions": "人防区内金属门框等电位接地设置是否符合设计及规范要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中金属门框等电位接地未设置。"
+  },
+  {
+    "id": 18,
+    "questions": "跨越人防围护结构的电气线路材质是否符合要求？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中电气线路采用铸铁管生锈，应采用镀锌管。"
+  },
+  {
+    "id": 19,
+    "questions": "穿墙预埋套管是否加密闭翼环？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中穿墙预埋套管未加密闭翼环。"
+  },
+  {
+    "id": 20,
+    "questions": "风管加强钢筋是否正确？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中风管加强钢筋未设置。"
+  },
+  {
+    "id": 21,
+    "questions": "这个通道（指密闭通道）内是否应有集水井内？",
+    "answers": [
+      "是",
+      "否"
+    ],
+    "correctAnswer": 1,
+    "explain": "本示例中已设置集水井。"
+  }
+]
