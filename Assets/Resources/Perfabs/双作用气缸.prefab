@@ -130,7 +130,7 @@ MonoBehaviour:
   signalName: "\u6C14\u7F38\u7F29\u56DE\u70B9\u4FE1\u53F7"
   targetCylinder: {fileID: 8519183510837708321}
   detectionMode: 0
-  threshold: 0.02
+  threshold: 0.2
   percent: 0
 --- !u!1 &2914523582925458485
 GameObject:
@@ -249,6 +249,8 @@ MonoBehaviour:
   retractSound: {fileID: 8300000, guid: 72c3e022d6bbb1d4a9259ba3f4a2ad35, type: 3}
   cySignal1: {fileID: 2188148872360515049}
   cySignal2: {fileID: 1794639356839146143}
+  targetDirection: 0
+  targetFlowRate: 0
 --- !u!114 &681963398538958301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,7 +608,7 @@ MonoBehaviour:
   signalName: "\u6C14\u7F38\u4F38\u51FA\u70B9\u4FE1\u53F7"
   targetCylinder: {fileID: 8519183510837708321}
   detectionMode: 1
-  threshold: 0.02
+  threshold: 0.2
   percent: 1
 --- !u!1 &6932091094842335332
 GameObject:

@@ -49,6 +49,9 @@ public class T_JointValve : BaseValve
             }
         };
         coreHub.pressure = maxP;
+        // 🔴 修复：三通传递流量约束应取 Min（保留最窄瓶颈），而非 Max（Max 会绕过节流阀限速）
+        // 例：换向阀出口(flow=1) → 三通 → 分支A(节流阀,flow=0.3) + 分支B(直通,flow=1)
+        // ports[0] 汇总两个出口的瓶颈：Min(0.3, 1) = 0.3，正确反映主路被节流阀约束
         ports[0].ReceiveInternalInfo(1, Mathf.Max(ports[1].inExFlow, ports[2].inExFlow), Mathf.Max(ports[1].outExFlow, ports[2].outExFlow));
         ports[1].ReceiveInternalInfo(1, Mathf.Max(ports[0].inExFlow, ports[2].inExFlow), Mathf.Max(ports[0].outExFlow, ports[2].outExFlow));
         ports[2].ReceiveInternalInfo(1, Mathf.Max(ports[1].inExFlow, ports[0].inExFlow), Mathf.Max(ports[1].outExFlow, ports[0].outExFlow));

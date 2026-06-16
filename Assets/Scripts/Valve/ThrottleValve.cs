@@ -1,73 +1,99 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 /// <summary>
 /// 可调单向节流阀 (One-Way Flow Control Valve)
+/// 
+/// 物理行为：
+///   正向 (P → A)：气流经过节流芯，速度受 opening 限制（慢速）
+///   反向 (A → P)：气流经过内置单向阀旁路，不受节流限制（全速）
+/// 
 /// 端口配置约定：
-/// - ports[0]: P口 (进气端) -> 必须设为 PortType.Input
-/// - ports[1]: A口 (出气端) -> 必须设为 PortType.Output
+///   ports[0]: P口 (进气/出气端，正向进气侧)
+///   ports[1]: A口 (出气/进气端，连向气缸腔室侧)
+/// 
+/// 典型用法（出口节流控制气缸伸出速度）：
+///   主气源 → 换向阀 → 节流阀P口 → 节流阀A口 → 气缸A腔
+///   气缸A腔排气时(A→P方向)：单向阀开，全速排气
+///   气缸A腔进气时(P→A方向)：节流芯节流，慢速进气
 /// </summary>
 public class ThrottleValve : BaseValve
 {
     [Range(0.01f, 1f)]
-    [Header("节流开口度")]
-    public float opening = 0.5f; // 旋钮开口度，越小阻力越大，气缸越慢
+    [Header("节流开口度 (1=全开/全速, 0.01=几乎关死/极慢)")]
+    public float opening = 0.5f;
+
     protected override void Start()
     {
-        base.Start(); // 执行基类的注册逻辑
+        base.Start();
 
         if (ports.Count >= 2)
         {
-            // 🔴 节流阀在物理上是永久双向连通的。
-            // 我们在初始化时，就直接让 P口 和 A口 在内部“小手拉大手”搭建好高速路。
-            ports[0].internalConnectTo = ports[1]; // P -> A
-            ports[1].internalConnectTo = ports[0]; // A -> P
+            // 节流阀内部通道永久双向连通（无论正反向气都能过）
+            // 速度差异由 ProcessLogic 中的 flowRate 参数控制
+            ports[0].internalConnectTo = ports[1]; // P ↔ A
+            ports[1].internalConnectTo = ports[0]; // A ↔ P
         }
     }
+
     /// <summary>
-    /// 阶段 1：根据当前的绝对压差，动态调整滑道内部的阻力特征
+    /// 阶段1：根据两端压差判断气流方向，动态分配节流速率
+    /// 
+    /// ReceiveInternalInfo(pressurePercent, inFlowPercent, outFlowPercent) 参数说明：
+    ///   - pressurePercent: 从 internalConnectTo 端口获取压力时的缩放比（减压阀用）
+    ///   - inFlowPercent:   从内部通道"流入本端口方向"的速率系数
+    ///   - outFlowPercent:  从本端口"流向外部管路方向"的速率系数
+    /// 
+    /// 单向节流阀规则：
+    ///   正向 P→A（pP > pA）：A口是接收高压气的一侧
+    ///     → A口的 inFlow 被 opening 限速（从P侧吸进来的气被卡慢）
+    ///     → P口的 outFlow 被 opening 限速（往A侧推出的气被卡慢）
+    ///   反向 A→P（pA > pP）：P口是接收高压气的一侧（排气通过单向阀旁路）
+    ///     → 不限速，inFlow/outFlow 均为 1
     /// </summary>
     public override void ProcessLogic()
     {
         if (ports.Count < 2) return;
 
-        PneumaticPort portP = ports[0]; // 左端 P 口
-        PneumaticPort portA = ports[1]; // 右端 A 口
+        PneumaticPort portP = ports[0]; // P口
+        PneumaticPort portA = ports[1]; // A口
 
-        // 强制确保两端处于激活导通态
+        // 节流阀两端始终导通（截止由上游换向阀控制）
         portP.state = PortState.Conduct;
         portA.state = PortState.Conduct;
-        portP.ReceiveInternalInfo(1,opening, portA.outFlowRate);
-        portA.ReceiveInternalInfo(1,opening, portA.outFlowRate);
-        /*
-        // ==========================================
-        // 核心：基于压差驱动的内部流量约束分配
-        // ==========================================
-        if (portP.pressure > portA.pressure + 0.001f)
+
+        float pP = portP.exPressure; // 从外部管线读到的P侧压力
+        float pA = portA.exPressure; // 从外部管线读到的A侧压力
+
+        if (pP > pA + 0.001f)
         {
-            // --- 【流向：左(P) -> 右(A)】 伸出排气，单向阀堵死，节流阀芯卡脖子！ ---
-            // 此时由于窄门限制，我们通知 P 口和 A 口：你们之间的内部通道变狭窄了！
-            // 这样，在随后的“阶段 2”和“阶段 3”里，流经这条内部通道的最终流速会被强制锁死在 0.3f
-            portP.ReceiveInternalInfo(1,opening);
-            portA.ReceiveInternalInfo(1, opening);
+            // ====================================================
+            // 【正向：P → A】 气通过节流芯，速度受 opening 限制
+            // ====================================================
+            // P口：正在往A口推气，其"流出到外部管路"的速率被限 → outFlow = opening
+            //      从A口回来的内压直接读取（压力不衰减）
+            portP.ReceiveInternalInfo(1f, 1f, opening);
+
+            // A口：正在从P口接收气，其"从内部通道流入"的速率被限 → inFlow = opening
+            //      向外部管路输出时速率同样被限（背压端也卡慢，避免跑压）
+            portA.ReceiveInternalInfo(1f, opening, opening);
         }
-        else if (portA.pressure > portP.pressure + 0.001f)
+        else if (pA > pP + 0.001f)
         {
-            // --- 【流向：右(A) -> 左(P)】 快退进气，内部单向阀被瞬间冲开！ ---
-            // 阀门内部大门敞开，流量系数 100% 解除限制，恢复完全不设防的自由通过状态
-            portP.ReceiveInternalInfo();
-            portA.ReceiveInternalInfo(1,1);
+            // ====================================================
+            // 【反向：A → P】 气经过内置单向阀旁路，不受节流限制
+            // ====================================================
+            // 单向阀全开，inFlow/outFlow 均为 1，不施加任何速率限制
+            portP.ReceiveInternalInfo(1f, 1f, 1f);
+            portA.ReceiveInternalInfo(1f, 1f, 1f);
         }
         else
-        {/*
-            // --- 静态平衡状态（保压） ---
-            if (portP.pressure > 0.1f)
-            {
-                portP.ReceiveInternalInfo();
-                portA.ReceiveInternalInfo();
-            }
-        }*/
-
-
+        {
+            // ====================================================
+            // 【静态平衡 / 保压】 两端压力相等，无净流动
+            // ====================================================
+            // 保持当前压力，不施加流量限制
+            portP.ReceiveInternalInfo(1f, 1f, 1f);
+            portA.ReceiveInternalInfo(1f, 1f, 1f);
+        }
     }
 }

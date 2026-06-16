@@ -12,7 +12,9 @@ public class ItenMenuUI_2 : ItenMenuUIBase
     public Button confirmButton;
 
     public Slider singal1SliderUI, singal2SliderUI;
+    public Slider singal1Sliderthreshold, singal2Sliderthreshold;
     public TextMeshProUGUI UIsignal1percent, signal2percentUI;
+    public TextMeshProUGUI UIsignal1threshold, signal2threshold;
     CylinderSignalSource signal1Source, signal2Source;
 
     private void Start()
@@ -27,7 +29,17 @@ public class ItenMenuUI_2 : ItenMenuUIBase
         singal2SliderUI.onValueChanged.AddListener(
             (float a) =>
             {
-                signal2percentUI.text = ((int)(a * 100)).ToString().ToString() + "%";
+                signal2percentUI.text = ((int)(a * 100)).ToString() + "%";
+            });
+        singal1Sliderthreshold.onValueChanged.AddListener(
+            (float a) =>
+            {
+                UIsignal1threshold.text ="±" +a.ToString("F2") ;
+            });
+        singal2Sliderthreshold.onValueChanged.AddListener(
+            (float a) =>
+            {
+                signal2threshold.text = "±"+a.ToString("F2");
             });
     }
     public override void InitItenMenu()
@@ -58,10 +70,12 @@ public class ItenMenuUI_2 : ItenMenuUIBase
             }
 
         }
-        signal1Source.name = tMP_InputField.text + "标尺1位置";
+        signal1Source.signalName = tMP_InputField.text + "标尺1";
         signal1Source.percent =singal1SliderUI.value;
-        signal2Source.name = tMP_InputField.text + "标尺2位置";
+        signal1Source.threshold = singal1Sliderthreshold.value;
+        signal2Source.signalName = tMP_InputField.text + "标尺2";
         signal2Source.percent =singal2SliderUI.value;
+        signal2Source.threshold= singal2Sliderthreshold.value;
 
     }
     public int GetSelectedToggleIndex(int i)

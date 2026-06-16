@@ -84,6 +84,7 @@ public class ItenMenuUI_5 : ItenMenuUIBase
 
     void OnConfirm()
     {
+        RefreshDropdown(signalDropdown1);
         signalDropdown1.onValueChanged.Invoke(signalDropdown1.value);
         for (int i = 0; i < toggleGroups.Count; i++)
         {

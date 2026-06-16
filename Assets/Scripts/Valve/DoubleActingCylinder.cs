@@ -57,17 +57,14 @@ public class DoubleActingCylinder : BaseValve
         float pA = portA.exPressure;
         float pB = portB.exPressure;
 
-        // 1. 纯物理意图与流速判定
+        // 1. 纯物理意图判定（使用 exPressure = 外部管线压力，已经包含节流阀约束的上一帧结果）
         if (pA > pB + 0.1f && currentPos < maxStroke)
         {
-            targetDirection = 1f; // 伸出
-                                  // 🔴 【核心修改】：双边流量因果制约！
-
+            targetDirection = 1f; // 伸出：A腔进气，B腔排气
         }
         else if (pB > pA + 0.1f && currentPos > 0f)
         {
-            targetDirection = -1f; // 缩回
-
+            targetDirection = -1f; // 缩回：B腔进气，A腔排气
         }
         else
         {
@@ -75,34 +72,33 @@ public class DoubleActingCylinder : BaseValve
             targetFlowRate = 1f;
         }
 
-
-        // 2. 依据物理意图装配内部拓扑连接，向网络宣泄能量
+        // 2. 依据物理意图装配内部拓扑连接，向网络传递压力
         if (targetDirection != 0)
         {
             if (targetDirection == 1)
             {
-                // 【伸出】：A进气，B排气。
-                // 仅让接收端 B 的内指针连向送气端 A。B 会自发从 A 身上剥离高压
-                // 接收端 B 绝对不会污染或影响送气端 A 的数据
+                // 【伸出】：A腔进气（高压推活塞），B腔排气（低压释放）
+                // A口内指针=null（A是压力源，不从别人身上借压）
+                // B口内指针→A（B跟着A的高压走，表示推力传到B侧背压）
                 portA.internalConnectTo = null;
                 portB.internalConnectTo = portA;
-                targetFlowRate = Mathf.Min(portA.inFlowRate, portB.inFlowRate);
+
+                // 🔴 关键修复：流量应读 exFlowRate（已被节流阀写入的外部流量系数）
+                // exFlow 在 ReceiveExternalInfo 阶段由连线对端（节流阀端口）填写
+                // 正确反映了节流阀在当前迭代中对该通道的速率限制
+                targetFlowRate = Mathf.Min(portA.inExFlow, portB.outExFlow);
                 portB.ReceiveInternalInfo(0.5f);
             }
             else
             {
-                // 【缩回】：B进气，A排气。
-                // 仅让排气端 A 的内指针单向连向进气端 B
+                // 【缩回】：B腔进气（高压推活塞缩回），A腔排气
                 portB.internalConnectTo = null;
                 portA.internalConnectTo = portB;
-                targetFlowRate = Mathf.Min(portA.outFlowRate, portB.outFlowRate);
+
+                // 🔴 同样使用 exFlow 而非 inFlowRate（后者在 IntegrateAndOutput 后才稳定）
+                targetFlowRate = Mathf.Min(portB.inExFlow, portA.outExFlow);
                 portA.ReceiveInternalInfo(0.5f);
             }
-
-            // 🔴 驱动无参数调用！
-            // 此时由于单向指针已绑好，排气口会自动顺着 internalConnectTo 把进气口的高压咬过来！
-            // 彻底消灭了原先硬编码的 portB.pressure = pA; 手动强写！                       
-            // 🔴 同理，缩回时的流速同样采取双边取极小值
         }
         else
         {
