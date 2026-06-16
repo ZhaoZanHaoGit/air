@@ -23,7 +23,7 @@ namespace RainbowArt.CleanFlatUI
         
         void Update()
         {
-            if(tooltip.gameObject.activeSelf == true)// && cachedEnterEventCamera != null
+            if(tooltip.gameObject.activeSelf == true && cachedEnterEventCamera != null)
             {
 #if ENABLE_INPUT_SYSTEM
                 Vector2 mousePosition = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
