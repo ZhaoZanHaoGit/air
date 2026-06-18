@@ -20,11 +20,25 @@ public class DynamicCircuitManager : MonoBehaviour
     public void MarkTopologyDirty() => isTopologyDirty = true;
 
     #region 多态多态注册接口
-    public void RegisterNode(DynamicNode node) { activeNodes.Add(node); MarkTopologyDirty(); }
+    public void RegisterNode(DynamicNode node)
+    {
+        activeNodes.Add(node);
+        Debug.Log($"<color=cyan>[拓扑注册]</color> 节点已注册: {node.nodeName}, 类型: {node.type}");
+        MarkTopologyDirty();
+    }
     public void UnregisterNode(DynamicNode node) { activeNodes.Remove(node); MarkTopologyDirty(); }
 
     // 统一的边注册入口
-    public void RegisterEdge(CircuitEdge edge) { activeEdges.Add(edge); MarkTopologyDirty(); }
+    public void RegisterEdge(CircuitEdge edge)
+    {
+        activeEdges.Add(edge);
+        // 强制转换为子类以获取更详细的信息
+        if (edge is DynamicWire wire)
+        {
+            Debug.Log($"<color=cyan>[拓扑注册]</color> 导线已注册! 连通两端: {wire.nodeA?.nodeName} <-> {wire.nodeB?.nodeName}");
+        }
+        MarkTopologyDirty();
+    }
     public void UnregisterEdge(CircuitEdge edge) { activeEdges.Remove(edge); MarkTopologyDirty(); }
     #endregion
 
@@ -45,11 +59,25 @@ public class DynamicCircuitManager : MonoBehaviour
         // 大脑现在只需要看这条边是否导通 (IsEdgeConnected)
         foreach (var edge in activeEdges)
         {
+            if (!activeNodes.Contains(edge.nodeA))
+            {
+                Debug.LogError($"[拓扑阻断] 边 {edge.edgeID} 无法导通！因为 activeNodes 中不包含起始节点A: {edge.nodeA?.nodeName}");
+                continue;
+            }
+            if (!activeNodes.Contains(edge.nodeB))
+            {
+                Debug.LogError($"[拓扑阻断] 边 {edge.edgeID} 无法导通！因为 activeNodes 中不包含终止节点B: {edge.nodeB?.nodeName}");
+                continue;
+            }
             if (edge.IsEdgeConnected && activeNodes.Contains(edge.nodeA) && activeNodes.Contains(edge.nodeB))
             {
                 Union(edge.nodeA, edge.nodeB);
                 adjacencyList[edge.nodeA].Add(edge.nodeB);
                 adjacencyList[edge.nodeB].Add(edge.nodeA);
+            }
+            else
+            {
+                Debug.Log($"[拓扑跳过] 边 {edge.edgeID} 当前处于断开状态(如未闭合的开关)");
             }
         }
 
@@ -61,17 +89,27 @@ public class DynamicCircuitManager : MonoBehaviour
             if (!loops.ContainsKey(root)) loops[root] = new List<DynamicNode>();
             loops[root].Add(node);
         }
-
+        // 4. 分析每个独立回路的电源供电状态
+        Debug.Log($"<color=yellow>[回路盘点]</color> 当前全网共切分出 {loops.Count} 个独立网络分量。");
         // 4. 电源染色与短路分析
         foreach (var kvp in loops)
         {
             List<DynamicNode> loopNodes = kvp.Value;
             List<DynamicNode> posSources = loopNodes.FindAll(n => n.type == NodeType.Positive);
             List<DynamicNode> negSources = loopNodes.FindAll(n => n.type == NodeType.Negative);
-
+            // 打印当前回路的详细身世
+            string nodeNames = "";
+            loopNodes.ForEach(n => nodeNames += n.nodeName + ", ");
+            Debug.Log($"[回路详情] 根节点:{kvp.Key.nodeName} | 包含节点:[{nodeNames}] | 正极源数:{posSources.Count} | 负极源数:{negSources.Count}");
             if (posSources.Count > 0 && negSources.Count > 0) HandleShortCircuit(posSources, negSources);
             else if (posSources.Count > 0) RunBFS(posSources, NodeType.Positive);
-            else if (negSources.Count > 0) RunBFS(negSources, NodeType.Negative);
+            else if (negSources.Count > 0)
+            { RunBFS(negSources, NodeType.Negative); }
+            else
+            {
+                // 重点看这里会不会触发！
+                Debug.LogWarning($"<color=orange>[无源回路]</color> 根节点为 {kvp.Key.nodeName} 的回路中没有任何电源，无法被染色！");
+            }
         }
 
         // 5. 刷新表现

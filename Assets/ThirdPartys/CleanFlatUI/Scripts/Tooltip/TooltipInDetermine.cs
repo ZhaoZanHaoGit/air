@@ -23,7 +23,7 @@ namespace RainbowArt.CleanFlatUI
         
         void Update()
         {
-            if(tooltip.gameObject.activeSelf == true && cachedEnterEventCamera != null)
+            if(tooltip.gameObject.activeSelf == true)
             {
 #if ENABLE_INPUT_SYSTEM
                 Vector2 mousePosition = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
@@ -31,7 +31,7 @@ namespace RainbowArt.CleanFlatUI
                 Vector2 mousePosition = Input.mousePosition;
 #endif
                 Vector2 localMousePos;
-                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(cachedRect, mousePosition, cachedEnterEventCamera, out localMousePos))
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(cachedRect, mousePosition, null, out localMousePos))
                 {
                     UpdatePosition();
                 }
@@ -52,7 +52,7 @@ namespace RainbowArt.CleanFlatUI
             Vector2 mousePosition = Input.mousePosition;
 #endif
             Vector2 mousePos;
-            bool success = RectTransformUtility.ScreenPointToLocalPointInRectangle(tooltipParentRect, mousePosition, cachedEnterEventCamera, out mousePos);
+            bool success = RectTransformUtility.ScreenPointToLocalPointInRectangle(tooltipParentRect, mousePosition, null, out mousePos);
             Vector3 position = new Vector3(mousePos.x,mousePos.y,0);   
             tooltip.SetTooltipPosition(position,0,0);            
         }

@@ -47,7 +47,7 @@ public class TubeBuilderManager : MonoBehaviour
             PortBase port = joint.GetComponent<PortBase>();
             if (port != null && port.isOccupied && !port.isStackable)
             {
-                Debug.LogWarning("该接头已经连接！");
+            //    Debug.LogWarning("该接头已经连接！");
 
             }
             else
@@ -57,7 +57,7 @@ public class TubeBuilderManager : MonoBehaviour
             }
 
         }
-        Debug.Log("进入放置模式，请选择第一个接头");
+   //     Debug.Log("进入放置模式，请选择第一个接头");
     }
 
     // --- 2. 交互逻辑 ---
@@ -70,7 +70,7 @@ public class TubeBuilderManager : MonoBehaviour
             // 1. 排除真正的 UI（仅限 Canvas 上的元素）
             if (IsClickingRealUI(screenPos))
             {
-                Debug.Log("点到了真正的 UI 按钮，跳过逻辑");
+       //         Debug.Log("点到了真正的 UI 按钮，跳过逻辑");
                 return;
             }
 
@@ -78,7 +78,7 @@ public class TubeBuilderManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(screenPos);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Debug.Log("射线击中了 3D 物体: " + hit.transform.name);
+                //Debug.Log("射线击中了 3D 物体: " + hit.transform.name);
 
                 if (hit.transform.CompareTag(CurrentjointChanel.ToString()))
                 {
@@ -93,69 +93,68 @@ public class TubeBuilderManager : MonoBehaviour
         PortBase port = jointTransform.GetComponent<PortBase>();
         if (port != null && !port.isStackable&& port.isOccupied )
         {
-            Debug.LogWarning("该接头已经连接了气管！");
+            //Debug.LogWarning("该接头已经连接了气管！");
             return;
         }
 
         if (firstJoint == null)
         {
             firstJoint = jointTransform;
-            Debug.Log("已选择第一个接头: " + firstJoint.name);
+          //  Debug.Log("已选择第一个接头: " + firstJoint.name);
         }
         else if (secondJoint == null && (jointTransform != firstJoint))
         {
             secondJoint = jointTransform;
-            Debug.Log("已选择第二个接头: " + secondJoint.name);
+          //  Debug.Log("已选择第二个接头: " + secondJoint.name);
             CreateTube();
         }
     }
 
     private void CreateTube()
     {
-        GameObject newTube=new GameObject();
-        // 实例化气管
+        GameObject newTube = null;
+
+        // 1. 实例化正确的管线预制体
         switch (CurrentjointChanel)
         {
             case portChanel.pneumatic:
-                 newTube = Instantiate(pneumaticPrefab);
+                newTube = Instantiate(pneumaticPrefab);
                 break;
             case portChanel.tinckElec:
-                 newTube = Instantiate(xixianPrefab);
+                newTube = Instantiate(xixianPrefab); // 确保已挂载 DynamicWire
                 break;
             case portChanel.simplleElec:
-                newTube = Instantiate(cuxianPrefab);
-                break;
-            default:
+                newTube = Instantiate(cuxianPrefab);  // 确保已挂载 DynamicWire
                 break;
         }
-       
-        linerendeler bezier = newTube.GetComponent<linerendeler>();
 
-        // 设置起止点
-        bezier.p0 = firstJoint;
-        bezier.p2 = secondJoint;
+        if (newTube == null) return;
+        newTube.transform.position = Vector3.zero;
 
-        // 自动初始化中点位置
-        newTube.transform.position = Vector3.zero; // 确保在原点，靠P0/P2驱动
-                                                   // --- 新增逻辑绑定 ---
-       PortBase portA = firstJoint.GetComponent<PortBase>();
+        // 2. 获取两端的物理接口组件
+        PortBase portA = firstJoint.GetComponent<PortBase>();
         PortBase portB = secondJoint.GetComponent<PortBase>();
-        // ---> [电路系统融合核心点] <---
+
+        // 3. 【核心兼容适配修改】：分流处理电气导线和气动管线
         if (CurrentjointChanel == portChanel.tinckElec || CurrentjointChanel == portChanel.simplleElec)
         {
-            // 获取新型的导线拓扑组件（它替代了原来的纯 linerendeler）
+            // 抓取全新的多态电线组件
             DynamicWire wireTopology = newTube.GetComponent<DynamicWire>();
 
             if (wireTopology != null && portA != null && portB != null)
             {
-                // 调用多态初始化，这会自动在全局电路管理器（DynamicCircuitManager）中注册这条边
+                Debug.Log($"<color=green>[兼容适配成功]</color> 成功抓取到新电线组件，开始初始化拓扑边...");
+                // 传入两端 PortBase 上 Awake 时自动动态生成的电路节点 (circuitNode)
                 wireTopology.SetupWire(portA.circuitNode, portB.circuitNode);
+            }
+            else
+            {
+                Debug.LogError($"<color=red>[组件丢失错误]</color> 电线预制体上未找到全新的 DynamicWire 脚本，或者接口缺失！");
             }
         }
         else
         {
-            // 如果是气动管线（pneumatic），依然走你们原本的纯渲染或气动逻辑
-            // 比如你们气动管线上如果挂的是老版的 linerendeler：
+            // 如果是纯气动管线（pneumatic），依然保留你原本的老版 bezier 赋值逻辑
             var oldBezier = newTube.GetComponent<linerendeler>();
             if (oldBezier != null)
             {
@@ -163,6 +162,8 @@ public class TubeBuilderManager : MonoBehaviour
                 oldBezier.p2 = secondJoint;
             }
         }
+
+        // 4. 保持你原系统的物理状态绑定（让接头知道自己被占用了）
         if (portA != null && portB != null)
         {
             portA.OnConnect(portB);
@@ -170,13 +171,14 @@ public class TubeBuilderManager : MonoBehaviour
             portA.isOccupied = true;
             portB.isOccupied = true;
         }
-        // 结束选择模式，关闭高亮
+
+        // 5. 结束选择模式，关闭高亮
         EndSelection();
     }
 
     private void EndSelection()
     {
-        Debug.Log("清除选择信息");
+        //Debug.Log("清除选择信息");
         isSelecting = false;
         GameObject[] joints = GameObject.FindGameObjectsWithTag(CurrentjointChanel.ToString());
 

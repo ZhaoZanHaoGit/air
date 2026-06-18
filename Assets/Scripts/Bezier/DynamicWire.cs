@@ -75,6 +75,8 @@ public class DynamicWire : CircuitEdge
 
     private void UpdateWireVisualEffect()
     {
+        // 如果运行时你想看这根线两端到底在干嘛，可以解开这行注释
+         Debug.Log($"[导线单帧检查] {gameObject.name} -> NodeA极性:{nodeA.currentPowerStatus}(级数:{nodeA.currentLevel}) | NodeB极性:{nodeB.currentPowerStatus}(级数:{nodeB.currentLevel})");
         if (nodeA.currentPowerStatus == NodeType.Positive || nodeB.currentPowerStatus == NodeType.Positive)
             lineRenderer.startColor = lineRenderer.endColor = Color.red;
         else if (nodeA.currentPowerStatus == NodeType.Negative || nodeB.currentPowerStatus == NodeType.Negative)

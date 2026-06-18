@@ -40,6 +40,7 @@ public class TraniningPanel : BaseUI
     public PneumaticTrainingCase currentTrainingCase;
     private trainType trainType;
     public UIManager_qidong uIManager_qidong;
+    
     public trainType TrainType
     {
         get { return trainType; }
@@ -494,7 +495,7 @@ public class TraniningPanel : BaseUI
     protected override void OnBtnRelease(GameObject listener, object eventData, params object[] args)
     {
         startTraining = false;
-        SimulationLoop.Instance.DeleteAllLines();
+        SimulationLoop.Instance.DeleteAllValves();
         Debug.Log("TraniningPanel OnBtnRelease");
         //CloseUIToBeOpenUI(EnumUIType.CognitiveMenuPanel);
         if (TrainType == trainType.None)
@@ -540,6 +541,7 @@ public class TraniningPanel : BaseUI
             testPanel.gameObject.SetActive(false);
             toolPanel.gameObject.SetActive(false);
             uIManager_qidong.clearButtonData();
+            ItemManager.Instance.ClearAllItemData();
         }
 
 
