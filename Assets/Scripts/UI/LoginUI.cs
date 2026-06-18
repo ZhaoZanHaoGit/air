@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using RainbowArt.CleanFlatUI;
 public class LoginUI : BaseUI
 {
     public override EnumUIType GetUIType()

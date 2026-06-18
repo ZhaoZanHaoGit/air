@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Linq;
 using TMPro;
+using RainbowArt.CleanFlatUI;
 
 public class LoadingUI : BaseUI
 {
@@ -20,8 +21,10 @@ public class LoadingUI : BaseUI
     private Animator loadUIAnimator =>
         _loadUIAnimator ??= UnityHelper.GetTheChildComponent<Animator>(gameObject, "rectLoadUI");
 
-    private Slider _sliderUI;
-    public Slider sliderUI => _sliderUI ??= UnityHelper.GetTheChildComponent<Slider>(gameObject, "slider");
+   // private Slider _sliderUI;
+   // public Slider sliderUI => _sliderUI ??= UnityHelper.GetTheChildComponent<Slider>(gameObject, "slider");
+
+    public ProgressBar progressBar;
     private TextMeshProUGUI _txtLoading, _txtTip;
     public TextMeshProUGUI txtLoading => _txtLoading ??= UnityHelper.GetTheChildComponent<TextMeshProUGUI>(gameObject, "txtLoading");
     public TextMeshProUGUI txtTip => _txtTip ??= UnityHelper.GetTheChildComponent<TextMeshProUGUI>(gameObject, "tip");
@@ -102,7 +105,7 @@ public class LoadingUI : BaseUI
                 sliderValue += UnityEngine.Random.Range(3, 5);
             else
                 sliderValue = 100;
-            sliderUI.value = sliderValue;
+            progressBar.CurrentValue = sliderValue;
 
             yield return new WaitForSeconds(0.04f);
         }
@@ -121,16 +124,16 @@ public class LoadingUI : BaseUI
         {
             sliderValue = 1.0f;
         }
-        if (sliderValue != sliderUI.value)
+        if (sliderValue != progressBar.CurrentValue)
         {
-            sliderUI.value = Mathf.Lerp(sliderUI.value, sliderValue, Time.deltaTime * loadingSpeed);
-            if (Mathf.Abs(sliderUI.value - sliderValue) < 0.01f)
+            progressBar.CurrentValue = Mathf.Lerp(progressBar.CurrentValue, sliderValue, Time.deltaTime * loadingSpeed);
+            if (Mathf.Abs(progressBar.CurrentValue - sliderValue) < 0.01f)
             {
-                sliderUI.value = sliderValue;
+                progressBar.CurrentValue = sliderValue;
             }
         }
         //numberText.text = ((int)(processBar.value * 100)).ToString() + "%";
-        if ((int)(sliderUI.value * 100) >= 100)
+        if ((int)(progressBar.CurrentValue * 100) >= 100)
         {
             //允许异步加载完毕后自动切换场景
             oper.allowSceneActivation = true;

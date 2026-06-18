@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 3222143485124296924}
   - component: {fileID: 1274093915270669780}
   - component: {fileID: 5906024475076942992}
-  - component: {fileID: 4333198188550358847}
+  - component: {fileID: 3842572590429931752}
+  - component: {fileID: 7972157912439900415}
   m_Layer: 0
   m_Name: Elecport
   m_TagString: Untagged
@@ -289,7 +290,7 @@ MonoBehaviour:
   hitFxFadeOutDuration: 0.25
   hitFxColor: {r: 1, g: 1, b: 1, a: 1}
   hitFxRadius: 0.5
---- !u!114 &4333198188550358847
+--- !u!114 &3842572590429931752
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -298,14 +299,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 1437616322213480916}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28056c4043cfc6246a7ea2652abb0291, type: 3}
+  m_Script: {fileID: 11500000, guid: 88aa21a5357a8e04393d21629f4eab84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  portandvalve:
+    port: 10
+    valve: 37
   chanel: 0
   isOccupied: 0
   isStackable: 0
-  portType: 1
-  parentValve: {fileID: 0}
-  pressure: 0
-  volt: 1
-  connectedTo: {fileID: 0}
+  isMain: 0
+  debugOn: 0
+  nodetype: 0
+  circuitNode: {fileID: 7972157912439900415}
+--- !u!114 &7972157912439900415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437616322213480916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2059ab7b5a4e84daa634c7d958a05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeName: 
+  type: 0
+  currentLevel: -1
+  currentPowerStatus: 0

@@ -52,8 +52,8 @@ public class PneumaticPort : PortBase
         if (internalConnectTo != null)
         {
             inPressure = internalConnectTo.pressure*Pressurepercent ;
-            InFlow     =inFlowpercent;
-            outFlow    =outFlowpercent;
+            InFlow     = internalConnectTo.inFlowRate*inFlowpercent;
+            outFlow    = internalConnectTo.outFlowRate*outFlowpercent;
         }
         else
         {
@@ -147,7 +147,7 @@ public class PneumaticPort : PortBase
     }
     public override void Disconnect()
     {
-        isOccupied = false;
+       base.Disconnect();
         this.connectedTo = null;
 
     }

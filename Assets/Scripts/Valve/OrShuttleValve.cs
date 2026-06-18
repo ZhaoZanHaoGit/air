@@ -13,7 +13,7 @@ public class OrShuttleValve : BaseValve
 {
     [Header("抗扰动微调")]
     [Tooltip("触发内部滑块切变所需的最低有效气压阈值，低于此值视为管路噪声微弱残压")]
-    public float pTriggerThreshold = 0.15f;
+    public float pTriggerThreshold = 0.05f;
 
     [Header("实时状态监测看板（只读）")]
     [Tooltip("当前哪一路输入胜出并主导了输出通路")]
@@ -33,7 +33,8 @@ public class OrShuttleValve : BaseValve
         // 强行确保梭阀的所有工作物理接触面处于正常导通极性
    
         portY.state = PortState.Conduct;
-
+        portA.state = PortState.Conduct;
+        portB.state = PortState.Conduct;
         // ==========================================
         // 1. 或门逻辑判定：加入相对压差抗扰动机制
         // ==========================================
@@ -48,8 +49,8 @@ public class OrShuttleValve : BaseValve
             // 🔴 纯拓扑指针改绑：将输出口 Y 的外部连线终点，死死绑在源头输入口 A 上！
             // 这样下游网络（如气缸）在阶段 2 和阶段 3 运行时，会自发顺着指针咬到 A 口的纯净高压。
             portY.connectedTo = portA;
-            portA.state = PortState.Conduct;
-            portB.state = PortState.CutOff;
+     
+           
         }
         else if (pB > pA + pTriggerThreshold)
         {
@@ -58,8 +59,8 @@ public class OrShuttleValve : BaseValve
 
             // 🔴 纯拓扑指针改绑：将输出口 Y 的外部连线终点，死死绑在源头输入口 B 上！
             portY.connectedTo = portB; 
-            portA.state = PortState.CutOff; 
-            portB.state = PortState.Conduct;
+     
+            
         }
         else
         {

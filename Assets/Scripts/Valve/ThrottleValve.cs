@@ -71,11 +71,11 @@ public class ThrottleValve : BaseValve
             // ====================================================
             // P口：正在往A口推气，其"流出到外部管路"的速率被限 → outFlow = opening
             //      从A口回来的内压直接读取（压力不衰减）
-            portP.ReceiveInternalInfo(1f, 1f, opening);
+            portP.ReceiveInternalInfo(opening, 1f, opening);
 
             // A口：正在从P口接收气，其"从内部通道流入"的速率被限 → inFlow = opening
             //      向外部管路输出时速率同样被限（背压端也卡慢，避免跑压）
-            portA.ReceiveInternalInfo(1f, opening, opening);
+            portA.ReceiveInternalInfo(opening, opening, opening);
         }
         else if (pA > pP + 0.001f)
         {

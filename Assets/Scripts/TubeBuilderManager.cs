@@ -140,7 +140,29 @@ public class TubeBuilderManager : MonoBehaviour
                                                    // --- 新增逻辑绑定 ---
        PortBase portA = firstJoint.GetComponent<PortBase>();
         PortBase portB = secondJoint.GetComponent<PortBase>();
+        // ---> [电路系统融合核心点] <---
+        if (CurrentjointChanel == portChanel.tinckElec || CurrentjointChanel == portChanel.simplleElec)
+        {
+            // 获取新型的导线拓扑组件（它替代了原来的纯 linerendeler）
+            DynamicWire wireTopology = newTube.GetComponent<DynamicWire>();
 
+            if (wireTopology != null && portA != null && portB != null)
+            {
+                // 调用多态初始化，这会自动在全局电路管理器（DynamicCircuitManager）中注册这条边
+                wireTopology.SetupWire(portA.circuitNode, portB.circuitNode);
+            }
+        }
+        else
+        {
+            // 如果是气动管线（pneumatic），依然走你们原本的纯渲染或气动逻辑
+            // 比如你们气动管线上如果挂的是老版的 linerendeler：
+            var oldBezier = newTube.GetComponent<linerendeler>();
+            if (oldBezier != null)
+            {
+                oldBezier.p0 = firstJoint;
+                oldBezier.p2 = secondJoint;
+            }
+        }
         if (portA != null && portB != null)
         {
             portA.OnConnect(portB);

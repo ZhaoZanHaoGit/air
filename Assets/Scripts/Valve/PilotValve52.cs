@@ -15,8 +15,12 @@ public class PilotValve52 : BaseValve
     private void Start()
     {
         base.Start();
+        ports[0].state = PortState.Conduct;
+        ports[1].state = PortState.Conduct;
+        ports[2].state = PortState.Conduct;
         ports[3].state = PortState.Conduct;
         ports[4].state = PortState.Conduct;
+        ports[5].state = PortState.Conduct;
     }
     void Update()
     {
@@ -47,7 +51,7 @@ public class PilotValve52 : BaseValve
         // ports[2]: B (输出2) -> Output
         // ports[3]: Z1 (左控制口，使 P->A) -> Input
         // ports[4]: Z2 (右控制口，使 P->B) -> Input
-
+        // ports[5]: R (右控制口，使 P->B) -> Input
         if (ports.Count < 5) return;
 
         // 1. 气控切换逻辑：检测控制口的压力脉冲
@@ -65,24 +69,14 @@ public class PilotValve52 : BaseValve
         // 2. 执行气路输出逻辑
         if (internalPressedState)
         {
-            ports[0].state = PortState.Conduct;
-            ports[1].state = PortState.Conduct;
-            ports[2].state = PortState.CutOff;
-            ports[2].internalConnectTo = null;
-
-            ports[1].internalConnectTo = ports[0];
-            ports[0].internalConnectTo = ports[1];
-
+           
+            ports[2].internalConnectTo = ports[5];
+            ports[1].internalConnectTo = ports[0];  
         }
         else
         {
-            ports[0].state = PortState.Conduct;
-            ports[1].state = PortState.CutOff;
-            ports[2].state = PortState.Conduct;
-            ports[1].internalConnectTo = null;
-
+            ports[1].internalConnectTo = ports[5];
             ports[2].internalConnectTo = ports[0];
-            ports[0].internalConnectTo = ports[2];
         }
        
         ports[1].ReceiveInternalInfo();

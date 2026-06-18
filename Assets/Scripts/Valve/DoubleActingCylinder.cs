@@ -58,11 +58,11 @@ public class DoubleActingCylinder : BaseValve
         float pB = portB.exPressure;
 
         // 1. 纯物理意图判定（使用 exPressure = 外部管线压力，已经包含节流阀约束的上一帧结果）
-        if (pA > pB + 0.1f && currentPos < maxStroke)
+        if (pA > pB + 0.01f && currentPos < maxStroke)
         {
             targetDirection = 1f; // 伸出：A腔进气，B腔排气
         }
-        else if (pB > pA + 0.1f && currentPos > 0f)
+        else if (pB > pA + 0.01f && currentPos > 0f)
         {
             targetDirection = -1f; // 缩回：B腔进气，A腔排气
         }
@@ -85,7 +85,7 @@ public class DoubleActingCylinder : BaseValve
 
                 // 🔴 关键修复：流量应读 exFlowRate（已被节流阀写入的外部流量系数）
                 // exFlow 在 ReceiveExternalInfo 阶段由连线对端（节流阀端口）填写
-                // 正确反映了节流阀在当前迭代中对该通道的速率限制
+                // 正确反映了节流阀在当前迭代中对该通道的速率限制 
                 targetFlowRate = Mathf.Min(portA.inExFlow, portB.outExFlow);
                 portB.ReceiveInternalInfo(0.5f);
             }
@@ -94,10 +94,9 @@ public class DoubleActingCylinder : BaseValve
                 // 【缩回】：B腔进气（高压推活塞缩回），A腔排气
                 portB.internalConnectTo = null;
                 portA.internalConnectTo = portB;
-
                 // 🔴 同样使用 exFlow 而非 inFlowRate（后者在 IntegrateAndOutput 后才稳定）
                 targetFlowRate = Mathf.Min(portB.inExFlow, portA.outExFlow);
-                portA.ReceiveInternalInfo(0.5f);
+                portA.ReceiveInternalInfo(0.8f);
             }
         }
         else

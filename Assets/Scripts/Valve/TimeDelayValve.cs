@@ -50,13 +50,14 @@ public class TimeDelayValve : BaseValve
         {
             ports[0].state = PortState.Conduct;
             ports[2].state = PortState.Conduct;
+            ports[2].internalConnectTo = ports[0];
             ports[0].ReceiveInternalInfo();
             ports[2].ReceiveInternalInfo();
         }
         else
         {
+            ports[2].internalConnectTo = ports[3];
             ports[0].state = PortState.CutOff;
-            ports[2].state = PortState.CutOff;
         }
     }
 }
