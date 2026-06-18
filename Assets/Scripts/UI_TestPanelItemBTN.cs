@@ -79,7 +79,7 @@ public class UI_TestPanelItemBTN : MonoBehaviour
                 UpdateUIState();
                 // 4. 从全局背包系统移除
                 // ItemManager.Instance.RemoveItem(this.item, 1);
-                SimulationLoop.Instance.gridInScene.Add(@object);
+               // SimulationLoop.Instance.gridInScene.Add(@object);
             }
 
         }

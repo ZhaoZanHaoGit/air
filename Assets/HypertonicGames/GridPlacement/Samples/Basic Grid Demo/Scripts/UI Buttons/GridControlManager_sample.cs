@@ -127,7 +127,7 @@ namespace Hypertonic.GridPlacement.Example.BasicDemo
             if (@object.GetComponent<Item3D>().itemUI == null)
             { return; }    
             @object.GetComponent<Item3D>().itemUI.itemnum++;
-            @object.GetComponent<Item3D>().itemUI.chazhi++;
+            @object.GetComponent<Item3D>().itemUI.chazhi--;
             @object.GetComponent<Item3D>().itemUI.UpdateUIState();
             // ItemManager.Instance.AddItem(@object.GetComponent<Item3D>().itemSelf, 1);
         }

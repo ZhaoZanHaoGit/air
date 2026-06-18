@@ -43,7 +43,8 @@ public class CreateItemBtn : MonoBehaviour
         }
     }
     private void HandleObjectPlacedOnGrid(GameObject @object)
-    { SimulationLoop.Instance.gridInScene.Add(@object); }
+    { SimulationLoop.Instance.gridInScene.Add(@object);
+     }
     public void UseItem()
     {
         /*
