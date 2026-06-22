@@ -197,7 +197,7 @@ public class linerendeler : MonoBehaviour
             // 屏幕空间数学检查
             if (IsClickOnLine(inputScreenPos))
             {
-                SimulationLoop.Instance.currentLine = this;
+                SimulationLoop.Instance.currentLine = this.gameObject;
                 SetHandlesActive(true);
             }
             else

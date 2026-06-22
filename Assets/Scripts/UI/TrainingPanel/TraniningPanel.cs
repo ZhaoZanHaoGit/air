@@ -434,7 +434,7 @@ public class TraniningPanel : BaseUI
     {
         if (SimulationLoop.Instance && SimulationLoop.Instance.currentLine)
         {
-            GameObject.Destroy(SimulationLoop.Instance.currentLine.gameObject);
+            Destroy(SimulationLoop.Instance.currentLine);
             SimulationLoop.Instance.currentLine = null;
         }
     }

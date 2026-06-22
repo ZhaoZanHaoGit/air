@@ -76,7 +76,7 @@ public class DynamicWire : CircuitEdge
     private void UpdateWireVisualEffect()
     {
         // 如果运行时你想看这根线两端到底在干嘛，可以解开这行注释
-         Debug.Log($"[导线单帧检查] {gameObject.name} -> NodeA极性:{nodeA.currentPowerStatus}(级数:{nodeA.currentLevel}) | NodeB极性:{nodeB.currentPowerStatus}(级数:{nodeB.currentLevel})");
+        Debug.Log($"[导线单帧检查] {gameObject.name} -> NodeA极性:{nodeA.currentPowerStatus}(级数:{nodeA.currentLevel}) | NodeB极性:{nodeB.currentPowerStatus}(级数:{nodeB.currentLevel})");
         if (nodeA.currentPowerStatus == NodeType.Positive || nodeB.currentPowerStatus == NodeType.Positive)
             lineRenderer.startColor = lineRenderer.endColor = Color.red;
         else if (nodeA.currentPowerStatus == NodeType.Negative || nodeB.currentPowerStatus == NodeType.Negative)
@@ -90,7 +90,32 @@ public class DynamicWire : CircuitEdge
     Vector3 GetPointOnSpline(float t) { int numSections = 4; int currSection = Mathf.Min(Mathf.FloorToInt(t * numSections), numSections - 1); float localT = (t * numSections) - currSection; return GetCatmullRomPosition(localT, GetNode(currSection - 1), GetNode(currSection), GetNode(currSection + 1), GetNode(currSection + 2)); }
     Vector3 GetNode(int index) { if (index < 0) return controlPoints[0] + (controlPoints[0] - controlPoints[1]); if (index >= 5) return controlPoints[4] + (controlPoints[4] - controlPoints[3]); return controlPoints[index]; }
     Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3) { float t2 = t * t; float t3 = t2 * t; return 0.5f * ((2f * p1) + ((p2 - p0) * t) + ((2f * p0 - 5f * p1 + 4f * p2 - p3) * t2) + ((-p0 + 3f * p1 - 3f * p2 + p3) * t3)); }
-    void HandleSelectionLogic() { bool inputDown = false; Vector3 inputScreenPos = Vector3.zero; if (Input.touchCount > 0) { Touch touch = Input.GetTouch(0); if (touch.phase == TouchPhase.Began) { inputDown = true; inputScreenPos = touch.position; } } else if (Input.GetMouseButtonDown(0)) { inputDown = true; inputScreenPos = Input.mousePosition; } if (inputDown) { Ray ray = mainCamera.ScreenPointToRay(inputScreenPos); if (Physics.Raycast(ray, out RaycastHit hit)) { if (hit.transform == handle20 || hit.transform == handle50 || hit.transform == handle80 || hit.transform == p0 || hit.transform == p2) { SetHandlesActive(true); return; } } if (IsClickOnLine(inputScreenPos)) SetHandlesActive(true); else SetHandlesActive(false); } }
+    void HandleSelectionLogic()
+    {
+        bool inputDown = false;
+        Vector3 inputScreenPos = Vector3.zero;
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                inputDown = true;
+                inputScreenPos = touch.position;
+            }
+        }
+        else if (Input.GetMouseButtonDown(0)) { inputDown = true; inputScreenPos = Input.mousePosition; }
+        if (inputDown)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(inputScreenPos);
+            if (Physics.Raycast(ray, out RaycastHit hit)) { if (hit.transform == handle20 || hit.transform == handle50 || hit.transform == handle80 || hit.transform == p0 || hit.transform == p2) { SetHandlesActive(true); return; } }
+            if (IsClickOnLine(inputScreenPos))
+            {
+                SetHandlesActive(true);
+                SimulationLoop.Instance.currentLine = this.gameObject;
+            }
+            else SetHandlesActive(false);
+        }
+    }
     bool IsClickOnLine(Vector2 clickPos) { for (int i = 0; i < resolution - 1; i++) { if (Vector2.Distance(clickPos, DistanceToSegment(clickPos, mainCamera.WorldToScreenPoint(lineRenderer.GetPosition(i)), mainCamera.WorldToScreenPoint(lineRenderer.GetPosition(i + 1)))) <= clickThresholdPixels) return true; } return false; }
     Vector2 DistanceToSegment(Vector2 p, Vector2 v, Vector2 w) { float sqrLength = (v - w).sqrMagnitude; if (sqrLength == 0) return v; float t = Mathf.Max(0, Mathf.Min(1, Vector2.Dot(p - v, w - v) / sqrLength)); return v + t * (w - v); }
     void SetHandlesActive(bool active) { if (handle20) handle20.gameObject.SetActive(active); if (handle50) handle50.gameObject.SetActive(active); if (handle80) handle80.gameObject.SetActive(active); }

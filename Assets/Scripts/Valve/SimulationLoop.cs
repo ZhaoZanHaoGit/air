@@ -8,7 +8,8 @@ public class SimulationLoop : MonoBehaviour
     public List<BaseValve> allValves = new List<BaseValve>();
     public List<PortBase> mainSources = new List<PortBase>();
     public List<GameObject> gridInScene = new List<GameObject>();
-    public linerendeler currentLine;
+    public GameObject currentLine;
+    
     public DeleteLine deleteLineScript;
     public PneumaticTrainingCase CurrentCase;
     public CustomList<caseportData> currentPostsData = new CustomList<caseportData>();
