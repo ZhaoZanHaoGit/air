@@ -109,6 +109,12 @@ public class DynamicCircuitManager : MonoBehaviour
             {
                 // 重点看这里会不会触发！
                 Debug.LogWarning($"<color=orange>[无源回路]</color> 根节点为 {kvp.Key.nodeName} 的回路中没有任何电源，无法被染色！");
+                // 【显式复原】：如果这个回路里没有任何电源，强制把这个回路里所有节点的状态打回原型！
+                foreach (var node in loopNodes)
+                {
+                    node.currentLevel = -1;
+                    node.currentPowerStatus = NodeType.Normal;
+                }
             }
         }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 public class DynamicSwitch : CircuitEdge
 {
     [Header("========= 开关特有属性 =========")]
-    public bool isClosed = true;     // 闸刀是否闭合
+    public bool isClosed = false;     // 闸刀是否闭合
 
     // 实现父类的抽象接口：开关导通的条件就是闸刀闭合
     public override bool IsEdgeConnected => isClosed;

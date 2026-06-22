@@ -72,6 +72,26 @@ public class DynamicWire : CircuitEdge
         HandleSelectionLogic();
         UpdateWireVisualEffect();
     }
+    private void OnDestroy()
+    {
+        base.OnDestroy();
+        // ---> [新增] 销毁管线时，从 SimulationLoop 中移除连接数据 <---
+        PortBase portA = null;
+        PortBase portB = null;
+        if (p0)
+        { portA = p0.GetComponent<PortBase>(); }
+
+        if (p2)
+        { portB = p2.GetComponent<PortBase>(); }
+
+
+        if (portA != null && portB != null)
+        {
+            portA.Disconnect();
+            portB.Disconnect();
+
+        }
+    }
 
     private void UpdateWireVisualEffect()
     {

@@ -92,7 +92,7 @@ public class SolenoidValve32 : BaseValve
             portA.state = PortState.Conduct; // 保持工作口活跃，以便可以向排气口释放压力
 
             portP.internalConnectTo = null;
-            portA.internalConnectTo = ports[3];
+            portA.internalConnectTo = ports[2];
         }
 
         // 5. 驱动步骤：让各个活跃端口顺着内部纽带去获取彼此的内部压力/状态数据
