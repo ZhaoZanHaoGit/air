@@ -10,12 +10,7 @@ using UnityEngine;
 /// </summary>
 public class ManualValve34 : BaseValve
 {
-    public enum ValveState
-    {
-        Left = -1,    // 左位
-        Center = 0,   // 中位
-        Right = 1     // 右位
-    }
+   
     PneumaticPort coreHub;
     [Header("阀芯位置状态")]
     [Tooltip("通过外部按钮或手柄动画直接切换此枚举值")]
