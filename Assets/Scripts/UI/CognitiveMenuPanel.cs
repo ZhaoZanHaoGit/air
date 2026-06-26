@@ -332,6 +332,7 @@ public class CognitiveMenuPanel : BaseUI
             // Debug.LogWarning($"在 Resources/Symbol/ 路径下找到名为 [{iconName}] 的图片。");
             componentImage.sprite = targetSprite;
             componentImage.enabled = true; // 确保可见
+            componentImage.color = Color.white;
         }
         else
         {
@@ -349,6 +350,7 @@ public class CognitiveMenuPanel : BaseUI
             // Debug.LogWarning($"在 Resources/Symbol/ 路径下找到名为 [{iconName}] 的图片。");
             specificationImage.sprite = SpecificationSprite;
             specificationImage.enabled = true; // 确保可见
+            specificationImage.color = Color.white;
         }
         else
         {
@@ -391,7 +393,8 @@ public class CognitiveMenuPanel : BaseUI
     {
 
         //CloseUIToBeOpenUI(EnumUIType.CognitiveMenuPanel);
-        CloseUIToBeOpenUI(EnumUIType.MainMenu);
+        ModelShowManager.Instance.DestoryBaseGo();
+       CloseUIToBeOpenUI(EnumUIType.MainMenu);
     }
     protected override void OnRelease()
     {
