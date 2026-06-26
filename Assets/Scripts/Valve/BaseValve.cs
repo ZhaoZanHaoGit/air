@@ -71,5 +71,10 @@ public enum ValveName
 
 }
 
-
+public enum ValveState
+{
+    Left = -1,    // 左位
+    Center = 0,   // 中位
+    Right = 1     // 右位
+}
 
