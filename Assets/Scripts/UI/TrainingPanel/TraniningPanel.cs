@@ -1,4 +1,6 @@
+using Net.Component;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +24,7 @@ public class TraniningPanel : BaseUI
     public GameObject caseButtonPrefab;     // 带有 Button 和 TMP_Text 的按钮预制体
 
     [Header("任务书显示区")]
-    public TMP_Text taskDocumentText;       // 显示 TaskDocument 信息的 TextMeshPro
+    public TMP_Text taskDocumentText1, taskDocumentText2, taskDocumentText3;       // 显示 TaskDocument 信息的 TextMeshPro
     public TMP_Text taskName;       // 显示 TaskDocument 信息的 TextMeshPro
 
     [Header("回路图显示区")]
@@ -30,8 +32,8 @@ public class TraniningPanel : BaseUI
     public GameObject schematicImagePrefab; // 带有 Image 组件的预制体
 
     [Header("元件列表显示区")]
-    public TMP_Text componentListText;      // 显示 ComponentList 信息的 TextMeshPro
-
+    public Transform componentContent;      // 显示 ComponentList 信息的 TextMeshPro
+    public GameObject ItemcountPrefab; // 所需元器件预制体
     [Header("连线信息区")]
     public TMP_Text DebugData;      // 显示 ComponentList 信息的 TextMeshPro
 
@@ -40,7 +42,7 @@ public class TraniningPanel : BaseUI
     public PneumaticTrainingCase currentTrainingCase;
     private trainType trainType;
     public UIManager_qidong uIManager_qidong;
-    
+
     public trainType TrainType
     {
         get { return trainType; }
@@ -160,6 +162,7 @@ public class TraniningPanel : BaseUI
 
     protected override void OnStart()
     {
+        selectpanel.SetActive(true);
         testPanel.SetActive(false);
         toolPanel.SetActive(false);
         base.OnStart();
@@ -167,6 +170,7 @@ public class TraniningPanel : BaseUI
         LoadPneumaticCases();
         // 延迟调用或确保在 jsonReader 读取完成后调用
         // 也可以由 jsonReader 解析完毕后主动调用此方法
+        taskDocumentText1.text = ""; taskDocumentText2.text = ""; taskDocumentText3.text = "";
         if (trainingCases.Count > 0)
         {
             InitializeCaseButtons();
@@ -255,18 +259,13 @@ public class TraniningPanel : BaseUI
     /// </summary>
     public void InitializeCaseButtons()
     {
+        int index = 0;
         foreach (var trainingCase in trainingCases)
         {
             // 1. 生成按钮预制体
             GameObject btnObj = Instantiate(caseButtonPrefab, buttonContainer);
-
             // 2. 设置按钮显示的文本 (如需要，可使用 Casname)
-            TMP_Text btnText = btnObj.GetComponentInChildren<TMP_Text>();
-            if (btnText != null)
-            {
-                btnText.text = trainingCase.Casname;
-            }
-
+            btnObj.GetComponent<caseBtn>().UpdateBtnDData("TASK·" + (index + 1).ToString(), trainingCase.Casname);
             // 3. 绑定点击事件，注意解决 Lambda 闭包问题
             Button btn = btnObj.GetComponent<Button>();
             PneumaticTrainingCase cachedCase = trainingCase; // 缓存局部变量
@@ -292,14 +291,16 @@ public class TraniningPanel : BaseUI
     {
         if (doc == null)
         {
-            taskDocumentText.text = "暂无任务书数据。";
+            taskDocumentText1.text = "暂无任务书数据。";
+            taskDocumentText2.text = "暂无任务书数据。";
+            taskDocumentText3.text = "暂无任务书数据。";
             return;
         }
 
 
         // 将任务书内的不同部分拼接显示，若部分字段为空则自动忽略
         string content = "";
-
+        /*
         if (!string.IsNullOrEmpty(doc.TaskRequirements))
             content += $"<b>任务要求：</b>\n{doc.TaskRequirements}\n\n";
 
@@ -308,14 +309,23 @@ public class TraniningPanel : BaseUI
 
         if (!string.IsNullOrEmpty(doc.TaskImplementation))
             content += $"<b>任务实施：</b>\n{doc.TaskImplementation}";
+        */
+        if (!string.IsNullOrEmpty(doc.TaskRequirements))
+            taskDocumentText1.text = doc.TaskRequirements;
 
-        taskDocumentText.text = content;
-        RectTransform Rect = taskDocumentText.GetComponent<RectTransform>();
+        if (!string.IsNullOrEmpty(doc.TechnicalDocumentation))
+            taskDocumentText2.text = doc.TechnicalDocumentation;
+
+        if (!string.IsNullOrEmpty(doc.TaskImplementation))
+            taskDocumentText3.text = doc.TaskImplementation;
+        RectTransform Rect = (RectTransform)taskDocumentText1.transform.parent.parent;
         if (Rect != null)
         {
             // 强行重建当前物体以及所有子物体的布局
             LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
         }
+      
+
     }
 
     /// <summary>
@@ -360,25 +370,34 @@ public class TraniningPanel : BaseUI
     /// </summary>
     private void UpdateComponentListUI(List<Dictionary<string, int>> components)
     {
+        for (int i = 0;i< componentContent.childCount; i++)
+        {
+            Destroy(componentContent.GetChild(i).gameObject);
+        }
+
         if (components == null || components.Count == 0)
         {
-            componentListText.text = "暂无所需元件数据。";
+           // componentListText.text = "暂无所需元件数据。";
             return;
         }
 
-        string result = "";
+        //string result = "";
 
         // 解析格式类似 [{"2":2}, {"2":2}] 的结构
         foreach (var dict in components)
         {
             foreach (var kvp in dict)
             {
+                GameObject btnObj = Instantiate(ItemcountPrefab, componentContent);
+                // 2. 设置按钮显示的文本 (如需要，可使用 Casname)
+                btnObj.GetComponent<caseBtn>().UpdateBtnDData("*" + kvp.Value.ToString(), kvp.Key);
+
                 // 拼接 "string*数量" 并换行
-                result += $"{kvp.Key}*{kvp.Value}\n";
+                // result += $"{kvp.Key}*{kvp.Value}\n";
             }
         }
 
-        componentListText.text = result;
+       // componentListText.text = result;
     }
     private void onfreeBtnClick(GameObject listener, object eventData, object[] args)
     {
@@ -502,7 +521,7 @@ public class TraniningPanel : BaseUI
         { CloseUIToBeOpenUI(EnumUIType.LoadingUI, true, EnumUIType.MainMenu, EnumSceneType.GameStart); }
         else
         {
-
+          
             if (AppController.Instance.loginUser.Usertype == (int)UserType.学生 && TrainType == trainType.test)
             {
                 Debug.Log("上传认知数据");

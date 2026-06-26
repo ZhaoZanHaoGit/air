@@ -11,6 +11,7 @@ public class ItemSprite_factory : MonoBehaviour
     public int count;
     Button button;
     public ItemManager manager;
+    public TextMeshProUGUI name,model, num; 
     void Start()
     {
         button = GetComponent<Button>();
@@ -46,9 +47,15 @@ public class ItemSprite_factory : MonoBehaviour
         });*/
     }
 
+    public void setItem(string itemName, string itemModel, int itemNum)
+    {
+        name.text = itemName;
+        model.text = itemModel;
+        num.text = itemNum.ToString();
+    }
 
     public void UpdateCount()
     {
-        transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = count.ToString();
+        num.text = count.ToString();
     }
 }

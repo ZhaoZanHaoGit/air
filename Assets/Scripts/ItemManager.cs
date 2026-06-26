@@ -110,9 +110,10 @@ public class ItemManager : SingletonMono2<ItemManager>
     {
         iconRig.GetChild(count).GetComponent<ItemSprite_factory>().item = item;
         iconRig.GetChild(count).GetComponent<ItemSprite_factory>().count = num;
+        iconRig.GetChild(count).GetComponent<ItemSprite_factory>().setItem(item.itemName, item.model, num);
         iconRig.GetChild(count).GetChild(0).gameObject.SetActive(true);
-        iconRig.GetChild(count).GetChild(0).GetComponent<Image>().sprite = sprite;
-        iconRig.GetChild(count).GetChild(1).GetComponent<TextMeshProUGUI>().text = num.ToString();
+        //iconRig.GetChild(count).GetChild(0).GetComponent<Image>().sprite = sprite;
+        //iconRig.GetChild(count).GetChild(1).GetComponent<TextMeshProUGUI>().text = num.ToString();
 
 
     }
@@ -123,12 +124,16 @@ public class ItemManager : SingletonMono2<ItemManager>
     }
     void clearBagUI()
     {
-        for (int i = 0; i < iconRig.childCount; i++)
+        if (iconRig.childCount > 0)
         {
-            iconRig.GetChild(i).GetChild(0).gameObject.SetActive(false);
-            iconRig.GetChild(i).GetChild(0).GetComponent<Image>().sprite = null;
-            iconRig.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
+            for (int i = 0; i < iconRig.childCount; i++)
+            {
+                iconRig.GetChild(i).GetChild(0).gameObject.SetActive(false);
+                // iconRig.GetChild(i).GetChild(0).GetComponent<Image>().sprite = null;
+                iconRig.GetChild(i).GetComponent<ItemSprite_factory>().setItem("", "", 0);
+            }
         }
+
     }
 
     public void UpdateBagUI()

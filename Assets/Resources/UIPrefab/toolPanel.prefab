@@ -666,6 +666,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &897765306871197087
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,6 +1288,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &1597986615739589773
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,6 +1449,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &1605810981525154695
 GameObject:
   m_ObjectHideFlags: 0
@@ -2546,6 +2555,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &2354149585319458966
 GameObject:
   m_ObjectHideFlags: 0
@@ -2704,6 +2716,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &2471405804298969514
 GameObject:
   m_ObjectHideFlags: 0
@@ -2937,6 +2952,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &2613422511031061579
 GameObject:
   m_ObjectHideFlags: 0
@@ -3382,6 +3400,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &3141495273137285922
 GameObject:
   m_ObjectHideFlags: 0
@@ -3540,6 +3561,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &3258510749968741534
 GameObject:
   m_ObjectHideFlags: 0
@@ -4120,6 +4144,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &4644765697955433557
 GameObject:
   m_ObjectHideFlags: 0
@@ -4313,7 +4340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4621,6 +4648,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &4971751708805377158
 GameObject:
   m_ObjectHideFlags: 0
@@ -4965,6 +4995,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &5355957343395068844
 GameObject:
   m_ObjectHideFlags: 0
@@ -6636,6 +6669,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &6142326176425893156
 GameObject:
   m_ObjectHideFlags: 0
@@ -6794,6 +6830,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &6246856540848022047
 GameObject:
   m_ObjectHideFlags: 0
@@ -6952,6 +6991,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &6250937467381353113
 GameObject:
   m_ObjectHideFlags: 0
@@ -7279,6 +7321,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &6691559945585018542
 GameObject:
   m_ObjectHideFlags: 0
@@ -8064,6 +8109,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &7773024425392396071
 GameObject:
   m_ObjectHideFlags: 0
@@ -8483,10 +8531,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7101785529264120971}
   - {fileID: 4298310006168169552}
   - {fileID: 2788535299688234316}
   - {fileID: 2617541418231494535}
-  - {fileID: 7101785529264120971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8690,6 +8738,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &8141876268910692791
 GameObject:
   m_ObjectHideFlags: 0
@@ -9183,6 +9234,9 @@ MonoBehaviour:
     itemDescription: 
   count: 0
   manager: {fileID: 0}
+  name: {fileID: 0}
+  model: {fileID: 0}
+  num: {fileID: 0}
 --- !u!1 &8678863402691490306
 GameObject:
   m_ObjectHideFlags: 0
@@ -9512,7 +9566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.6745283, g: 0.818129, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
