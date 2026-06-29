@@ -77,23 +77,23 @@ public class CognitiveMenuPanel : BaseUI
         return EnumUIType.CognitiveMenuPanel;
     }
 
-    public virtual void InitUserInfo()
-    {
-        if (AppController.Instance != null && AppController.Instance.loginUser != null && AppController.Instance.loginUser.Usertype != (int)UserType.游客)
-        {
-            UserName.text = "用户名：" + AppController.Instance.loginUser.Username;
-        }
-        else
-        {
-            UserName.text = "游客模式";
-        }
-        AppController.Instance.cLSType = CLSType.元器件认知;
-        AppController.Instance.courseType = CourseType.认知;
-        AppController.Instance.menuPanelType = MenuPanelType.认知;
-        // ID.text = "ID:" + AppController.Instance.loginUser.Account;
-        //loginTime.text = "TIME:" + DateTime.Now.ToString();
-        // LayoutRebuilder./ForceRebuildLayoutImmediate(horizontalLayoutGroup.GetComponent<RectTransform>());
-    }
+    //public virtual void InitUserInfo()
+    //{
+    //    if (AppController.Instance != null && AppController.Instance.loginUser != null && AppController.Instance.loginUser.Usertype != (int)UserType.游客)
+    //    {
+    //        UserName.text = AppController.Instance.loginUser.Username;
+    //    }
+    //    else
+    //    {
+    //        UserName.text = "游客";
+    //    }
+    //    AppController.Instance.cLSType = CLSType.元器件认知;
+    //    AppController.Instance.courseType = CourseType.认知;
+    //    AppController.Instance.menuPanelType = MenuPanelType.认知;
+    //    // ID.text = "ID:" + AppController.Instance.loginUser.Account;
+    //    //loginTime.text = "TIME:" + DateTime.Now.ToString();
+    //    // LayoutRebuilder./ForceRebuildLayoutImmediate(horizontalLayoutGroup.GetComponent<RectTransform>());
+    //}
     void LoadItemData()
     {// 拼接路径
         string filePath = Path.Combine(Application.streamingAssetsPath, "ItemData", "PneumaticComponents.json");

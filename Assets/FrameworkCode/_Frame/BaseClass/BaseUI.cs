@@ -106,7 +106,7 @@ public abstract class BaseUI : MonoBehaviour
         UserName.text = AppController.Instance.loginUser.Username;
         ID.text = "ID:" + AppController.Instance.loginUser.Account;
         loginTime.text = "TIME:" + DateTime.Now.ToString();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(horizontalLayoutGroup.GetComponent<RectTransform>());
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(horizontalLayoutGroup.GetComponent<RectTransform>());
     }
 
     protected virtual void OnBtnRelease(GameObject listener, object eventData, params object[] args)
