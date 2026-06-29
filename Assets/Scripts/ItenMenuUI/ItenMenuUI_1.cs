@@ -29,6 +29,7 @@ public class ItenMenuUI_1 : ItenMenuUIBase
     }
     void OnConfirm()
     {
+        base.OnConfirm();
         if (itemIns != null)
         {
             itemIns.GetComponent<ThrottleValve>().opening = slider.value;

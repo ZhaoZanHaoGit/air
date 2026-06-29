@@ -32,6 +32,7 @@ public class ItenMenuUI_5 : ItenMenuUIBase
     /// </summary>
     public  override void InitItenMenu()
     {
+        base.InitItenMenu();
         currentValve = itemIns.GetComponent<RollerValve32>();
         RefreshDropdown(signalDropdown1);
       
@@ -84,6 +85,7 @@ public class ItenMenuUI_5 : ItenMenuUIBase
 
     void OnConfirm()
     {
+        base.OnConfirm();
         RefreshDropdown(signalDropdown1);
         signalDropdown1.onValueChanged.Invoke(signalDropdown1.value);
         for (int i = 0; i < toggleGroups.Count; i++)

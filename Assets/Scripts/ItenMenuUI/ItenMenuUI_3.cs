@@ -27,6 +27,7 @@ public class ItenMenuUI_3 : ItenMenuUIBase
 
     void OnConfirm()
     {
+        base.OnConfirm();
         for (int i = 0; i < toggleGroups.Count; i++)
         {
             int program2 = GetSelectedToggleIndex(i);

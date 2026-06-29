@@ -321,7 +321,7 @@ MonoBehaviour:
   minDuration: 0.5
   maxDuration: 10
   currentAngle: 0
-  rotateAxis: {x: 0, y: 0, z: 1}
+  rotateAxis: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 1791181743098858988}
   rotateForwardSound: {fileID: 8300000, guid: f73649b8499a17843b9c3e0efbec10bd, type: 3}
   rotateBackwardSound: {fileID: 8300000, guid: 72c3e022d6bbb1d4a9259ba3f4a2ad35, type: 3}
