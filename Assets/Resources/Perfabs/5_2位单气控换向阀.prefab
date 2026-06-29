@@ -74,7 +74,8 @@ MonoBehaviour:
   - {fileID: 4069374166448685954}
   - {fileID: 443330381770667295}
   - {fileID: 5879646498884382082}
-  name: "5/2\u4F4D\u5355\u6C14\u63A7\u6362\u5411\u9600"
+  isSwitched: 0
+  debounceDuration: 0.05
 --- !u!114 &376881622423429155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,7 +526,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342943308465330907, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portType
@@ -649,7 +650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342943308465330907, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portType
@@ -773,7 +774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342943308465330907, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portType
@@ -893,7 +894,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3682936041912859757, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: m_IsActive

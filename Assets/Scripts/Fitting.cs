@@ -9,9 +9,11 @@ public class Fitting : MonoBehaviour
     public FittingType fittingType;
 
     // 在 Inspector 中拖入对应的模型
+
     public GameObject plug1; // 对应 Blocked
-    public GameObject plug2; // 对应 Silencing
     public GameObject plug3; // 对应 Opening
+    public GameObject plug2; // 对应 Silencing
+
 
     void Start()
     {
@@ -60,7 +62,8 @@ public class Fitting : MonoBehaviour
 
 public enum FittingType
 {
-    Blocked = 0,   // 对应输出 1
-    Silencing = 1, // 对应输出 2
-    Opening = 2,   // 对应输出 3
+    Opening = 0,   // 对应输出 3
+    Blocked = 1,   // 对应输出 1
+    Silencing = 2, // 对应输出 2
+
 }

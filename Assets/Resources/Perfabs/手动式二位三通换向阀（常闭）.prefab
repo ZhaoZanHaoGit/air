@@ -396,6 +396,7 @@ MonoBehaviour:
   - {fileID: 4049876317848278886}
   - {fileID: 8410074464254781846}
   isPressed: 0
+  debounceDuration: 0.05
 --- !u!1 &7282736486892012509
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,7 +621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342943308465330907, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portType
@@ -736,7 +737,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: fittingType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342943308465330907, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portType

@@ -280,6 +280,10 @@ PrefabInstance:
       propertyPath: portandvalve.valve
       value: 27
       objectReference: {fileID: 0}
+    - target: {fileID: 3179145999182824902, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: fittingType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3896402692963557938, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: m_Name
       value: p
