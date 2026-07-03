@@ -175,7 +175,7 @@ Material:
     - _NearLightFade: 0
     - _NearPlaneFade: 0
     - _NormalMapScale: 10
-    - _OcclusionStrength: 0.6
+    - _OcclusionStrength: 0.22
     - _Parallax: 0.005
     - _ProximityLight: 0
     - _ProximityLightSubtractive: 0
@@ -192,7 +192,7 @@ Material:
     - _RoundCornerMargin: 0.01
     - _RoundCornerRadius: 0.25
     - _RoundCorners: 0
-    - _Smoothness: 0.8
+    - _Smoothness: 0.15
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SphericalHarmonics: 0
