@@ -122,14 +122,14 @@ public class LoadingUI : BaseUI
         sliderValue = oper.progress;
         if (oper.progress >= 0.9f)
         {
-            sliderValue = 1.0f;
+            sliderValue = 1.0f*100;
         }
         if (sliderValue != progressBar.CurrentValue)
         {
             progressBar.CurrentValue = Mathf.Lerp(progressBar.CurrentValue, sliderValue, Time.deltaTime * loadingSpeed);
             if (Mathf.Abs(progressBar.CurrentValue - sliderValue) < 0.01f)
             {
-                progressBar.CurrentValue = sliderValue;
+                progressBar.CurrentValue = sliderValue*100;
             }
         }
         //numberText.text = ((int)(processBar.value * 100)).ToString() + "%";
