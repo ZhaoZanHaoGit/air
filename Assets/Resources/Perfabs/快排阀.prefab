@@ -117,6 +117,10 @@ PrefabInstance:
       propertyPath: _highlighted
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 271239188308174842, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -241,6 +245,10 @@ PrefabInstance:
     - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: _highlighted
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 271239188308174842, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: m_Materials.Array.data[0]

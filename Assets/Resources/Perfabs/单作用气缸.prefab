@@ -734,6 +734,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3189363301303043267}
     m_Modifications:
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: chanel
       value: 1
@@ -840,6 +844,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3189363301303043267}
     m_Modifications:
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: chanel
       value: 1

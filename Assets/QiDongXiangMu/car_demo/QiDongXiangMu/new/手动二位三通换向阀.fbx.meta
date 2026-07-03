@@ -7,6 +7,16 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: 01 - Default
+    second: {fileID: 2100000, guid: ce1c4b25be1e00d44b2ddd0e2336e315, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 1254 Default
+    second: {fileID: 2100000, guid: 9cb745b137e836741bfa384ad33d74bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: renfangmen
     second: {fileID: 2100000, guid: 556784e3395808441ae36b3665738091, type: 2}
   materials:

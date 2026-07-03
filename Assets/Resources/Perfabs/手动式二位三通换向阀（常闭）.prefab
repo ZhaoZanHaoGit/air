@@ -95,7 +95,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4049277035834354348, guid: b5a2194789f0b1a488df286bfcbc3b28, type: 3}
+  - {fileID: 2100000, guid: 9cb745b137e836741bfa384ad33d74bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -180,7 +180,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4049277035834354348, guid: 05ffaef72e3829044b4e908ba703f4b7, type: 3}
+  - {fileID: 2100000, guid: 9cb745b137e836741bfa384ad33d74bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -490,7 +490,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4049277035834354348, guid: 05ffaef72e3829044b4e908ba703f4b7, type: 3}
+  - {fileID: 2100000, guid: 9cb745b137e836741bfa384ad33d74bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -573,7 +573,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 239378781582670930, guid: b5a2194789f0b1a488df286bfcbc3b28, type: 3}
+  - {fileID: 2100000, guid: c65a90eba20d08749995897974dc8837, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -603,6 +603,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4730126204555370329}
     m_Modifications:
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: chanel
       value: 1
@@ -719,6 +723,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4730126204555370329}
     m_Modifications:
+    - target: {fileID: 24134130224527833, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
+      propertyPath: targetFXTexture
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: chanel
       value: 1

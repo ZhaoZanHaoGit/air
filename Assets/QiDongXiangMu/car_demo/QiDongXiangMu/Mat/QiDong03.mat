@@ -205,7 +205,7 @@ Material:
     - _UseEmissiveMap: 0
     - _UseMetallicMap: 1
     - _UseNormalMap: 1
-    - _UseRoughnessMap: 1
+    - _UseRoughnessMap: 0
     - _VertexColors: 0
     - _VertexExtrusion: 0
     - _VertexExtrusionSmoothNormals: 0
