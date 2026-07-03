@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class casesPart2Answer : MonoBehaviour
 {
@@ -50,7 +51,12 @@ public class casesPart2Answer : MonoBehaviour
     {
         if (SimulationLoop.Instance.currenttrainType != trainType.free)
         { trainingPanel.DebugData.text = CheckConnectionsBasic(SimulationLoop.Instance.currentPostsData, GetCurrentStandardAnswers()); }
-
+        RectTransform Rect = (RectTransform)trainingPanel.DebugData.transform.parent;
+        if (Rect != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
+        }
     }
     /// <summary>
     /// 【新增方法】获取当前选定案例对应的标准答案连线列表
@@ -175,10 +181,27 @@ public class casesPart2Answer : MonoBehaviour
 
         return sb.ToString();
     }
+
+    public void TiShi(TextMeshProUGUI text)
+    {
+        text.text = CheckConnectionsBasic(SimulationLoop.Instance.currentPostsData, GetCurrentStandardAnswers());
+        RectTransform Rect = (RectTransform)text.transform.parent;
+        if (Rect != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
+        }
+    }
     public void xunxian(TextMeshProUGUI text)
     {
-        text.text = EvaluateAllConnections(SimulationLoop.Instance.currentPostsData, GetCurrentStandardAnswers()).DetailReport;
 
+        text.text = EvaluateAllConnections(SimulationLoop.Instance.currentPostsData, GetCurrentStandardAnswers()).DetailReport;
+        RectTransform Rect = (RectTransform)text.transform.parent;
+        if (Rect != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
+        }
 
     }
     public ConnectionReport ExamEvaluate()

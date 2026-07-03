@@ -31,8 +31,13 @@ public class DynamicCircuitManager : MonoBehaviour
     // 统一的边注册入口
     public void RegisterEdge(CircuitEdge edge)
     {
+        // 防御性检查：防止 CircuitEdge.Start() 与 SetupWire() 重复注册
+        if (activeEdges.Contains(edge))
+        {
+            Debug.LogWarning($"[拓扑注册] 边 {edge.edgeID} 已存在，跳过重复注册。");
+            return;
+        }
         activeEdges.Add(edge);
-        // 强制转换为子类以获取更详细的信息
         if (edge is DynamicWire wire)
         {
             Debug.Log($"<color=cyan>[拓扑注册]</color> 导线已注册! 连通两端: {wire.nodeA?.nodeName} <-> {wire.nodeB?.nodeName}");
@@ -59,6 +64,9 @@ public class DynamicCircuitManager : MonoBehaviour
         // 大脑现在只需要看这条边是否导通 (IsEdgeConnected)
         foreach (var edge in activeEdges)
         {
+            // 兜底保护：跳过已被销毁的"幽灵边"（GameObject 已被 Destroy 但引用残留）
+            if (edge == null || edge.gameObject == null) continue;
+
             if (!activeNodes.Contains(edge.nodeA))
             {
                 Debug.LogError($"[拓扑阻断] 边 {edge.edgeID} 无法导通！因为 activeNodes 中不包含起始节点A: {edge.nodeA?.nodeName}");

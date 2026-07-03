@@ -318,6 +318,24 @@ public class TraniningPanel : BaseUI
 
         if (!string.IsNullOrEmpty(doc.TaskImplementation))
             taskDocumentText3.text = doc.TaskImplementation;
+        RectTransform Rect1 = (RectTransform)taskDocumentText1.transform;
+        if (Rect1 != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect1);
+        }
+        RectTransform Rect2 = (RectTransform)taskDocumentText2.transform;
+        if (Rect2 != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect2);
+        }
+        RectTransform Rect3 = (RectTransform)taskDocumentText3.transform;
+        if (Rect3 != null)
+        {
+            // 强行重建当前物体以及所有子物体的布局
+            LayoutRebuilder.ForceRebuildLayoutImmediate(Rect3);
+        }
         RectTransform Rect = (RectTransform)taskDocumentText1.transform.parent.parent;
         if (Rect != null)
         {

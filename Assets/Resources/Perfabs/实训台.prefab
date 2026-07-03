@@ -6291,7 +6291,7 @@ Transform:
   m_GameObject: {fileID: 5000304004348298004}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3718, y: 0.0462, z: -0}
+  m_LocalPosition: {x: -0.3875, y: 0.0451, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6314,7 +6314,8 @@ MonoBehaviour:
   nodeA: {fileID: 702414532368709145}
   nodeB: {fileID: 147559385095783411}
   edgeID: 
-  isClosed: 1
+  switchType: 0
+  isClosed: 0
 --- !u!114 &8979397612294127032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6327,7 +6328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f53e48506da3a44bb7225734d263d53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonIns: {fileID: 6048161392999824903}
+  buttonIns: {fileID: 2481095068075904092}
   upPos: {x: -0.358, y: 1.231, z: -0.125}
   downPos: {x: -0.358, y: 1.231, z: -0.13}
   Switch: {fileID: 7255921355728905702}
@@ -9261,7 +9262,8 @@ MonoBehaviour:
   nodeA: {fileID: 7279790665927140603}
   nodeB: {fileID: 6523879952366648847}
   edgeID: 
-  isClosed: 1
+  switchType: 0
+  isClosed: 0
 --- !u!114 &4219313065763730390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14183,6 +14185,11 @@ PrefabInstance:
 --- !u!4 &1905632315103631174 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 015d68275c9ca9746b6b5bf81fd022e3, type: 3}
+  m_PrefabInstance: {fileID: 2159637662434898093}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2481095068075904092 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4641507167506006799, guid: 015d68275c9ca9746b6b5bf81fd022e3, type: 3}
   m_PrefabInstance: {fileID: 2159637662434898093}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6048161392999824903 stripped

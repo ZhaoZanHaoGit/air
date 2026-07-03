@@ -35,7 +35,7 @@ public class SingletonMono2<T> : MonoBehaviour where T : MonoBehaviour
                         singleton.name = $"(Singleton) {typeof(T)}";
 
                         // 保证单例在场景切换时不被销毁
-                        DontDestroyOnLoad(singleton);
+                       // DontDestroyOnLoad(singleton);
                     }
                 }
 
@@ -46,6 +46,10 @@ public class SingletonMono2<T> : MonoBehaviour where T : MonoBehaviour
 
     private static bool _applicationIsQuitting = false;
 
+    private void Awake()
+    {
+        _applicationIsQuitting = false;
+    }
     /// <summary>
     /// 当程序退出时，Unity 会按随机顺序销毁对象。
     /// 如果单例先被销毁，而其他脚本在 OnDestroy 中又访问了它，会创建出新的“孤儿”实例。

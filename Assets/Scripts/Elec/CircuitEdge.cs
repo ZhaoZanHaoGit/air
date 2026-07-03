@@ -22,11 +22,16 @@ public abstract class CircuitEdge : MonoBehaviour
     // 核心多态接口：由子类（导线或开关）自己决定当前在物理上是否导通
     public abstract bool IsEdgeConnected { get; }
 
+    private bool _registeredToManager = false;
+
     protected void RegisterToManager()
     {
+        // 防重复注册：SetupWire 和 Start() 可能先后触发，只需注册一次
+        if (_registeredToManager) return;
         if (DynamicCircuitManager.Instance != null)
         {
             DynamicCircuitManager.Instance.RegisterEdge(this);
+            _registeredToManager = true;
         }
     }
 
