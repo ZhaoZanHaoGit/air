@@ -1,20 +1,28 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ToggleSwitchButton : MonoBehaviour
 {
     public Transform buttonIns;
-    public Vector3 upPos,downPos;
+    public Vector3 upPos, downPos;
     public DynamicSwitch Switch;
-    bool currentstate;
+
+    private void Start()
+    {
+        // 根据 DynamicSwitch 的初始闸刀状态，同步按钮视觉位置
+        if (Switch != null && buttonIns != null)
+        {
+            buttonIns.localPosition = Switch.IsClosed ? downPos : upPos;
+        }
+    }
+
     private void OnMouseUp()
     {
-        Switch.SetSwitchState(!Switch.isClosed);
-        currentstate = Switch.isClosed;
-        if (currentstate)
+        if (Switch == null) return;
+
+        Switch.SetSwitchState(!Switch.IsClosed);
+
+        if (Switch.IsClosed)
         {
             buttonIns.DOLocalMove(downPos, 0.2f);
         }
