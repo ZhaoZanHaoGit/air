@@ -75,6 +75,8 @@ public class AdministratorPanel : BaseUI
         {
             panelsDic.Add((int)panels[i].GetUIType(), panels[i]);
         }
+        Debug.Log("panels---" + panels.Length);
+        Debug.Log("panelsDic---" + panelsDic.Count);
         currentPanel = DictionaryExtension.TryGet(panelsDic, 0);
         oldT = currentPanel;
     }
@@ -171,8 +173,9 @@ public class AdministratorPanel : BaseUI
         oldValue = "";
         //topSearchInput.text = "";
         int temp = (int)args[0];
+
         currentPanel = DictionaryExtension.TryGet(panelsDic, temp);
-        Debug.Log(currentPanel);
+        Debug.Log("currentPanel----"+currentPanel);
         if (oldT == currentPanel)        
          return;
         if (oldT != null)
