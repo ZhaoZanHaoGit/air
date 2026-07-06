@@ -23,8 +23,11 @@ public class linerendeler : MonoBehaviour
     private LineRenderer lineRenderer;
     private Camera mainCamera;
 
-    // --- 新增：用于在 SimulationLoop 中记录当前管线 ---
-    private caseportData currentConnectionData;
+    // --- 线缆注册：存储两端 portandvalve 数据 + PortBase 引用，用于注销时定位 ---
+    private portandvalve _wirePortA;
+    private portandvalve _wirePortB;
+    private PortBase _wireBaseA;
+    private PortBase _wireBaseB;
     private bool isConnectionRegistered = false;
 
     // 存储样条曲线的所有核心节点
@@ -263,40 +266,41 @@ public class linerendeler : MonoBehaviour
         }
     }
 
-    // --- 新增：注册连接数据到 SimulationLoop ---
+    // --- 注册连接数据到 SimulationLoop ---
     private void RegisterConnection()
     {
         if (SimulationLoop.Instance == null || p0 == null || p2 == null) return;
 
-        // 获取两端接口的 portandvalve 数据
-        portandvalve pvA = p0.GetComponent<PortBase>().portandvalve;
-        portandvalve pvB = p2.GetComponent<PortBase>().portandvalve;
+        PortBase portA = p0.GetComponent<PortBase>();
+        PortBase portB = p2.GetComponent<PortBase>();
 
-        // 如果获取成功，则组装数据并添加到全局列表
-        if (pvA != null && pvB != null)
+        if (portA != null && portB != null)
         {
-            currentConnectionData = new caseportData
-            {
-                portA = pvA,
-                portB = pvB
-            };
+            // 缓存数据，注销时即使 p0/p2 已销毁也能通过 FindObjectsByType 查到
+            _wirePortA = portA.portandvalve;
+            _wirePortB = portB.portandvalve;
+            _wireBaseA = portA;
+            _wireBaseB = portB;
 
-            SimulationLoop.Instance.currentPostsData.Add(currentConnectionData);
+            SimulationLoop.Instance.RegisterWire(portA, portB);
             isConnectionRegistered = true;
         }
         else
         {
-            Debug.LogWarning("管线两端的接口缺少 portandvalve 数据，无法记录到考核列表中！");
+            Debug.LogWarning("管线两端的接口缺少 PortBase 组件，无法注册线缆！");
         }
     }
 
-    // --- 新增：从 SimulationLoop 注销连接数据 ---
+    // --- 从 SimulationLoop 注销连接数据 ---
     private void UnregisterConnection()
     {
-        if (isConnectionRegistered && SimulationLoop.Instance != null && SimulationLoop.Instance.currentPostsData != null)
+        if (isConnectionRegistered && SimulationLoop.Instance != null)
         {
-            SimulationLoop.Instance.currentPostsData.Remove(currentConnectionData);
+            // 用缓存的 PortBase 引用注销（包含唯一实例信息）
+            SimulationLoop.Instance.UnregisterWire(_wireBaseA, _wireBaseB);
             isConnectionRegistered = false;
+            _wireBaseA = null;
+            _wireBaseB = null;
         }
     }
 }

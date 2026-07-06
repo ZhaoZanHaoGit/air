@@ -18,8 +18,8 @@ MonoBehaviour:
   GridSizeRatio: {x: 2, y: 1}
   AmountOfCellsX: 40
   AmountOfCellsY: 20
-  DesiredCellSize: 1.0625
-  GridPosition: {x: -3.3434367, y: -0.40058184, z: 3.7675781}
+  DesiredCellSize: 0.75
+  GridPosition: {x: -2.6086884, y: -0.45, z: 2.8407907}
   GridRotation: 0
   ParentToGrid: 0
   CellImage: {fileID: 21300000, guid: 06eb39f6d66f3dc4583a4ce13e034511, type: 3}
