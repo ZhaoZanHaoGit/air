@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class ManualValve34 : BaseValve
 {
-   
+
     PneumaticPort coreHub;
     [Header("阀芯位置状态")]
     [Tooltip("通过外部按钮或手柄动画直接切换此枚举值")]
@@ -19,7 +19,7 @@ public class ManualValve34 : BaseValve
     private void Start()
     {
         base.Start();
-       
+
     }
 
     public override void ProcessLogic()
@@ -40,8 +40,9 @@ public class ManualValve34 : BaseValve
                 ports[1].state = PortState.Conduct; // A 口物理截止
                 ports[2].state = PortState.Conduct;
                 ports[0].state = PortState.Conduct;
+                ports[3].state = PortState.Conduct;
                 ports[1].internalConnectTo = ports[3];
-               ports[2].internalConnectTo = ports[0];
+                ports[2].internalConnectTo = ports[0];
 
 
                 break;
@@ -61,9 +62,10 @@ public class ManualValve34 : BaseValve
             case ValveState.Right:
                 // --- 右位逻辑：P->A, B->R ---
                 // P 与 A 导通
-                ports[1].state = PortState.Conduct; 
+                ports[1].state = PortState.Conduct;
                 ports[2].state = PortState.Conduct;
                 ports[0].state = PortState.Conduct;
+                ports[3].state = PortState.Conduct;
                 ports[1].internalConnectTo = ports[0];
                 ports[2].internalConnectTo = ports[3];
                 break;
@@ -71,6 +73,7 @@ public class ManualValve34 : BaseValve
         ports[0].ReceiveInternalInfo();
         ports[1].ReceiveInternalInfo();
         ports[2].ReceiveInternalInfo();
+        ports[3].ReceiveInternalInfo();
     }
 
     /// <summary>

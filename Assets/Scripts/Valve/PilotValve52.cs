@@ -49,18 +49,18 @@ public class PilotValve52 : BaseValve
         // ports[0]: P (进气) -> Input
         // ports[1]: A (输出1) -> Output
         // ports[2]: B (输出2) -> Output
-        // ports[3]: Z1 (左控制口，使 P->A) -> Input
-        // ports[4]: Z2 (右控制口，使 P->B) -> Input
+        // ports[3]: Z1 (左控制口，使 P->B) -> Input
+        // ports[4]: Z2 (右控制口，使 P->A) -> Input
         // ports[5]: R (右控制口，使 P->B) -> Input
         if (ports.Count < 6) return;
 
         // 1. 气控切换逻辑：检测控制口的压力脉冲
-        // 只要 Z1 有压力，阀芯就推向右侧（P-A导通），并保持
+        // 只要 Z1 有压力，阀芯就推向右侧（P-B导通），并保持
         if (ports[3].pressure > 0.1f)
         {
             isSwitched = true;
         }
-        // 只要 Z2 有压力，阀芯就推向左侧（P-B导通），并保持
+        // 只要 Z2 有压力，阀芯就推向左侧（P-A导通），并保持
         else if (ports[4].pressure > 0.1f)
         {
             isSwitched = false;

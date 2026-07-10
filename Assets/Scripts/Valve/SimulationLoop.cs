@@ -89,28 +89,61 @@ public class SimulationLoop : MonoBehaviour
     public void DeleteAllValves()
     {
         Debug.Log("删除全部");
+
+        // ⚠️ 关键：先删线缆，再删元器件！
+        // 线缆（linerendeler）依赖端口引用，如果先删元器件，
+        // 端口被销毁后 linerendeler.OnDestroy 中的 p0/p2 会报空
+        DeleteAllLines();
+
+        // 需要先把 allValves 中待删的阀门记录下来，
+        // 因为 Destroy 是延迟执行的，同一帧内 allValves 里的引用还没被移除
+        var valvesToRemove = new List<BaseValve>(allValves);
+
         foreach (var v in gridInScene)
         {
-            ReturnItemUI(v);
-            GridManagerAccessor.GridManager.DeleteObject(v);
+            if (v != null)
+            {
+                ReturnItemUI(v);
+                GridManagerAccessor.GridManager.DeleteObject(v);
+            }
         }
         gridInScene.Clear();
+
+        // 主动从 allValves 移除已删阀门，不等 OnDestroy 延迟回调
+        // 避免后续仿真迭代遍历到已销毁的阀门
+        foreach (var valve in valvesToRemove)
+        {
+            allValves.Remove(valve);
+        }
     }
+
     public void DeleteAllLines()
     {
         // 先清空线缆注册表并重建分组（currentPostsData 立即刷新）
         _wireRegistry.Clear();
         RebuildGroups();
 
-        linerendeler[] ports = GameObject.FindObjectsByType<linerendeler>(FindObjectsSortMode.None);
-        foreach (var item in ports)
+        // ⚠️ 先收集所有 linerendeler 引用，再统一 Destroy
+        // 避免遍历过程中 Destroy 导致的对象访问异常
+        linerendeler[] lines = GameObject.FindObjectsByType<linerendeler>(FindObjectsSortMode.None);
+        for (int i = 0; i < lines.Length; i++)
         {
-            Destroy(item.gameObject);
+            if (lines[i] != null)
+            {
+                // linerendeler.OnDestroy 会调 UnregisterConnection → Disconnect
+                // 但 _wireRegistry 已清空，UnregisterWire 会找不到匹配条目（无害）
+                // Disconnect 会清空端口的 connectedTo 和 isOccupied（这是正确行为）
+                Destroy(lines[i].gameObject);
+            }
         }
     }
+
     public void ReturnItemUI(GameObject @object)
     {
-        if (@object.GetComponent<Item3D>().itemUI == null)
+        // ❌ 旧：if (@object==null&&@object.GetComponent<Item3D>().itemUI == null)
+        // 当 @object==null 时，后面的 GetComponent 会报空！
+        // ✅ 新：用 || — 任一为空就安全退出
+        if (@object == null || @object.GetComponent<Item3D>() == null || @object.GetComponent<Item3D>().itemUI == null)
         { return; }
         @object.GetComponent<Item3D>().itemUI.itemnum++;
         @object.GetComponent<Item3D>().itemUI.chazhi--;

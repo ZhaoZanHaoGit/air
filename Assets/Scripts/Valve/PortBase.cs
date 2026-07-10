@@ -20,7 +20,7 @@ public class PortBase : MonoBehaviour
         // 如果是电气接口，在初始化时自动挂载并配置电路拓扑节点
         if (chanel == portChanel.tinckElec || chanel == portChanel.simplleElec || circuitNode != null)
         {
-            circuitNode.nodeName = gameObject.name;
+           // circuitNode.nodeName = gameObject.name;
 
             // 这里可以根据实际情况初始化节点类型：
             // 如果这个接头在场景里是固定死代表电源正极的，可以写逻辑改成 Positive

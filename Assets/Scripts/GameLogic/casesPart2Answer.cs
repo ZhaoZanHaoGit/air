@@ -166,10 +166,11 @@ public class casesPart2Answer : MonoBehaviour
     public void TiShi(TextMeshProUGUI text)
     {
         text.text = CheckConnectionsBasic(SimulationLoop.Instance.currentPostsData, GetCurrentStandardAnswers());
-        RectTransform Rect = (RectTransform)text.transform.parent;
+        RectTransform Rect = (RectTransform)text.transform;
         if (Rect != null)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)Rect.parent);
         }
     }
     public void xunxian(TextMeshProUGUI text)
@@ -259,7 +260,10 @@ public class casesPart2Answer : MonoBehaviour
         if (item?.nodes == null) return false;
         foreach (var node in item.nodes)
         {
-            if (node != null && node.port == PneumaticPortName.L)
+            if (node == null) continue;
+            // 三通/四通的端口名也是 L，但它们不是真正的"L口连线"，必须跳过
+            if (node.valve == ValveName.三通 || node.valve == ValveName.四通) continue;
+            if (node.port == PneumaticPortName.L)
                 return true;
         }
         return false;

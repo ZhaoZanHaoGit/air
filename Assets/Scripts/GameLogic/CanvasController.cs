@@ -59,7 +59,7 @@ public class CanvasController : DDOLSingleton<CanvasController>
         AudioManager.Instance.Init();
         UIManager.Instance.OpenUI(EnumUIType.LoginUI);
         GetPaths();
-        GetModelsData();
+       // GetModelsData();
         ClientManager.Instance.ip = AppController.Instance.pathDatas.Find(a => a.ID == 0).Path;
         ClientManager.Instance.startConnect = true;
     }

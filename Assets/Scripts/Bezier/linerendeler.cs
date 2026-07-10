@@ -83,12 +83,17 @@ public class linerendeler : MonoBehaviour
     {
         // ---> [新增] 销毁管线时，从 SimulationLoop 中移除连接数据 <---
         UnregisterConnection();
+
+        // 注意：Unity 的 Destroy 是延迟执行的。
+        // 当 DeleteAllValves 先删元器件时，端口 GameObject 被标记为销毁但还没回收，
+        // 此时 p0 != null（Unity fake null）但 GetComponent 可能返回 null。
+        // 所以需要双重检查：p0 存在 + GetComponent 成功
         PortBase portA = null;
         PortBase portB = null;
-        if (p0)
+        if (p0 != null  )
         { portA = p0.GetComponent<PortBase>(); }
 
-        if (p2)
+        if (p2 != null)
         { portB = p2.GetComponent<PortBase>(); }
 
 

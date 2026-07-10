@@ -63,6 +63,7 @@ public class ItemManager : SingletonMono2<ItemManager>
                 if (!part1Scored)
                 {
                     Pneumatic.part1Score = result.FinalScore; // 记录零部件领取的得分
+                    Pneumatic.part1Evaluated = true; // 标记已经过评分流程
                     part1Scored = true; // 标记已经评分过
                 }
                 break;

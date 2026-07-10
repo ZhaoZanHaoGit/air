@@ -16,6 +16,8 @@ public class PneumaticEvaluator : MonoBehaviour
     [HideInInspector]
     private ConnectionReport report;
     public int part1Score, part3Score;
+    [HideInInspector]
+    public bool part1Evaluated = false;   // 标记零部件领取是否经过评分
     int finalscore;// 零部件领取得分
     float m_Timer=0; // 记录训练时间
 
@@ -38,11 +40,20 @@ public class PneumaticEvaluator : MonoBehaviour
     }
     public void UpdateFinalScore(SetUIData uiData)
     {
-        int part1score = part1Score;
-        report = part2Answer.ExamEvaluate();
-        int part2score1 =math.clamp(0,part2ScoreMax,(part2ScoreMax - (report.OverCount * deductPerMissing) - (report.ErrorCount * deductPerExtra))) ;
+        // 第一部分：未经评分流程（没选元器件/没点确认），直接 0 分
+        int part1score = part1Evaluated ? part1Score : 0;
 
-        int part3score =UnityEngine.Random.Range(0, part3ScoreMax + 1);
+        // 第二部分：根据接线判定结果计算
+        report = part2Answer.ExamEvaluate();
+        int part2score1 = Mathf.Clamp(
+            part2ScoreMax - (report.OverCount * deductPerExtra) - (report.ErrorCount * deductPerMissing),
+            0, part2ScoreMax);
+
+        // 第三部分：第二部分满分才给随机分，否则 0 分
+        int part3score = (part2score1 >= part2ScoreMax)
+            ? UnityEngine.Random.Range(0, part3ScoreMax + 1)
+            : 0;
+
         finalscore = part1score + part2score1 + part3score;
         uiData.setPanelData(part1score.ToString(), part2score1.ToString(), part3score.ToString(), finalscore.ToString(), report.ErrorCount.ToString(), report.OverCount.ToString());
         trainingPanelUI.startTraining = false;

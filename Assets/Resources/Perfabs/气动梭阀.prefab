@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26471fd94e098dc428d02a20f25ca268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  valveName: 
+  valveName: "\u6C14\u52A8\u68AD\u9600"
   ports:
   - {fileID: 443330381770667295}
   - {fileID: 4069374166448685954}

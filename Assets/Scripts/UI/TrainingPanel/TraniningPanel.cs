@@ -200,7 +200,6 @@ public class TraniningPanel : BaseUI
     }
     public override void InitUserInfo()
     {
-
         if (AppController.Instance != null && AppController.Instance.loginUser != null && AppController.Instance.loginUser.Usertype != (int)UserType.游客)
         {
             UserName.text = "用户名：" + AppController.Instance.loginUser.Username;
@@ -312,10 +311,8 @@ public class TraniningPanel : BaseUI
         */
         if (!string.IsNullOrEmpty(doc.TaskRequirements))
             taskDocumentText1.text = doc.TaskRequirements;
-
         if (!string.IsNullOrEmpty(doc.TechnicalDocumentation))
             taskDocumentText2.text = doc.TechnicalDocumentation;
-
         if (!string.IsNullOrEmpty(doc.TaskImplementation))
             taskDocumentText3.text = doc.TaskImplementation;
         RectTransform Rect1 = (RectTransform)taskDocumentText1.transform;
@@ -342,8 +339,6 @@ public class TraniningPanel : BaseUI
             // 强行重建当前物体以及所有子物体的布局
             LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
         }
-      
-
     }
 
     /// <summary>
@@ -356,16 +351,13 @@ public class TraniningPanel : BaseUI
         {
             Destroy(child.gameObject);
         }
-
         if (schematicNames == null || schematicNames.Count == 0) return;
 
         foreach (string schematicName in schematicNames)
         {
             if (string.IsNullOrEmpty(schematicName)) continue;
-
             // 在 Assets/Resources/CircuitSchematic 目录下加载同名 Sprite 资源
             Sprite loadedSprite = Resources.Load<Sprite>($"CircuitSchematic/{schematicName}");
-
             if (loadedSprite != null)
             {
                 // 创建图片对象并设置资源
@@ -382,25 +374,21 @@ public class TraniningPanel : BaseUI
             }
         }
     }
-
     /// <summary>
     /// 更新元件列表 UI (ComponentList)
     /// </summary>
     private void UpdateComponentListUI(List<Dictionary<string, int>> components)
     {
-        for (int i = 0;i< componentContent.childCount; i++)
+        for (int i = 0; i < componentContent.childCount; i++)
         {
             Destroy(componentContent.GetChild(i).gameObject);
         }
-
         if (components == null || components.Count == 0)
         {
-           // componentListText.text = "暂无所需元件数据。";
+            // componentListText.text = "暂无所需元件数据。";
             return;
         }
-
         //string result = "";
-
         // 解析格式类似 [{"2":2}, {"2":2}] 的结构
         foreach (var dict in components)
         {
@@ -414,17 +402,13 @@ public class TraniningPanel : BaseUI
                 // result += $"{kvp.Key}*{kvp.Value}\n";
             }
         }
-
-       // componentListText.text = result;
+        // componentListText.text = result;
     }
     private void onfreeBtnClick(GameObject listener, object eventData, object[] args)
     {
         selectpanel.SetActive(false);
         testPanel.gameObject.SetActive(true);
-
         TrainType = trainType.free;
-
-
     }
     private void onexamBtnClick(GameObject listener, object eventData, object[] args)
     {
@@ -435,7 +419,6 @@ public class TraniningPanel : BaseUI
 
         TrainType = trainType.exam;
         int num = currentTrainingCase.CaseNamber + 200;
-
         AppController.Instance.eVSType = (EVSType)Enum.Parse(typeof(EVSType), num.ToString());
         startTraining = true;
     }
@@ -445,7 +428,6 @@ public class TraniningPanel : BaseUI
             return;
         selectpanel.SetActive(false);
         testPanel.gameObject.SetActive(true);
-
         TrainType = trainType.test;
         AppController.Instance.courseType = CourseType.实训;
         int num = currentTrainingCase.CaseNamber + 300;
@@ -539,7 +521,7 @@ public class TraniningPanel : BaseUI
         { CloseUIToBeOpenUI(EnumUIType.LoadingUI, true, EnumUIType.MainMenu, EnumSceneType.GameStart); }
         else
         {
-          
+
             if (AppController.Instance.loginUser.Usertype == (int)UserType.学生 && TrainType == trainType.test)
             {
                 Debug.Log("上传认知数据");

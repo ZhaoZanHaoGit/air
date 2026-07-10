@@ -46,14 +46,20 @@ public class PneumaticPort : PortBase
 
     /// <summary>
     /// 步骤 1：接收【阀门内部连接对端】通过内滑道传过来的流体信息
+    /// 
+    /// 流量参数语义变更（2026-07-09 修复迭代衰减 Bug）：
+    ///   - Pressurepercent：仍然是乘法（压力需要跨迭代收敛）
+    ///   - inFlowpercent / outFlowpercent：改为 Mathf.Min（瓶颈上限原则）
+    ///     即"本端口流量不能超过此值"，而非"每轮迭代都再乘一次"
+    ///     这修复了 ThrottleValve 在多轮迭代中流量指数衰减的问题
     /// </summary>
     public void ReceiveInternalInfo(float Pressurepercent = 1, float inFlowpercent = 1, float outFlowpercent = 1)
     {
         if (internalConnectTo != null)
         {
-            inPressure = internalConnectTo.pressure*Pressurepercent ;
-            InFlow     = internalConnectTo.inFlowRate*inFlowpercent;
-            outFlow    = internalConnectTo.outFlowRate*outFlowpercent;
+            inPressure = internalConnectTo.pressure * Pressurepercent;
+            InFlow     = Mathf.Min(internalConnectTo.inFlowRate, inFlowpercent);
+            outFlow    = Mathf.Min(internalConnectTo.outFlowRate, outFlowpercent);
         }
         else
         {

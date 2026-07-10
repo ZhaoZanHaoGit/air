@@ -48,7 +48,7 @@ public class OrShuttleValve : BaseValve
 
             // 🔴 纯拓扑指针改绑：将输出口 Y 的外部连线终点，死死绑在源头输入口 A 上！
             // 这样下游网络（如气缸）在阶段 2 和阶段 3 运行时，会自发顺着指针咬到 A 口的纯净高压。
-            portY.connectedTo = portA;
+            portY.internalConnectTo = portA;
      
            
         }
@@ -58,7 +58,7 @@ public class OrShuttleValve : BaseValve
             activeChannel = "Channel_B";
 
             // 🔴 纯拓扑指针改绑：将输出口 Y 的外部连线终点，死死绑在源头输入口 B 上！
-            portY.connectedTo = portB; 
+            portY.internalConnectTo = portB; 
      
             
         }
@@ -69,16 +69,15 @@ public class OrShuttleValve : BaseValve
             // 为了防止悬空引发空指针，如果两端确实有基础对等压力，我们让它默认继承较高的一侧；如果全为0，则断开连接。
             if (pA > 0.1f || pB > 0.1f)
             {
-                portY.connectedTo = (pA >= pB) ? portA : portB;
+                portY.internalConnectTo = (pA >= pB) ? portA : portB;
                 activeChannel = (pA >= pB) ? "Channel_A (Balanced)" : "Channel_B (Balanced)";
             }
             else
             {
-                portY.connectedTo = null; // 彻底断开，防止无压力时的残留穿透
+                portY.internalConnectTo = null; // 彻底断开，防止无压力时的残留穿透
                 activeChannel = "None (DeadZone)";
             }
         }
-
         // ==========================================
         // 2. 拓扑因果自激活：驱动统一无参数重载接口演化
         // ==========================================
