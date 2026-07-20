@@ -15,6 +15,9 @@ namespace TJGenerators.Utils
         /// <summary>包版本请求头名称，与 fromMethod 并列上报。</summary>
         public const string PackageVersionHeaderName = "X-Package-Version";
 
+        /// <summary>Agent 会话 ID 请求头名称，用于按 session 分组查询任务。</summary>
+        public const string SessionIdHeaderName = "X-Session-Id";
+
         /// <summary>编辑器 UI 面板发起的生成。</summary>
         public const string Ui = "ui";
 

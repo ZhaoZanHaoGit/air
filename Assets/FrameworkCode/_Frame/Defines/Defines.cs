@@ -234,7 +234,7 @@ public class Defines
     public const string RESOLUTION = "DQDPCResolution"; //本地化分辨率缓存（电驱动总成）
     public const string FULLSCREEN = "DQDFullScreen";  //本地化是否全屏（电驱动总成）
 
-    public const SoftInfo softInfo = SoftInfo.气动;
+    public const SoftInfo softInfo = SoftInfo.气压传动虚拟仿真实训系统;
 
     #endregion
 
@@ -270,7 +270,7 @@ public class PathData
 
 public enum SoftInfo
 {
-    气动 = 2600
+    气压传动虚拟仿真实训系统 = 2600
 }
 
 /// <summary>

@@ -94,8 +94,15 @@ namespace TJGenerators
                 GUILayout.Space(5);
             }
 
+            bool playBlocked = TJGeneratorsPlayModeGuard.IsActive;
+            if (playBlocked)
+            {
+                EditorGUILayout.HelpBox(TJGeneratorsPlayModeGuard.ShortHint, MessageType.Warning);
+                GUILayout.Space(5);
+            }
+
             // 生成按钮
-            EditorGUI.BeginDisabledGroup(isGenerating);
+            EditorGUI.BeginDisabledGroup(isGenerating || playBlocked);
             if (GUILayout.Button(TJGeneratorsL10n.L("生成所有缺失的模板"), GUILayout.Height(30)))
             {
                 StartGenerateAll();
@@ -153,7 +160,7 @@ namespace TJGenerators
             GUILayout.EndVertical();
 
             // 单独生成按钮
-            EditorGUI.BeginDisabledGroup(isGenerating);
+            EditorGUI.BeginDisabledGroup(isGenerating || TJGeneratorsPlayModeGuard.IsActive);
             if (GUILayout.Button(exists ? TJGeneratorsL10n.L("重新生成") : TJGeneratorsL10n.L("生成"), GUILayout.Width(80)))
             {
                 StartGenerateSingle(template);
@@ -254,6 +261,14 @@ namespace TJGenerators
 
         private IEnumerator GenerateSingleTemplate(MaterialTemplateOptionConfig template)
         {
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                currentGenerateError = TJGeneratorsPlayModeGuard.Message;
+                templateErrors[template.id] = currentGenerateError;
+                TJLog.LogError($"[MaterialTemplate] {template.id}: {TJGeneratorsPlayModeGuard.Message}");
+                yield break;
+            }
+
             string prompt = template.prompt;
             if (string.IsNullOrEmpty(prompt))
             {

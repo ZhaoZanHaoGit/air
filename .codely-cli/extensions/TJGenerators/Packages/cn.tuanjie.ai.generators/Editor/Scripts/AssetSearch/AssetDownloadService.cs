@@ -156,6 +156,16 @@ namespace TJGenerators.AssetSearch
             if (string.IsNullOrWhiteSpace(request.Url))        throw new ArgumentException("Url is required",        nameof(request));
             if (string.IsNullOrWhiteSpace(request.PrefabPath)) throw new ArgumentException("PrefabPath is required", nameof(request));
 
+            // Unity 禁止在 Play 模式下 ImportPackage；下载到项目与放入场景均不可用。
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                return new StartDownloadResult
+                {
+                    Status  = DownloadTaskStatus.Failed,
+                    Message = TJGeneratorsPlayModeGuard.DownloadOrPlaceShortHint,
+                };
+            }
+
             // asset_id 即 slug，直接用作目录名（与原 SearchAssetsTool 逻辑一致）
             string packageDir   = DefaultDestBase + "/" + request.AssetId;
             string metadataPath = packageDir + "/" + request.AssetId + "_metadata.json";

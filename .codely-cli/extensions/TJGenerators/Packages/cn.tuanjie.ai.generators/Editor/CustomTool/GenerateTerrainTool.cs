@@ -404,7 +404,7 @@ namespace UnityTcp.Editor.Tools
                 generator.SetParameter("outputFormat", "png");
 
                 // 同步提交任务
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateTerrainTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -453,7 +453,7 @@ namespace UnityTcp.Editor.Tools
                             new JObject { ["session_id"] = sessionId, ["prompt"] = prompt ?? "" });
                     }
                 );
-                var pipeline = new GenerationPipeline(host, ConfigType.Image);
+                var pipeline = new GenerationPipeline(host, ConfigType.Image, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));

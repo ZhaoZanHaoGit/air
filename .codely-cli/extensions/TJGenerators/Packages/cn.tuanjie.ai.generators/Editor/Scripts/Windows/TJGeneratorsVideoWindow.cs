@@ -52,6 +52,7 @@ namespace TJGenerators
                 focus: true
             );
             window.titleContent = new GUIContent(TJGeneratorsL10n.L("TJGenerators 视频生成"));
+            FinalizeMainWindowShow(window, rect);
         }
 
         /// <summary>
@@ -67,12 +68,25 @@ namespace TJGenerators
                 () =>
                 {
                     var window = CreateInstance<TJGeneratorsVideoWindow>();
-                    SetDefaultWindowSize(window);
                     return window;
                 },
                 (w, r) => w.targetVideoAsset = r,
-                ShowWindow
-            );
+                ShowWindow);
+        }
+
+        protected override void OnBootstrapWindowContent()
+        {
+            if (targetVideoAsset != null && !string.IsNullOrEmpty(targetVideoAsset.guid))
+                s_videoOpenWindows[targetVideoAsset.guid] = this;
+
+            InitializeGeneratorsFromConfig(ConfigType.Video);
+            OnRefreshWindowContent();
+        }
+
+        protected override void OnRefreshWindowContent()
+        {
+            RefreshHistory();
+            CheckAndRecoverInterruptedTasks();
         }
 
         // ========== 生命周期 ==========
@@ -81,18 +95,6 @@ namespace TJGenerators
         {
             base.OnEnable();
             wantsMouseMove = true;
-            InitializeGeneratorsFromConfig(ConfigType.Video);
-
-            EditorApplication.delayCall += () =>
-            {
-                if (this == null)
-                    return;
-                generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(
-                    GetCurrentVideoAssetGuid()
-                );
-                selectedHistoryIndex = generationHistory.Count > 0 ? 0 : -1;
-                Repaint();
-            };
 
             EditorCoroutineUtility.StartCoroutineOwnerless(
                 UserInfoHelper.GetUserInfoCoroutine(
@@ -100,8 +102,6 @@ namespace TJGenerators
                     OnUserInfoLoaded
                 )
             );
-
-            CheckAndRecoverInterruptedTasks();
         }
 
         protected override void OnDisable()
@@ -517,7 +517,11 @@ namespace TJGenerators
                 return preview;
             }
 
+#if UNITY_6000_5_OR_NEWER
+            if (AssetPreview.IsLoadingAssetPreview(clip.GetEntityId()))
+#else
             if (AssetPreview.IsLoadingAssetPreview(clip.GetInstanceID()))
+#endif
                 EditorApplication.delayCall += Repaint;
 
             return null;
@@ -1041,8 +1045,7 @@ namespace TJGenerators
             targetVideoAsset != null && targetVideoAsset.IsValid();
 
         /// <summary>
-        /// 窗口内点击「生成」且尚未绑定目标时创建占位视频（与 3D 的 EnsureTargetAsset 一致）。
-        /// 菜单「AI/生成/生成视频」与 Inspector OpenForAsset 均不调用此方法。
+        /// 无绑定目标时创建占位视频（ShowWindow 回退或生成前兜底）。
         /// </summary>
         private void EnsureTargetVideo()
         {

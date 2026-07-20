@@ -102,6 +102,8 @@ namespace TJGenerators.UI
         public static readonly string PlusSymbol = "+";
         /// <summary>行之间的垂直间距（像素）</summary>
         public static float LineSpacing => 20f;
+        /// <summary>统一间距节奏 1x </summary>
+        public static float Space1 => 4f;
         /// <summary>统一间距节奏 2x </summary>
         public static float Space2 => 8f;
         /// <summary>统一间距节奏 4x </summary>

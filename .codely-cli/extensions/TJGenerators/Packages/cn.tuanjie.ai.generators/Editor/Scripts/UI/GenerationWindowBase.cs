@@ -119,6 +119,8 @@ namespace TJGenerators.UI
         /// </summary>
         protected virtual void OnEnable()
         {
+            if (!_windowContentReady)
+                BootstrapWindow();
             TJGeneratorsL10n.OnLanguageChanged += Repaint;
         }
 
@@ -127,13 +129,35 @@ namespace TJGenerators.UI
             TJGeneratorsL10n.OnLanguageChanged -= Repaint;
         }
 
+        // ========== 窗口内容延迟初始化 ==========
+        private bool _windowContentReady;
+
+        /// <summary>
+        /// 在目标资产/模式确定后执行首次初始化。由 <see cref="OnEnable"/> 在首帧绘制前同步调用；
+        /// OpenForAsset 须在 <see cref="EditorWindow.Show"/> 之前完成 setTarget，以便 Bootstrap 读到正确绑定。
+        /// 对已就绪的窗口幂等（防止重复完整初始化）。
+        /// </summary>
+        protected void BootstrapWindow()
+        {
+            if (_windowContentReady)
+                return;
+            OnBootstrapWindowContent();
+            _windowContentReady = true;
+        }
+
+        /// <summary>首次初始化：生成器、历史、任务恢复等。子类重写。</summary>
+        protected virtual void OnBootstrapWindowContent() { }
+
+        /// <summary>域重载或窗口重新启用时刷新。子类重写。</summary>
+        protected virtual void OnRefreshWindowContent() { }
+
         /// <summary>
         /// 设置历史记录列表，任务恢复后刷新时调用。
         /// </summary>
         protected abstract void SetHistory(List<TJGeneratorsGenerationHistoryItem> history);
 
         /// <summary>
-        /// 检查并恢复中断的任务。子类在 OnEnable 中调用。
+        /// 检查并恢复中断的任务。通常在 <see cref="OnRefreshWindowContent"/> 中调用。
         /// </summary>
         protected void CheckAndRecoverInterruptedTasks()
         {
@@ -333,6 +357,172 @@ namespace TJGenerators.UI
         {
             float inset = HistoryPreviewBaseInsetTotal * GetHistoryTileScale();
             return Mathf.Max(1f, tileWidth - inset);
+        }
+
+        /// <summary>
+        /// 标准历史面板配置：网格缩略图 + 可选大预览 + 底部操作区。
+        /// </summary>
+        protected sealed class StandardHistoryPanelOptions
+        {
+            public Action<Rect, TJGeneratorsGenerationHistoryItem> DrawTilePreview;
+            public Func<TJGeneratorsGenerationHistoryItem, string> GetModelLabel;
+            public Action<int> ShowContextMenu;
+            public Action DrawHistoryActions;
+
+            public Func<TJGeneratorsGenerationHistoryItem, string> GetPrimaryLabel;
+            public Func<TJGeneratorsGenerationHistoryItem, Texture2D> GetLargePreviewTexture;
+            public Func<float, float, float> DrawLargePreviewBlock;
+            public Action OnBeforeDraw;
+            public Action<int, int> OnBeforeSelectHistoryItem;
+            public float BottomMargin = 100f;
+            public float ScrollTopSpacing;
+            public bool AddPanelTopSpacing;
+            public float? HistoryContentWidth;
+            public Func<float, float> GetLabelHeight;
+        }
+
+        /// <summary>
+        /// 校正 <see cref="selectedHistoryIndex"/>，避免列表为空或越界。
+        /// </summary>
+        protected void EnsureHistorySelectionIndex()
+        {
+            if (generationHistory == null)
+                generationHistory = new List<TJGeneratorsGenerationHistoryItem>();
+
+            if (generationHistory.Count > 0)
+                selectedHistoryIndex = Mathf.Clamp(selectedHistoryIndex, 0, generationHistory.Count - 1);
+            else
+                selectedHistoryIndex = -1;
+        }
+
+        /// <summary>
+        /// 绘制标准历史面板：大预览区、网格缩略图、底部操作按钮。
+        /// </summary>
+        protected void DrawStandardHistoryPanel(float panelWidth, StandardHistoryPanelOptions options)
+        {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            float historyPanelHeight = isVerticalLayout ? position.height * 0.45f : position.height;
+            EnsureHistorySelectionIndex();
+            options.OnBeforeDraw?.Invoke();
+
+            UIComponents.BeginHistoryPanel(panelWidth, historyPanelHeight, isVerticalLayout);
+            if (options.AddPanelTopSpacing)
+                GUILayout.Space(5);
+
+            float previewBlockHeight = 0f;
+            if (options.DrawLargePreviewBlock != null)
+                previewBlockHeight = options.DrawLargePreviewBlock(panelWidth, historyPanelHeight);
+            else if (options.GetLargePreviewTexture != null)
+                previewBlockHeight = DrawDefaultHistoryLargePreview(panelWidth, historyPanelHeight, options.GetLargePreviewTexture);
+
+            if (options.ScrollTopSpacing > 0f)
+                GUILayout.Space(options.ScrollTopSpacing);
+
+            float scrollHeight = historyPanelHeight - previewBlockHeight - options.ScrollTopSpacing - options.BottomMargin;
+            historyScrollPosition = GUILayout.BeginScrollView(
+                historyScrollPosition,
+                GUIStyle.none,
+                GUI.skin.verticalScrollbar,
+                GUILayout.Height(scrollHeight));
+
+            if (generationHistory.Count == 0)
+                UIComponents.DrawHistoryEmptyState();
+            else
+                DrawStandardHistoryGrid(options);
+
+            GUILayout.EndScrollView();
+            options.DrawHistoryActions?.Invoke();
+            UIComponents.EndHistoryPanel();
+        }
+
+        protected float DrawDefaultHistoryLargePreview(
+            float panelWidth,
+            float historyPanelHeight,
+            Func<TJGeneratorsGenerationHistoryItem, Texture2D> getPreviewTexture)
+        {
+            Texture2D historyPreviewTex = null;
+            bool showHistoryPreview = false;
+            if (selectedHistoryIndex >= 0 && selectedHistoryIndex < generationHistory.Count)
+            {
+                var selectedItem = generationHistory[selectedHistoryIndex];
+                if (!selectedItem.isGenerating)
+                {
+                    showHistoryPreview = true;
+                    historyPreviewTex = getPreviewTexture?.Invoke(selectedItem);
+                }
+            }
+
+            return UIComponents.DrawHistoryTexturePreview(
+                historyPreviewTex,
+                showHistoryPreview,
+                isVerticalLayout,
+                panelWidth,
+                historyPanelHeight);
+        }
+
+        private void DrawStandardHistoryGrid(StandardHistoryPanelOptions options)
+        {
+            float tileWidth = currentHistoryTileSize;
+            float labelHeight = options.GetLabelHeight != null
+                ? options.GetLabelHeight(tileWidth)
+                : (currentHistoryTileSize >= 100f ? 40f : 32f);
+            float tileHeight = tileWidth + labelHeight;
+            float contentWidth = options.HistoryContentWidth
+                ?? CommonStyles.HistoryScrollViewLayoutWidth(currentHistoryPanelWidth);
+            int itemsPerRow = ComputeHistoryItemsPerRow(contentWidth, tileWidth);
+
+            for (int i = 0; i < generationHistory.Count; i += itemsPerRow)
+            {
+                GUILayout.BeginHorizontal();
+                for (int j = 0; j < itemsPerRow && (i + j) < generationHistory.Count; j++)
+                {
+                    int index = i + j;
+                    var item = generationHistory[index];
+                    bool isSelected = selectedHistoryIndex == index;
+
+                    GUILayout.BeginVertical(
+                        GetScaledHistoryTileStyle(isSelected),
+                        GUILayout.Width(tileWidth),
+                        GUILayout.Height(tileHeight));
+
+                    float previewSize = GetScaledHistoryPreviewSize(tileWidth);
+                    Rect previewRect = GUILayoutUtility.GetRect(previewSize, previewSize);
+                    options.DrawTilePreview?.Invoke(previewRect, item);
+
+                    if (!item.isGenerating
+                        && Event.current.type == EventType.MouseDown
+                        && previewRect.Contains(Event.current.mousePosition))
+                    {
+                        int oldIndex = selectedHistoryIndex;
+                        options.OnBeforeSelectHistoryItem?.Invoke(index, oldIndex);
+                        selectedHistoryIndex = index;
+                        Event.current.Use();
+                        Repaint();
+                    }
+
+                    if (!item.isGenerating
+                        && options.ShowContextMenu != null
+                        && Event.current.type == EventType.ContextClick
+                        && previewRect.Contains(Event.current.mousePosition))
+                    {
+                        options.ShowContextMenu(index);
+                        Event.current.Use();
+                    }
+
+                    string primaryLabel = options.GetPrimaryLabel != null
+                        ? options.GetPrimaryLabel(item)
+                        : item.GetDisplayName();
+                    GUILayout.Label(primaryLabel, CommonStyles.HistoryLabelStyle);
+
+                    if (options.GetModelLabel != null)
+                        GUILayout.Label(options.GetModelLabel(item), CommonStyles.SmallGreyCenterLabelStyle);
+
+                    GUILayout.EndVertical();
+                }
+                GUILayout.EndHorizontal();
+            }
         }
 
         /// <summary>
@@ -1205,7 +1395,7 @@ namespace TJGenerators.UI
             Action<TWindow, TJGeneratorsAssetReference> setTarget,
             Action onEmptyPath = null
         )
-            where TWindow : EditorWindow
+            where TWindow : GenerationWindowBase
         {
             if (string.IsNullOrEmpty(assetPath))
             {
@@ -1229,11 +1419,37 @@ namespace TJGenerators.UI
             var window = getOrCreateWindow();
             var assetRef = TJGeneratorsAssetReference.FromPath(assetPath);
             setTarget(window, assetRef);
+            // CreateInstance triggers OnEnable/Bootstrap before setTarget runs, so the
+            // target asset is null at that point and history loads empty. Reload now that
+            // the target is assigned.
+            window.RefreshHistory();
             window.titleContent = new GUIContent(
                 string.Format(titleFormat, Path.GetFileNameWithoutExtension(assetPath))
             );
+            SetDefaultWindowSize(window);
             window.Show();
             openWindows[guid] = window;
+        }
+
+        /// <summary>
+        /// 在 Show 后再次应用已知矩形，避免首帧 OnGUI 改 minSize 导致窗口偏移。
+        /// 不增加堆叠偏移计数（矩形已由 GetDefaultMainWindowRect 计算）。
+        /// </summary>
+        protected static void FinalizeMainWindowShow<TWindow>(TWindow window, Rect rect)
+            where TWindow : EditorWindow
+        {
+            ScheduleWindowPositionReapply(window, rect);
+        }
+
+        private static void ScheduleWindowPositionReapply(EditorWindow window, Rect rect)
+        {
+            window.position = rect;
+            Rect capturedPos = rect;
+            EditorApplication.delayCall += () =>
+            {
+                if (window != null)
+                    window.position = capturedPos;
+            };
         }
 
         protected static Rect GetDefaultMainWindowRect()
@@ -1256,15 +1472,7 @@ namespace TJGenerators.UI
                 pos.height = UIComponents.DefaultMainWindowHeight;
 
             Rect rect = UIComponents.GetDefaultMainWindowRect(pos.width, pos.height, designStackOffset);
-            window.position = rect;
-
-            // Unity 在 Show() 后会在下一帧再布局，直接设 position 容易被覆盖，下一帧再设一次
-            Rect capturedPos = rect;
-            EditorApplication.delayCall += () =>
-            {
-                if (window != null)
-                    window.position = capturedPos;
-            };
+            ScheduleWindowPositionReapply(window, rect);
         }
     }
 }

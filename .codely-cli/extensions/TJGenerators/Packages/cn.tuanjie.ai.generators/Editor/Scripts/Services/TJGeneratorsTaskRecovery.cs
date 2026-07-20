@@ -34,6 +34,8 @@ namespace TJGenerators
 
         public static readonly string SessionId = Guid.NewGuid().ToString();
 
+        private static readonly long SessionStartUnixMs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
         private static List<InterruptedTaskData> s_Tasks;
         private static readonly HashSet<string> s_Recovering = new HashSet<string>();
 
@@ -168,9 +170,21 @@ namespace TJGenerators
                     // history 中已有 isGenerating 占位符，说明是同 session 内 domain reload 导致的中断，直接恢复无需弹窗
                     var interruptedTasks = GetAllInterruptedTasksForAsset(assetGuid);
                     if (interruptedTasks.Count > 0)
+                    {
                         RecoverAfterDomainReload(interruptedTasks, assetGuid, resumeTask, setHistory, onRepaint);
+                    }
                     else
-                        CleanupOrphanedPlaceholders(generatingItems, assetGuid, setHistory, onRepaint);
+                    {
+                        var orphansFromPreviousSession = generatingItems.FindAll(
+                            h => h.timestamp < SessionStartUnixMs);
+                        if (orphansFromPreviousSession.Count > 0)
+                            CleanupOrphanedPlaceholders(orphansFromPreviousSession, assetGuid, setHistory, onRepaint);
+                        else
+                        {
+                            setHistory(history);
+                            onRepaint?.Invoke();
+                        }
+                    }
                 }
                 else
                 {
@@ -192,10 +206,15 @@ namespace TJGenerators
             TJLog.Log($"[TJGeneratorsTaskRecovery] 检测到 {tasks.Count} 个中断的任务，重新恢复轮询...");
             foreach (var task in tasks)
             {
-                // HTTP 提交阶段中断：后端可能未收到请求，backendTaskId 无效，无法轮询，直接清理
                 if (task.status == "submitting")
                 {
-                    TJLog.Log($"[TJGeneratorsTaskRecovery] 任务 {task.localTaskId} 在提交阶段被中断，清理占位符");
+                    if (task.sessionId == SessionId)
+                    {
+                        TJLog.Log($"[TJGeneratorsTaskRecovery] 任务 {task.localTaskId} 仍在当前 session 提交中，跳过清理。");
+                        continue;
+                    }
+
+                    TJLog.Log($"[TJGeneratorsTaskRecovery] 任务 {task.localTaskId} 在提交阶段被中断（跨 domain reload），清理占位符");
                     RemoveInterruptedTask(task.backendTaskId);
                     if (!string.IsNullOrEmpty(task.localTaskId))
                         TJGeneratorsHistoryManager.RemovePlaceholder(task.localTaskId);

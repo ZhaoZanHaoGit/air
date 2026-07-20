@@ -12,6 +12,9 @@ namespace TJGenerators
     /// </summary>
     public static class TJGeneratorsMenuItems
     {
+        /// <summary>Play 模式下禁用会创建占位符 / 打开生成窗口的菜单项。</summary>
+        static bool ValidateNotInPlayMode() => !TJGeneratorsPlayModeGuard.IsActive;
+
         #region Menu Items
 
         #region AI - Generate (2000–2008 / 2100–2108)
@@ -21,39 +24,39 @@ namespace TJGenerators
         [MenuItem("AI/生成/生成3D模型", false, 2000)]
         public static void CreateAIGeneratedMesh() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: true, sceneParentForInstance: null); }
         [MenuItem("AI/生成/生成3D模型", true)]
-        public static bool Validate_CreateAIGeneratedMesh() => true;
+        public static bool Validate_CreateAIGeneratedMesh() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/3D Model", false, 2100)]
         public static void CreateAIGeneratedMesh_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: true, sceneParentForInstance: null); }
         [MenuItem("AI/Generate/3D Model", true)]
-        public static bool Validate_CreateAIGeneratedMesh_En() => true;
+        public static bool Validate_CreateAIGeneratedMesh_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成天空盒", false, 2001)]
         public static void CreateAIGeneratedSkybox() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
         [MenuItem("AI/生成/生成天空盒", true)]
-        public static bool Validate_CreateAIGeneratedSkybox() => true;
+        public static bool Validate_CreateAIGeneratedSkybox() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/Skybox", false, 2101)]
         public static void CreateAIGeneratedSkybox_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
         [MenuItem("AI/Generate/Skybox", true)]
-        public static bool Validate_CreateAIGeneratedSkybox_En() => true;
+        public static bool Validate_CreateAIGeneratedSkybox_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成表面材质", false, 2002)]
         public static void CreateAIGeneratedMaterial() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
         [MenuItem("AI/生成/生成表面材质", true)]
-        public static bool Validate_CreateAIGeneratedMaterial() => true;
+        public static bool Validate_CreateAIGeneratedMaterial() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/Material", false, 2102)]
         public static void CreateAIGeneratedMaterial_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
         [MenuItem("AI/Generate/Material", true)]
-        public static bool Validate_CreateAIGeneratedMaterial_En() => true;
+        public static bool Validate_CreateAIGeneratedMaterial_En() => ValidateNotInPlayMode();
 #endif
 
         // --- 2D ---
@@ -61,52 +64,52 @@ namespace TJGenerators
         [MenuItem("AI/生成/生成精灵", false, 2003)]
         public static void CreateAIGeneratedSprite() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
         [MenuItem("AI/生成/生成精灵", true)]
-        public static bool Validate_CreateAIGeneratedSprite() => true;
+        public static bool Validate_CreateAIGeneratedSprite() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/2D Sprite", false, 2103)]
         public static void CreateAIGeneratedSprite_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
         [MenuItem("AI/Generate/2D Sprite", true)]
-        public static bool Validate_CreateAIGeneratedSprite_En() => true;
+        public static bool Validate_CreateAIGeneratedSprite_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成图片", false, 2004)]
         public static void OpenImageGenerationWindow() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg"); }
         [MenuItem("AI/生成/生成图片", true)]
-        public static bool Validate_OpenImageGenerationWindow() => true;
+        public static bool Validate_OpenImageGenerationWindow() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/Image", false, 2104)]
         public static void OpenImageGenerationWindow_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg"); }
         [MenuItem("AI/Generate/Image", true)]
-        public static bool Validate_OpenImageGenerationWindow_En() => true;
+        public static bool Validate_OpenImageGenerationWindow_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成2D动作序列帧", false, 2005)]
         public static void CreateAIGeneratedSpriteSequence() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateAnimationClipAssetWithCallback("New Sprite Sequence.anim"); }
         [MenuItem("AI/生成/生成2D动作序列帧", true)]
-        public static bool Validate_CreateAIGeneratedSpriteSequence() => true;
+        public static bool Validate_CreateAIGeneratedSpriteSequence() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/2D Action Sequence", false, 2105)]
         public static void CreateAIGeneratedSpriteSequence_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateAnimationClipAssetWithCallback("New Sprite Sequence.anim"); }
         [MenuItem("AI/Generate/2D Action Sequence", true)]
-        public static bool Validate_CreateAIGeneratedSpriteSequence_En() => true;
+        public static bool Validate_CreateAIGeneratedSpriteSequence_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成2D精灵表序列帧", false, 2006)]
-        public static void OpenFrontierSequenceImageWindow() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg", openAsFrontierSequence: true); }
+        public static void OpenSpriteSheetSequenceWindow() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg", openAsSpriteSheetSequence: true); }
         [MenuItem("AI/生成/生成2D精灵表序列帧", true)]
-        public static bool Validate_OpenFrontierSequenceImageWindow() => true;
+        public static bool Validate_OpenSpriteSheetSequenceWindow() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/2D Spritesheet Sequence", false, 2106)]
-        public static void OpenFrontierSequenceImageWindow_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg", openAsFrontierSequence: true); }
+        public static void OpenSpriteSheetSequenceWindow_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg", openAsSpriteSheetSequence: true); }
         [MenuItem("AI/Generate/2D Spritesheet Sequence", true)]
-        public static bool Validate_OpenFrontierSequenceImageWindow_En() => true;
+        public static bool Validate_OpenSpriteSheetSequenceWindow_En() => ValidateNotInPlayMode();
 #endif
 
         // --- 音视频 ---
@@ -114,26 +117,26 @@ namespace TJGenerators
         [MenuItem("AI/生成/生成音频", false, 2007)]
         public static void CreateAIGeneratedMusic() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateAudioClipAssetWithCallback("New AudioClip.wav"); }
         [MenuItem("AI/生成/生成音频", true)]
-        public static bool Validate_CreateAIGeneratedMusic() => true;
+        public static bool Validate_CreateAIGeneratedMusic() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/Audio", false, 2107)]
         public static void CreateAIGeneratedMusic_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateAudioClipAssetWithCallback("New AudioClip.wav"); }
         [MenuItem("AI/Generate/Audio", true)]
-        public static bool Validate_CreateAIGeneratedMusic_En() => true;
+        public static bool Validate_CreateAIGeneratedMusic_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("AI/生成/生成视频", false, 2008)]
         public static void CreateAIGeneratedVideo() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateVideoAssetWithCallback("New Video.mp4"); }
         [MenuItem("AI/生成/生成视频", true)]
-        public static bool Validate_CreateAIGeneratedVideo() => true;
+        public static bool Validate_CreateAIGeneratedVideo() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Generate/Video", false, 2108)]
         public static void CreateAIGeneratedVideo_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateVideoAssetWithCallback("New Video.mp4"); }
         [MenuItem("AI/Generate/Video", true)]
-        public static bool Validate_CreateAIGeneratedVideo_En() => true;
+        public static bool Validate_CreateAIGeneratedVideo_En() => ValidateNotInPlayMode();
 #endif
 
         // --- 世界 ---
@@ -141,11 +144,11 @@ namespace TJGenerators
         [MenuItem("AI/生成/生成世界", false, 2009)]
         public static void CreateAIGeneratedWorld() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); UnityGaussianSplattingPackage.EnsureInstalledThenCreateWorld("New World.png"); }
         [MenuItem("AI/生成/生成世界", true)]
-        public static bool Validate_CreateAIGeneratedWorld() => true;
+        public static bool Validate_CreateAIGeneratedWorld() => ValidateNotInPlayMode();
         [MenuItem("AI/Generate/World", false, 2109)]
         public static void CreateAIGeneratedWorld_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); UnityGaussianSplattingPackage.EnsureInstalledThenCreateWorld("New World.png"); }
         [MenuItem("AI/Generate/World", true)]
-        public static bool Validate_CreateAIGeneratedWorld_En() => true;
+        public static bool Validate_CreateAIGeneratedWorld_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion
@@ -156,13 +159,13 @@ namespace TJGenerators
         [MenuItem("AI/搜索资产库", false, 2010)]
         public static void OpenCodelyAssetLibrarySearch() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); AssetLibrarySearchWindow.Open(); }
         [MenuItem("AI/搜索资产库", true)]
-        public static bool Validate_OpenCodelyAssetLibrarySearch() => true;
+        public static bool Validate_OpenCodelyAssetLibrarySearch() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("AI/Asset Library", false, 2110)]
         public static void OpenCodelyAssetLibrarySearch_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); AssetLibrarySearchWindow.Open(); }
         [MenuItem("AI/Asset Library", true)]
-        public static bool Validate_OpenCodelyAssetLibrarySearch_En() => true;
+        public static bool Validate_OpenCodelyAssetLibrarySearch_En() => ValidateNotInPlayMode();
 #endif
 
         public static void SearchAIGeneratedAssets()
@@ -237,7 +240,7 @@ namespace TJGenerators
         [MenuItem("AI/Dev/Run Generation Test", false, 3155)]
         public static void OpenGenerationTestRunnerWindow_En() { TJGeneratorsGenerationTestRunner.Open(); }
         [MenuItem("AI/Dev/Run Generation Test", true)]
-        public static bool Validate_OpenGenerationTestRunnerWindow_En() => true;
+        public static bool Validate_OpenGenerationTestRunnerWindow_En() => ValidateNotInPlayMode();
 
         public static void PrintAccessToken()
         {
@@ -281,7 +284,7 @@ namespace TJGenerators
         [MenuItem("AI/Dev/Generate Texture Pattern Templates", false, 3158)]
         public static void OpenMaterialTemplateGeneratorWindow_En() { TJGeneratorsMaterialTemplateGenerator.ShowWindow(); }
         [MenuItem("AI/Dev/Generate Texture Pattern Templates", true)]
-        public static bool Validate_OpenMaterialTemplateGeneratorWindow_En() => true;
+        public static bool Validate_OpenMaterialTemplateGeneratorWindow_En() => ValidateNotInPlayMode();
 
         public static void ClearAllGenerationHistory()
         {
@@ -312,43 +315,51 @@ namespace TJGenerators
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/生成3D模型", false, -199)]
         public static void CreateTJGeneratorsMesh() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: true, sceneParentForInstance: null); }
+        [MenuItem("Assets/Create/3D/生成3D模型", true)]
+        public static bool Validate_CreateTJGeneratorsMesh() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/3D Model", false, -199)]
         public static void CreateTJGeneratorsMesh_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: true, sceneParentForInstance: null); }
         [MenuItem("Assets/Create/3D/3D Model", true)]
-        public static bool Validate_CreateTJGeneratorsMesh_En() => true;
+        public static bool Validate_CreateTJGeneratorsMesh_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/生成天空盒", false, -198)]
         public static void CreateTJGeneratorsSkybox() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
+        [MenuItem("Assets/Create/3D/生成天空盒", true)]
+        public static bool Validate_CreateTJGeneratorsSkybox() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/Skybox", false, -198)]
         public static void CreateTJGeneratorsSkybox_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
         [MenuItem("Assets/Create/3D/Skybox", true)]
-        public static bool Validate_CreateTJGeneratorsSkybox_En() => true;
+        public static bool Validate_CreateTJGeneratorsSkybox_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/生成表面材质", false, -197)]
         public static void CreateTJGeneratorsMaterial() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
+        [MenuItem("Assets/Create/3D/生成表面材质", true)]
+        public static bool Validate_CreateTJGeneratorsMaterial() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/Material", false, -197)]
         public static void CreateTJGeneratorsMaterial_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
         [MenuItem("Assets/Create/3D/Material", true)]
-        public static bool Validate_CreateTJGeneratorsMaterial_En() => true;
+        public static bool Validate_CreateTJGeneratorsMaterial_En() => ValidateNotInPlayMode();
 #endif
 
 #if TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/3D/生成世界", false, -196)]
         public static void CreateTJGeneratorsWorld() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); UnityGaussianSplattingPackage.EnsureInstalledThenCreateWorld("New World.png"); }
+        [MenuItem("Assets/Create/3D/生成世界", true)]
+        public static bool Validate_CreateTJGeneratorsWorld() => ValidateNotInPlayMode();
         [MenuItem("Assets/Create/3D/World", false, -196)]
         public static void CreateTJGeneratorsWorld_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); UnityGaussianSplattingPackage.EnsureInstalledThenCreateWorld("New World.png"); }
         [MenuItem("Assets/Create/3D/World", true)]
-        public static bool Validate_CreateTJGeneratorsWorld_En() => true;
+        public static bool Validate_CreateTJGeneratorsWorld_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion
@@ -358,34 +369,40 @@ namespace TJGenerators
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/生成3D模型", false, -1)]
         public static void CreateInSceneAndNameMesh() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: false, sceneParentForInstance: Selection.activeGameObject); }
+        [MenuItem("GameObject/3D Object/生成3D模型", true)]
+        public static bool Validate_CreateInSceneAndNameMesh() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/3D Model", false, -1)]
         public static void CreateInSceneAndNameMesh_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreatePrefabAssetWithCallback($"{TJGeneratorsAssetCreation.DefaultNewAssetName}.prefab", enableLabel: false, sceneParentForInstance: Selection.activeGameObject); }
         [MenuItem("GameObject/3D Object/3D Model", true)]
-        public static bool Validate_CreateInSceneAndNameMesh_En() => true;
+        public static bool Validate_CreateInSceneAndNameMesh_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/生成天空盒", false, 0)]
         public static void CreateInSceneAndNameSkybox() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
+        [MenuItem("GameObject/3D Object/生成天空盒", true)]
+        public static bool Validate_CreateInSceneAndNameSkybox() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/Skybox", false, 0)]
         public static void CreateInSceneAndNameSkybox_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSkyboxAssetWithCallback("New Skybox.png"); }
         [MenuItem("GameObject/3D Object/Skybox", true)]
-        public static bool Validate_CreateInSceneAndNameSkybox_En() => true;
+        public static bool Validate_CreateInSceneAndNameSkybox_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/生成表面材质", false, 1)]
         public static void CreateInSceneAndNameMaterial() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
+        [MenuItem("GameObject/3D Object/生成表面材质", true)]
+        public static bool Validate_CreateInSceneAndNameMaterial() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("GameObject/3D Object/Material", false, 1)]
         public static void CreateInSceneAndNameMaterial_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateMaterialAssetWithCallback("New Material.mat"); }
         [MenuItem("GameObject/3D Object/Material", true)]
-        public static bool Validate_CreateInSceneAndNameMaterial_En() => true;
+        public static bool Validate_CreateInSceneAndNameMaterial_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion
@@ -395,34 +412,40 @@ namespace TJGenerators
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/生成2D精灵", false, -199)]
         public static void CreateTJGeneratorsSprite() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
+        [MenuItem("Assets/Create/2D/生成2D精灵", true)]
+        public static bool Validate_CreateTJGeneratorsSprite() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/2D Sprite", false, -199)]
         public static void CreateTJGeneratorsSprite_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
         [MenuItem("Assets/Create/2D/2D Sprite", true)]
-        public static bool Validate_CreateTJGeneratorsSprite_En() => true;
+        public static bool Validate_CreateTJGeneratorsSprite_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/生成图片", false, -196)]
         public static void CreateTJGeneratorsImage() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg"); }
+        [MenuItem("Assets/Create/2D/生成图片", true)]
+        public static bool Validate_CreateTJGeneratorsImage() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/Image", false, -196)]
         public static void CreateTJGeneratorsImage_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateImageAssetWithCallback("New Image.jpg"); }
         [MenuItem("Assets/Create/2D/Image", true)]
-        public static bool Validate_CreateTJGeneratorsImage_En() => true;
+        public static bool Validate_CreateTJGeneratorsImage_En() => ValidateNotInPlayMode();
 #endif
 
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/生成2D动作序列帧", false, -198)]
         public static void CreateTJGeneratorsSpriteSequence() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateAnimationClipAssetWithCallback("New Sprite Sequence.anim"); }
+        [MenuItem("Assets/Create/2D/生成2D动作序列帧", true)]
+        public static bool Validate_CreateTJGeneratorsSpriteSequence() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/2D/2D Action Sequence", false, -198)]
         public static void CreateTJGeneratorsSpriteSequence_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateAnimationClipAssetWithCallback("New Sprite Sequence.anim"); }
         [MenuItem("Assets/Create/2D/2D Action Sequence", true)]
-        public static bool Validate_CreateTJGeneratorsSpriteSequence_En() => true;
+        public static bool Validate_CreateTJGeneratorsSpriteSequence_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion
@@ -432,12 +455,14 @@ namespace TJGenerators
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("GameObject/2D Object/生成2D精灵", false, -1)]
         public static void CreateInSceneAndNameSprite() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
+        [MenuItem("GameObject/2D Object/生成2D精灵", true)]
+        public static bool Validate_CreateInSceneAndNameSprite() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("GameObject/2D Object/2D Sprite", false, -1)]
         public static void CreateInSceneAndNameSprite_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateSpriteAssetWithCallback("New Sprite.png"); }
         [MenuItem("GameObject/2D Object/2D Sprite", true)]
-        public static bool Validate_CreateInSceneAndNameSprite_En() => true;
+        public static bool Validate_CreateInSceneAndNameSprite_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion
@@ -447,12 +472,14 @@ namespace TJGenerators
 #if TUANJIE_1 || TUANJIE_2 || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/Audio/生成音频", false, -199)]
         public static void CreateTJGeneratorsAudioClip() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.Chinese); TJGeneratorsAssetCreation.CreateAudioClipAssetWithCallback("New AudioClip.wav"); }
+        [MenuItem("Assets/Create/Audio/生成音频", true)]
+        public static bool Validate_CreateTJGeneratorsAudioClip() => ValidateNotInPlayMode();
 #endif
 #if !(TUANJIE_1 || TUANJIE_2) || TJGENERATORS_DEBUG
         [MenuItem("Assets/Create/Audio/Audio", false, -199)]
         public static void CreateTJGeneratorsAudioClip_En() { TJGeneratorsL10n.SetLanguage(TJGeneratorsL10n.Language.English); TJGeneratorsAssetCreation.CreateAudioClipAssetWithCallback("New AudioClip.wav"); }
         [MenuItem("Assets/Create/Audio/Audio", true)]
-        public static bool Validate_CreateTJGeneratorsAudioClip_En() => true;
+        public static bool Validate_CreateTJGeneratorsAudioClip_En() => ValidateNotInPlayMode();
 #endif
 
         #endregion

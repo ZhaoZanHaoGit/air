@@ -518,7 +518,7 @@ namespace UnityTcp.Editor.Tools
                 ApplyImageParameters(generator, parameters);
 
                 // 阶段1：同步提交任务到后端
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateImageTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -572,7 +572,7 @@ namespace UnityTcp.Editor.Tools
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
 
                 // 阶段2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Image);
+                var pipeline = new GenerationPipeline(host, ConfigType.Image, GenerationRequestOrigin.Agent, sessionId);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
 
@@ -622,6 +622,7 @@ namespace UnityTcp.Editor.Tools
 #endif
         }
 
+        // CustomTool 名称 generate_frontier_sequence / 请求字段 frontier_sequence_envelope 为后端协议，保持不变。
         [ExecuteCustomTool.CustomTool("generate_frontier_sequence",
             "Generate a sequence-style image using Frontier (frontier-game-design) with profile-based spritesheet instructions. " +
             "User reference images (image_path) lock character identity; profile knowledge_refs layout images lock grid alignment. " +
@@ -642,7 +643,7 @@ namespace UnityTcp.Editor.Tools
                     wrapped["outputFormat"] = "png";
 
                 string profileId = null;
-                var profileResult = ResolveFrontierSequenceProfileAndEnvelope(wrapped, out profileId);
+                var profileResult = ResolveSpriteSheetSequenceProfileAndEnvelope(wrapped, out profileId);
                 if (profileResult.Error != null)
                 {
                     return new Dictionary<string, object>
@@ -652,7 +653,7 @@ namespace UnityTcp.Editor.Tools
                     };
                 }
 
-                string layoutFileErr = ValidateFrontierKnowledgeLayoutFilesExist(profileResult.KnowledgeRefs);
+                string layoutFileErr = ValidateSpriteSheetKnowledgeLayoutFilesExist(profileResult.KnowledgeRefs);
                 if (layoutFileErr != null)
                 {
                     return new Dictionary<string, object>
@@ -662,7 +663,7 @@ namespace UnityTcp.Editor.Tools
                     };
                 }
 
-                var envelope = BuildFrontierSequenceEnvelopeJObject(profileResult, wrapped, includeUserReferenceRefs: true);
+                var envelope = BuildSpriteSheetSequenceEnvelopeJObject(profileResult, wrapped, includeUserReferenceRefs: true);
 
                 // 通过 DynamicGenerator 扩展字段透传到后端
                 wrapped["frontier_sequence_envelope_raw"] = envelope.ToString();
@@ -674,7 +675,7 @@ namespace UnityTcp.Editor.Tools
                     profileResult.Instructions
                 );
 
-                var result = GenerateImageInternal(wrapped, enableFrontierSequenceEnvelope: true);
+                var result = GenerateImageInternal(wrapped, enableSpriteSheetSequenceEnvelope: true);
                 if (result is Dictionary<string, object> dict && dict.TryGetValue("success", out var ok) && ok is bool b && b)
                 {
                     dict["template_envelope"] = envelope.ToObject<object>();
@@ -725,7 +726,7 @@ namespace UnityTcp.Editor.Tools
                     wrapped["outputFormat"] = "png";
 
                 string profileId = null;
-                var profileResult = ResolveFrontierSequenceProfileAndEnvelope(wrapped, out profileId);
+                var profileResult = ResolveSpriteSheetSequenceProfileAndEnvelope(wrapped, out profileId);
                 if (!string.IsNullOrEmpty(profileResult.Error))
                 {
                     return new Dictionary<string, object>
@@ -735,7 +736,7 @@ namespace UnityTcp.Editor.Tools
                     };
                 }
 
-                string layoutFileErr2 = ValidateFrontierKnowledgeLayoutFilesExist(profileResult.KnowledgeRefs);
+                string layoutFileErr2 = ValidateSpriteSheetKnowledgeLayoutFilesExist(profileResult.KnowledgeRefs);
                 if (layoutFileErr2 != null)
                 {
                     return new Dictionary<string, object>
@@ -745,7 +746,7 @@ namespace UnityTcp.Editor.Tools
                     };
                 }
 
-                var envelope = BuildFrontierSequenceEnvelopeJObject(profileResult, wrapped, includeUserReferenceRefs: true);
+                var envelope = BuildSpriteSheetSequenceEnvelopeJObject(profileResult, wrapped, includeUserReferenceRefs: true);
                 wrapped["frontier_sequence_envelope_raw"] = envelope.ToString();
                 string rawUserPromptAuto = wrapped["prompt"]?.ToString()?.Trim();
                 if (!string.IsNullOrEmpty(rawUserPromptAuto))
@@ -755,7 +756,7 @@ namespace UnityTcp.Editor.Tools
                     profileResult.Instructions
                 );
 
-                var imageResult = GenerateImageInternal(wrapped, enableFrontierSequenceEnvelope: true);
+                var imageResult = GenerateImageInternal(wrapped, enableSpriteSheetSequenceEnvelope: true);
                 if (!(imageResult is Dictionary<string, object> imageDict)
                     || !imageDict.TryGetValue("success", out var okObj)
                     || !(okObj is bool ok)
@@ -1299,7 +1300,7 @@ namespace UnityTcp.Editor.Tools
         /// <summary>
         /// 将用户参考图与 envelope 内 knowledge_refs 指向的本地布局图合并为绝对路径列表（先用户、后 knowledge），供 DynamicGenerator 写入 images 数组。
         /// </summary>
-        private static bool TryCollectFrontierMergedImagePaths(
+        private static bool TryCollectSpriteSheetMergedImagePaths(
             JObject parameters,
             out List<string> mergedAbsolutePaths,
             out int userReferenceImageCount
@@ -1378,7 +1379,7 @@ namespace UnityTcp.Editor.Tools
             return mergedAbsolutePaths.Count > 0;
         }
 
-        private static object GenerateImageInternal(JObject parameters, bool enableFrontierSequenceEnvelope)
+        private static object GenerateImageInternal(JObject parameters, bool enableSpriteSheetSequenceEnvelope)
         {
             string generatorId = parameters["generator_id"]?.ToString() ?? "frontier-game-design";
             string prompt      = parameters["prompt"]?.ToString();
@@ -1392,8 +1393,8 @@ namespace UnityTcp.Editor.Tools
             List<string> frontierMergedPaths = null;
             int frontierUserImageCount = 0;
             bool hasFrontierMergedImages = false;
-            if (enableFrontierSequenceEnvelope)
-                hasFrontierMergedImages = TryCollectFrontierMergedImagePaths(
+            if (enableSpriteSheetSequenceEnvelope)
+                hasFrontierMergedImages = TryCollectSpriteSheetMergedImagePaths(
                     parameters,
                     out frontierMergedPaths,
                     out frontierUserImageCount);
@@ -1412,7 +1413,7 @@ namespace UnityTcp.Editor.Tools
             }
 
             if (hasFrontierMergedImages && frontierMergedPaths != null && frontierMergedPaths.Count > 0)
-                prompt = FrontierSequenceImageOrderHint.AppendToPrompt(prompt ?? "", frontierMergedPaths.Count, frontierUserImageCount);
+                prompt = SpriteSheetSequenceImageOrderHint.AppendToPrompt(prompt ?? "", frontierMergedPaths.Count, frontierUserImageCount);
 
             int maxLen = GetImagePromptMaxLength(generatorId);
             if (maxLen > 0 && !string.IsNullOrEmpty(prompt) && prompt.Length > maxLen)
@@ -1448,14 +1449,14 @@ namespace UnityTcp.Editor.Tools
 
             ApplyImageParameters(generator, parameters);
 
-            if (enableFrontierSequenceEnvelope)
+            if (enableSpriteSheetSequenceEnvelope)
             {
                 string envelopeRaw = parameters["frontier_sequence_envelope_raw"]?.ToString();
                 if (!string.IsNullOrEmpty(envelopeRaw))
                     generator.SetExtraRawJsonField("frontier_sequence_envelope", envelopeRaw);
             }
 
-            var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+            var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
             if (!submitResult.Success)
             {
                 return new Dictionary<string, object>
@@ -1504,7 +1505,7 @@ namespace UnityTcp.Editor.Tools
 
             string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
 
-            var pipeline = new GenerationPipeline(host, ConfigType.Image);
+            var pipeline = new GenerationPipeline(host, ConfigType.Image, GenerationRequestOrigin.Agent, sessionId);
             EditorCoroutineUtility.StartCoroutineOwnerless(
                 pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
 
@@ -1547,8 +1548,8 @@ namespace UnityTcp.Editor.Tools
             return instructions + "\n\n" + channelConstraint + "\n\n[User Addition]\n" + prompt.Trim();
         }
 
-        private static JObject BuildFrontierSequenceEnvelopeJObject(
-            FrontierSequenceProfileResolveResult profileResult,
+        private static JObject BuildSpriteSheetSequenceEnvelopeJObject(
+            SpriteSheetSequenceProfileResolveResult profileResult,
             JObject wrapped,
             bool includeUserReferenceRefs
         )
@@ -1574,7 +1575,7 @@ namespace UnityTcp.Editor.Tools
         /// <summary>
         /// profile 中声明了 knowledge 本地路径时，必须在磁盘可读，否则合并后 images 可能缺少布局参考。
         /// </summary>
-        private static string ValidateFrontierKnowledgeLayoutFilesExist(JArray knowledgeRefs)
+        private static string ValidateSpriteSheetKnowledgeLayoutFilesExist(JArray knowledgeRefs)
         {
             if (knowledgeRefs == null || knowledgeRefs.Count == 0)
                 return null;
@@ -1698,7 +1699,7 @@ namespace UnityTcp.Editor.Tools
             return refs;
         }
 
-        private struct FrontierSequenceProfileResolveResult
+        private struct SpriteSheetSequenceProfileResolveResult
         {
             public string Instructions;
             public JArray KnowledgeRefs;
@@ -1708,7 +1709,7 @@ namespace UnityTcp.Editor.Tools
             public int SliceRows;
         }
 
-        private static FrontierSequenceProfileResolveResult ResolveFrontierSequenceProfileAndEnvelope(JObject wrapped, out string appliedProfileId)
+        private static SpriteSheetSequenceProfileResolveResult ResolveSpriteSheetSequenceProfileAndEnvelope(JObject wrapped, out string appliedProfileId)
         {
             appliedProfileId = null;
             JObject profile = null;
@@ -1720,7 +1721,8 @@ namespace UnityTcp.Editor.Tools
             else
                 overrideInstructions = null;
 
-            var configRoot = LoadFrontierSequenceProfilesConfig();
+            if (!SpriteSheetSequenceProfileConfigLoader.TryLoad(out var configRoot, out _))
+                configRoot = null;
             string instructions;
 
             if (overrideInstructions != null)
@@ -1736,10 +1738,10 @@ namespace UnityTcp.Editor.Tools
                         profile = GetProfileById(configRoot, effectiveProfileId);
                         if (profile == null && !string.IsNullOrEmpty(requestedProfileId))
                         {
-                            return new FrontierSequenceProfileResolveResult
+                            return new SpriteSheetSequenceProfileResolveResult
                             {
                                 Error =
-                                    $"Missing sequence instructions config: profile \"{requestedProfileId}\" not found in FrontierSequenceProfiles.json."
+                                    $"Missing sequence instructions config: profile \"{requestedProfileId}\" not found in SpriteSheetSequenceProfiles.json."
                             };
                         }
 
@@ -1752,10 +1754,10 @@ namespace UnityTcp.Editor.Tools
             {
                 if (configRoot == null)
                 {
-                    return new FrontierSequenceProfileResolveResult
+                    return new SpriteSheetSequenceProfileResolveResult
                     {
                         Error =
-                            "Missing sequence instructions config: Cannot find or read FrontierSequenceProfiles.json. Ensure the package contains Editor/Config/FrontierSequenceProfiles.json."
+                            "Missing sequence instructions config: Cannot find or read SpriteSheetSequenceProfiles.json. Ensure the package contains Editor/Config/SpriteSheetSequenceProfiles.json."
                     };
                 }
 
@@ -1764,7 +1766,7 @@ namespace UnityTcp.Editor.Tools
                     : requestedProfileId;
                 if (string.IsNullOrEmpty(effectiveProfileId))
                 {
-                    return new FrontierSequenceProfileResolveResult
+                    return new SpriteSheetSequenceProfileResolveResult
                     {
                         Error = "Missing sequence instructions config: defaultProfileId not configured and profile_id not specified in request."
                     };
@@ -1773,10 +1775,10 @@ namespace UnityTcp.Editor.Tools
                 profile = GetProfileById(configRoot, effectiveProfileId);
                 if (profile == null)
                 {
-                    return new FrontierSequenceProfileResolveResult
+                    return new SpriteSheetSequenceProfileResolveResult
                     {
                         Error =
-                            $"Missing sequence instructions config: profile \"{effectiveProfileId}\" not found in FrontierSequenceProfiles.json."
+                            $"Missing sequence instructions config: profile \"{effectiveProfileId}\" not found in SpriteSheetSequenceProfiles.json."
                     };
                 }
 
@@ -1784,7 +1786,7 @@ namespace UnityTcp.Editor.Tools
                 string pinstr = profile["instructions"]?.ToString();
                 if (string.IsNullOrWhiteSpace(pinstr))
                 {
-                    return new FrontierSequenceProfileResolveResult
+                    return new SpriteSheetSequenceProfileResolveResult
                     {
                         Error =
                             $"Missing sequence instructions config: profile \"{effectiveProfileId}\" has empty instructions."
@@ -1813,7 +1815,7 @@ namespace UnityTcp.Editor.Tools
             int localEncodedCount = 0;
             NormalizeLocalKnowledgeRefsInPlace(knowledgeRefs, ref localEncodedCount);
 
-            return new FrontierSequenceProfileResolveResult
+            return new SpriteSheetSequenceProfileResolveResult
             {
                 Instructions = instructions,
                 KnowledgeRefs = knowledgeRefs,
@@ -1821,13 +1823,6 @@ namespace UnityTcp.Editor.Tools
                 SliceColumns = sliceColumns,
                 SliceRows = sliceRows
             };
-        }
-
-        private static JObject LoadFrontierSequenceProfilesConfig()
-        {
-            if (FrontierSequenceProfileConfigLoader.TryLoad(out var root, out _))
-                return root;
-            return null;
         }
 
         private static JObject GetProfileById(JObject configRoot, string profileId)

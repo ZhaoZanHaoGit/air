@@ -384,7 +384,7 @@ namespace UnityTcp.Editor.Tools
             motionGen.SetParameter("cfgStrength",    task.CfgStrength);
             motionGen.SetParameter("randomSeedList", task.RandomSeedList ?? "0");
 
-            var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(motionGen);
+            var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(motionGen, sessionId);
             if (!submitResult.Success)
             {
                 MarkMotionFailed(task, submitResult.Message, sessionId);
@@ -397,7 +397,7 @@ namespace UnityTcp.Editor.Tools
 
             string motionSavePath = RiggedAnimationDomainReloadRecovery.BuildMotionSavePath(task.RiggedModelPath);
             var motionHost        = new ModelMotionPipelineHost(task, motionSavePath, motionGen, sessionId);
-            var pipeline          = new GenerationPipeline(motionHost, ConfigType.Generator);
+            var pipeline          = new GenerationPipeline(motionHost, ConfigType.Generator, GenerationRequestOrigin.Agent, sessionId);
 
             string motionHistoryGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(
                 !string.IsNullOrEmpty(task.PrefabPath) ? task.PrefabPath : task.RiggedModelPath);
@@ -757,7 +757,7 @@ namespace UnityTcp.Editor.Tools
                 string srcBase     = Path.GetFileNameWithoutExtension(sourceModelPath);
                 string expectedRig = Path.Combine(srcDir, srcBase + "_rigged.fbx").Replace("\\", "/");
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                     return new Dictionary<string, object>
                     {
@@ -789,7 +789,7 @@ namespace UnityTcp.Editor.Tools
                 RiggedAnimationTaskTracker.SaveToSession(task);
 
                 var host     = new RigModelPipelineHost(task, sourceModelPath, expectedRig, generator, sessionId);
-                var pipeline = new GenerationPipeline(host, ConfigType.Generator);
+                var pipeline = new GenerationPipeline(host, ConfigType.Generator, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(createdPrefabPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId, null));
@@ -939,7 +939,7 @@ namespace UnityTcp.Editor.Tools
                 generator.SetParameter("cfgStrength",    cfgStrength);
                 generator.SetParameter("randomSeedList", randomSeedList);
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                     return new Dictionary<string, object>
                     {
@@ -967,8 +967,8 @@ namespace UnityTcp.Editor.Tools
                 RiggedAnimationTaskTracker.SaveToSession(task);
 
                 string motionSavePath = RiggedAnimationDomainReloadRecovery.BuildMotionSavePath(riggedModelPath);
-                var host     = new ModelMotionPipelineHost(task, motionSavePath, generator);
-                var pipeline = new GenerationPipeline(host, ConfigType.Generator);
+                var host     = new ModelMotionPipelineHost(task, motionSavePath, generator, sessionId);
+                var pipeline = new GenerationPipeline(host, ConfigType.Generator, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(
                     !string.IsNullOrEmpty(targetPrefabPath) ? targetPrefabPath : riggedModelPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
@@ -1124,7 +1124,7 @@ namespace UnityTcp.Editor.Tools
                 string srcBase     = Path.GetFileNameWithoutExtension(sourceModelPath);
                 string expectedRig = Path.Combine(srcDir, srcBase + "_rigged.fbx").Replace("\\", "/");
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                     return new Dictionary<string, object>
                     {
@@ -1160,7 +1160,7 @@ namespace UnityTcp.Editor.Tools
                 RiggedAnimationTaskTracker.SaveToSession(task);
 
                 var host     = new RigModelPipelineHost(task, sourceModelPath, expectedRig, generator, sessionId);
-                var pipeline = new GenerationPipeline(host, ConfigType.Generator);
+                var pipeline = new GenerationPipeline(host, ConfigType.Generator, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(createdPrefabPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId, null));

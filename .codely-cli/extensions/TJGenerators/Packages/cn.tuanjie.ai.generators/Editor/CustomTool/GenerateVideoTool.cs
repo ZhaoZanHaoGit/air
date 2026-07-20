@@ -237,6 +237,7 @@ namespace UnityTcp.Editor.Tools
             "Key parameters: generator_id (default 'huoshan_seedance'), " +
             "prompt (text description), image_path (optional reference image — omit for text-to-video), " +
             "mode (optional: 'text_to_video' or 'reference_image', auto-detected from image_path), " +
+            "model (optional: 'doubao-seedance-2-0-mini-260615' (default), 'doubao-seedance-2-0-260128', 'doubao-seedance-2-0-fast-260128'), " +
             "resolution (optional: '720p' or '1080p', default '720p'), " +
             "ratio (optional: '16:9', '9:16', or '1:1', default '16:9'), " +
             "duration (optional: 3-15 seconds, default 12), " +
@@ -291,7 +292,7 @@ namespace UnityTcp.Editor.Tools
                 ApplyVideoParameters(generator, generatorId, parameters);
 
                 // 阶段 1：同步提交任务到后端
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateVideoTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -344,7 +345,7 @@ namespace UnityTcp.Editor.Tools
                 );
 
                 // 阶段 2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Video);
+                var pipeline = new GenerationPipeline(host, ConfigType.Video, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
@@ -578,8 +579,21 @@ namespace UnityTcp.Editor.Tools
             // Huoshan SeeDream Video parameters
             if (generatorId == "huoshan_seedance")
             {
+                if (parameters["model"] != null)
+                    generator.SetParameter("model", parameters["model"].ToString());
+
+                // Match Video window / tool docs: auto-detect when mode omitted.
+                // Config default is reference_image; text-only without override fails with
+                // "reference_image requires 1 to 9 images".
                 if (parameters["mode"] != null)
+                {
                     generator.SetParameter("mode", parameters["mode"].ToString());
+                }
+                else
+                {
+                    bool hasImage = !string.IsNullOrEmpty(parameters["image_path"]?.ToString());
+                    generator.SetParameter("mode", hasImage ? "reference_image" : "text_to_video");
+                }
 
                 if (parameters["resolution"] != null)
                     generator.SetParameter("resolution", parameters["resolution"].ToString());

@@ -55,8 +55,13 @@ namespace TJGenerators
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button(new GUIContent(TJGeneratorsL10n.L("✦ AI 生成"), tooltip)))
-                onClick();
+            bool playBlocked = TJGeneratorsPlayModeGuard.IsActive;
+            string tip = playBlocked ? TJGeneratorsPlayModeGuard.ShortHint : tooltip;
+            using (new EditorGUI.DisabledScope(playBlocked))
+            {
+                if (GUILayout.Button(new GUIContent(TJGeneratorsL10n.L("✦ AI 生成"), tip)))
+                    onClick();
+            }
 
             DrawHeaderDocLink();
             EditorGUILayout.EndHorizontal();
@@ -115,7 +120,7 @@ namespace TJGenerators
             if (importer.textureType == TextureImporterType.Sprite)
             {
                 var spriteAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(texturePath);
-                if (!TJGeneratorsGenerationLabel.HasFrontierLabel(spriteAsset))
+                if (!TJGeneratorsGenerationLabel.HasSpriteSheetLabel(spriteAsset))
                 {
                     DrawAIGenerateHeaderButton(
                         TJGeneratorsL10n.L("使用 TJGenerators AI 生成2D精灵"),
@@ -138,11 +143,11 @@ namespace TJGenerators
                 else
                 {
                     var imageAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(texturePath);
-                    if (TJGeneratorsGenerationLabel.HasFrontierLabel(imageAsset))
+                    if (TJGeneratorsGenerationLabel.HasSpriteSheetLabel(imageAsset))
                     {
                         DrawAIGenerateHeaderButton(
                             TJGeneratorsL10n.L("使用 TJGenerators AI 生成2D精灵表序列帧"),
-                            () => TJGeneratorsImageWindow.OpenForAssetAsFrontierSequence(texturePath));
+                            () => TJGeneratorsSpriteSheetSequenceWindow.OpenForAsset(texturePath));
                     }
                     else
                     {
@@ -275,7 +280,7 @@ namespace TJGenerators
                 && clipPath.EndsWith(".anim", StringComparison.OrdinalIgnoreCase))
             {
                 var clipAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(clipPath);
-                if (!TJGeneratorsGenerationLabel.HasFrontierLabel(clipAsset))
+                if (!TJGeneratorsGenerationLabel.HasSpriteSheetLabel(clipAsset))
                 {
                     DrawAIGenerateHeaderButton(
                         TJGeneratorsL10n.L("使用 TJGenerators AI 生成2D动作序列帧"),

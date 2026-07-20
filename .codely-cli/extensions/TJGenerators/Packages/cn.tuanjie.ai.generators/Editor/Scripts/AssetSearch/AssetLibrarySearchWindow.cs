@@ -398,7 +398,8 @@ namespace TJGenerators.AssetSearch
                 DrawSearchActionPanel,
                 _hasLoadedUserInfo,
                 _currentCredits,
-                ref _creditsTextCache);
+                ref _creditsTextCache,
+                playModeHint: TJGeneratorsPlayModeGuard.SearchShortHint);
         }
 
         // ===== Left Panel =====
@@ -439,17 +440,30 @@ namespace TJGenerators.AssetSearch
 
         private void DrawSearchActionPanel(LeftPanelBottomDock.Layout layout)
         {
-            GUI.enabled = !_busy;
-            bool searchClicked = UIComponents.DrawGenerateButtonWithIconLayoutAt(
+            bool canSearch = !_busy
+                && !TJGeneratorsPlayModeGuard.IsActive
+                && HasSearchQuery();
+            bool searchClicked = UIComponents.DrawGenerateButtonWithIconAt(
                 layout.buttonRect,
                 _busy ? TJGeneratorsL10n.L("搜索中…") : TJGeneratorsL10n.L("搜索"),
                 GetSearchButtonIcon(),
-                !_busy,
-                24f,
-                15f);
+                canSearch,
+                iconSize: 24f);
             if (searchClicked)
                 StartSearch();
-            GUI.enabled = true;
+        }
+
+        /// <summary>至少有一行非空白关键词时才可搜索（与 <see cref="StartSearch"/> 校验一致）。</summary>
+        private bool HasSearchQuery()
+        {
+            if (string.IsNullOrEmpty(_queryText))
+                return false;
+            foreach (var line in _queryText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                    return true;
+            }
+            return false;
         }
 
         // ===== Right Panel =====
@@ -462,6 +476,8 @@ namespace TJGenerators.AssetSearch
         {
             const float edge = 16f;
             const float headerHeight = 24f;
+            const float playModeHintHeight = 38f;
+            bool showPlayModeHint = TJGeneratorsPlayModeGuard.IsActive;
             string header;
             if (_busy)
                 header = TJGeneratorsL10n.L("搜索中…");
@@ -482,7 +498,26 @@ namespace TJGenerators.AssetSearch
             GUILayout.Space(edge);
 
             float listWidth = Mathf.Max(1f, panelW - edge * 2f);
-            float usedHeight = edge + headerHeight + edge + edge;
+            if (showPlayModeHint)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(edge);
+                Rect playModeHintRect = GUILayoutUtility.GetRect(
+                    listWidth,
+                    playModeHintHeight,
+                    GUILayout.Width(listWidth),
+                    GUILayout.Height(playModeHintHeight));
+                EditorGUI.HelpBox(
+                    playModeHintRect,
+                    TJGeneratorsPlayModeGuard.AssetSearchAllBlockedHint,
+                    MessageType.Warning);
+                GUILayout.Space(edge);
+                GUILayout.EndHorizontal();
+                GUILayout.Space(edge);
+            }
+
+            float usedHeight = edge + headerHeight + edge + edge
+                + (showPlayModeHint ? playModeHintHeight + edge : 0f);
             float listHeight = Mathf.Max(1f, panelH - usedHeight);
 
             GUILayout.BeginHorizontal();
@@ -892,21 +927,39 @@ namespace TJGenerators.AssetSearch
             DrawCardContent(contentRect, item);
 
             bool alreadyImported = GetOrCheckImportStatus(item);
+            bool playBlocked = TJGeneratorsPlayModeGuard.IsActive;
+            string downloadBlockedTip = TJGeneratorsPlayModeGuard.DownloadOrPlaceShortHint;
 
             float buttonX = cardRect.x + SearchItemInnerEdge;
             Rect primaryBtnRect = new Rect(buttonX, cardRect.y + firstButtonY, SearchItemButtonWidth, SearchItemButtonHeight);
             Rect secondaryBtnRect = new Rect(buttonX, primaryBtnRect.yMax + SearchItemButtonGap, SearchItemButtonWidth, SearchItemButtonHeight);
             if (alreadyImported)
             {
-                DrawSearchItemButton(primaryBtnRect, TJGeneratorsL10n.L("放入场景"), () => ExecutePlaceInScene(item), enabled: true,
-                    tooltip: TJGeneratorsL10n.L("资源已在项目中，将当前条目对应的 Prefab 放入场景"));
+                DrawSearchItemButton(
+                    primaryBtnRect,
+                    TJGeneratorsL10n.L("放入场景"),
+                    () => ExecutePlaceInScene(item),
+                    enabled: !playBlocked,
+                    tooltip: playBlocked
+                        ? downloadBlockedTip
+                        : TJGeneratorsL10n.L("资源已在项目中，将当前条目对应的 Prefab 放入场景"));
                 DrawSearchItemButton(secondaryBtnRect, TJGeneratorsL10n.L("已在项目中"), onClick: null, enabled: false,
                     tooltip: TJGeneratorsL10n.L("与当前条目共用同一资源包，无需重复下载"));
             }
             else
             {
-                DrawSearchItemButton(primaryBtnRect, TJGeneratorsL10n.L("下载并放入场景"), () => ExecuteDownload(groupQuery, item, true));
-                DrawSearchItemButton(secondaryBtnRect, TJGeneratorsL10n.L("仅下载到项目"), () => ExecuteDownload(groupQuery, item, false));
+                DrawSearchItemButton(
+                    primaryBtnRect,
+                    TJGeneratorsL10n.L("下载并放入场景"),
+                    () => ExecuteDownload(groupQuery, item, true),
+                    enabled: !playBlocked,
+                    tooltip: playBlocked ? downloadBlockedTip : null);
+                DrawSearchItemButton(
+                    secondaryBtnRect,
+                    TJGeneratorsL10n.L("仅下载到项目"),
+                    () => ExecuteDownload(groupQuery, item, false),
+                    enabled: !playBlocked,
+                    tooltip: playBlocked ? downloadBlockedTip : AssetDownloadService.DefaultDestBase);
             }
         }
 
@@ -1079,27 +1132,51 @@ namespace TJGenerators.AssetSearch
             string q = string.IsNullOrEmpty(groupQuery) ? (item.AssetId ?? fallbackQueryId) : groupQuery;
 
             bool alreadyImported = GetOrCheckImportStatus(item);
+            bool playBlocked = TJGeneratorsPlayModeGuard.IsActive;
+            string downloadBlockedTip = TJGeneratorsPlayModeGuard.DownloadOrPlaceShortHint;
 
             if (alreadyImported)
             {
-                if (GUILayout.Button(new GUIContent(TJGeneratorsL10n.L("放入场景"), TJGeneratorsL10n.L("资源已在项目中，将当前条目对应的 Prefab 放入场景")), GUILayout.Height(24)))
-                    ExecutePlaceInScene(item);
+                using (new EditorGUI.DisabledScope(playBlocked))
+                {
+                    if (GUILayout.Button(
+                            new GUIContent(
+                                TJGeneratorsL10n.L("放入场景"),
+                                playBlocked
+                                    ? downloadBlockedTip
+                                    : TJGeneratorsL10n.L("资源已在项目中，将当前条目对应的 Prefab 放入场景")),
+                            GUILayout.Height(24)))
+                        ExecutePlaceInScene(item);
+                }
                 using (new EditorGUI.DisabledScope(true))
                     GUILayout.Button(new GUIContent(TJGeneratorsL10n.L("已在项目中"), TJGeneratorsL10n.L("与当前条目共用同一资源包，无需重复下载")), GUILayout.Height(20));
             }
             else
             {
-                if (GUILayout.Button(TJGeneratorsL10n.L("下载并放入场景"), GUILayout.Height(24)))
-                    ExecuteDownload(q, item, instantiateInScene: true);
+                using (new EditorGUI.DisabledScope(playBlocked))
+                {
+                    if (GUILayout.Button(
+                            new GUIContent(TJGeneratorsL10n.L("下载并放入场景"), playBlocked ? downloadBlockedTip : null),
+                            GUILayout.Height(24)))
+                        ExecuteDownload(q, item, instantiateInScene: true);
 
-                var downloadBtnContent = new GUIContent(TJGeneratorsL10n.L("仅下载到项目"), AssetDownloadService.DefaultDestBase);
-                if (GUILayout.Button(downloadBtnContent, GUILayout.Height(20)))
-                    ExecuteDownload(q, item, instantiateInScene: false);
+                    var downloadBtnContent = new GUIContent(
+                        TJGeneratorsL10n.L("仅下载到项目"),
+                        playBlocked ? downloadBlockedTip : AssetDownloadService.DefaultDestBase);
+                    if (GUILayout.Button(downloadBtnContent, GUILayout.Height(20)))
+                        ExecuteDownload(q, item, instantiateInScene: false);
+                }
             }
         }
 
         private void ExecutePlaceInScene(AssetSearchItem item)
         {
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                TJLog.LogWarning($"[AssetLibrarySearch] {TJGeneratorsPlayModeGuard.DownloadOrPlaceShortHint}");
+                return;
+            }
+
             try
             {
                 if (!AssetDownloadService.TryGetImportedPrefabPath(item.Url, item.AssetId, item.PrefabPath, out var path)
@@ -1119,6 +1196,12 @@ namespace TJGenerators.AssetSearch
 
         private void ExecuteDownload(string query, AssetSearchItem item, bool instantiateInScene)
         {
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                TJLog.LogWarning($"[AssetLibrarySearch] {TJGeneratorsPlayModeGuard.DownloadOrPlaceShortHint}");
+                return;
+            }
+
             try
             {
                 var req    = CreateDownloadRequest(query, item, instantiateInScene);

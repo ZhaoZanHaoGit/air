@@ -166,6 +166,16 @@ namespace TJGenerators.Utils
             _translations["生成中..."] = "Generating...";
             _translations["生成模型"] = "Generate Model";
             _translations["生成中"] = "Generating";
+            _translations["正在 Play 模式，无法使用 AI 生成。Play 模式下生成的内容会在退出后丢失，请退出 Play 模式后在编辑模式下使用。"] =
+                "Can't use AI generation while in Play mode. Content generated in Play mode is lost on exit — please exit Play mode and use it in Edit mode.";
+            _translations["Play 模式下不可生成，请退出 Play 模式"] =
+                "Can't generate in Play mode — please exit Play mode";
+            _translations["Play 模式下不可搜索，请退出 Play 模式"] =
+                "Can't search in Play mode — please exit Play mode";
+            _translations["Play 模式下不可下载或放入场景，请退出 Play 模式"] =
+                "Can't download or place in scene while in Play mode — please exit Play mode";
+            _translations["Play 模式下不可搜索、下载或放入场景，请退出 Play 模式"] =
+                "Can't search, download, or place in scene while in Play mode — please exit Play mode";
             _translations["文本提示词"] = "Prompt";
             _translations["在此处输入文本提示..."] = "Enter prompt here...";
             _translations["参考图片（可选）"] = "Ref Image (Opt.)";
@@ -228,7 +238,6 @@ namespace TJGenerators.Utils
             _translations["一键生成地形"] = "Generate Terrain";
 
             // ---- 图片窗口 ----
-            _translations["网格规格："] = "Grid Size:";
             _translations["地形高度图（生成后）"] = "Terrain Heightmap";
             _translations["输出最低"] = "Output Min";
             _translations["输出最高"] = "Output Max";
@@ -361,8 +370,8 @@ namespace TJGenerators.Utils
             _translations["错误:"] = "Error:";
 
             // ---- 窗口标题 ----
-            _translations["TJGenerators 参考图生成 (多视图)"] = "TJGenerators Ref Image (Multi-View)";
-            _translations["TJGenerators 参考图生成"] = "TJGenerators Ref Image";
+            _translations["TJGenerators 参考图生成 (多视图)"] = "TJGenerators Reference Image (Multi-View)";
+            _translations["TJGenerators 参考图生成"] = "TJGenerators Reference Image";
             _translations["TJGenerators 3D模型"] = "TJGenerators 3D Model";
             _translations["TJGenerators 图片生成"] = "TJGenerators Image";
             _translations["TJGenerators 音频生成"] = "TJGenerators Audio";
@@ -384,7 +393,7 @@ namespace TJGenerators.Utils
             _translations["动作描述"] = "Motion Description";
             _translations["输入动作，如：walk、run、jump..."] = "Enter motion, e.g.: walk, run, jump...";
             _translations["文本提示词（可选）"] = "Prompt (Opt.)";
-            _translations["生成参考图"] = "Generate Ref Image";
+            _translations["生成参考图"] = "Generate Reference Image";
             _translations["源OBJ文件"] = "Source OBJ";
             _translations["选择要减面的OBJ文件，将混元生成的OBJ模型进行智能减面处理"] = "Select OBJ to decimate";
             _translations["列表中只显示可减面的模型（需要先用混元3D生成OBJ格式的模型）"] = "Only processable models are listed";
@@ -542,7 +551,6 @@ namespace TJGenerators.Utils
             _translations["自定义"] = "Custom";
             _translations["参数设置"] = "Parameters";
             _translations["预览"] = "Preview";
-            _translations["帧网格"] = "Frame Grid";
             _translations["模型转换"] = "Model Conversion";
             _translations["智能减面"] = "Smart Decimate";
             _translations["语音角色"] = "Voice Character";
@@ -611,12 +619,10 @@ namespace TJGenerators.Utils
             _translations["动画 FPS"] = "Animation FPS";
             _translations["动画循环 (Loop)"] = "Loop";
             _translations["预览图中的红色线条为切割线。"] = "Red lines in the preview indicate slice boundaries.";
-            _translations["未找到模板配置，请检查 package 内 Editor/Config/FrontierSequenceProfiles.json"] = "Template config not found. Check Editor/Config/FrontierSequenceProfiles.json";
-            _translations["未找到可用模板，配置文件：{0}"] = "No available template. Config file: {0}";
-            _translations["未找到或无法读取 FrontierSequenceProfiles.json。\n\n请确认包内含 Editor/Config/FrontierSequenceProfiles.json，或通过 Package Manager 正确安装 cn.tuanjie.ai.generators。"] = "Cannot find or read FrontierSequenceProfiles.json.\n\nEnsure the package contains Editor/Config/FrontierSequenceProfiles.json.";
-            _translations["序列帧模板不可用：请检查 FrontierSequenceProfiles.json 中的 profiles 与 defaultProfileId 是否有效。"] = "Sequence template unavailable: check profiles and defaultProfileId in FrontierSequenceProfiles.json.";
+            _translations["未找到或无法读取 SpriteSheetSequenceProfiles.json。\n\n请确认包内含 Editor/Config/SpriteSheetSequenceProfiles.json，或通过 Package Manager 正确安装 cn.tuanjie.ai.generators。"] = "Cannot find or read SpriteSheetSequenceProfiles.json.\n\nEnsure the package contains Editor/Config/SpriteSheetSequenceProfiles.json.";
+            _translations["序列帧模板不可用：请检查 SpriteSheetSequenceProfiles.json 中的 profiles 与 defaultProfileId 是否有效。"] = "Sequence template unavailable: check profiles and defaultProfileId in SpriteSheetSequenceProfiles.json.";
             _translations["无法根据当前模板构建序列帧指令包（frontier_sequence_envelope），请检查配置文件。"] = "Cannot build sequence instruction package from the current template. Check config.";
-            _translations["当前 profile 的 instructions 为空或缺失，请编辑 FrontierSequenceProfiles.json 填写完整指令。"] = "Current profile's instructions are empty or missing. Edit FrontierSequenceProfiles.json.";
+            _translations["当前 profile 的 instructions 为空或缺失，请编辑 SpriteSheetSequenceProfiles.json 填写完整指令。"] = "Current profile's instructions are empty or missing. Edit SpriteSheetSequenceProfiles.json.";
             _translations["仅支持绑定 .jpg / .jpeg / .png 的图片资产。\r\n\r\n建议先创建「生成图片」新资产。"] = "Only supports .jpg / .jpeg / .png image assets.\n\nCreate a new \"Generate Image\" asset first.";
             _translations["仅支持绑定 .jpg / .jpeg / .png 的图片资产。\r\n\r\n建议先通过菜单创建新图片资产。"] = "Only supports .jpg / .jpeg / .png image assets.\n\nCreate a new image asset via menu first.";
 
@@ -640,11 +646,10 @@ namespace TJGenerators.Utils
             _translations["左侧"] = "Left";
             _translations["背面"] = "Back";
             _translations["右侧"] = "Right";
-            _translations["没有可用的图片生成器配置"] = "No image generator config available";
+            _translations["没有可用的图片生成器配置"] = "No available image generator configuration";
             _translations["(无可用模型)"] = "(No model available)";
-            _translations["输入提示词生成多视图参考图"] = "Enter prompt to generate multi-view ref images";
-            _translations["输入提示词生成参考图"] = "Enter prompt to generate ref image";
-            _translations["正在生成多视图图片 ({0}/{1})..."] = "Generating multi-view images ({0}/{1})...";
+            _translations["输入提示词生成多视图参考图"] = "Enter a prompt to generate multi-view reference images";
+            _translations["输入提示词生成参考图"] = "Enter a prompt to generate a reference image";
             _translations["正在生成图片，请稍候..."] = "Generating image, please wait...";
             _translations["描述你想要生成的音乐风格、情绪或场景..."] = "Describe the music style, mood or scene to generate...";
 
@@ -652,17 +657,20 @@ namespace TJGenerators.Utils
             _translations["已导出 {0} 张 Sprite。\n路径：{1}"] = "Exported {0} Sprites.\nPath: {1}";
             _translations["已导出 {0} 张 Sprite，并创建动画文件。\nSprite路径：{1}\n动画路径：{2}"] = "Exported {0} Sprites and created animation.\nSprite path: {1}\nAnimation path: {2}";
 
-            // ---- AIReferenceImageWindow 补充 ----
+            // ---- AIReferenceImageWindow ----
             _translations["将按顺序自动生成：{0}（共{1}张）"] = "Will auto-generate in order: {0} ({1} images)";
             _translations["正在生成多视图图片 ({0}/{1}) - {2}..."] = "Generating multi-view ({0}/{1}) - {2}...";
             _translations["请求失败: {0}"] = "Request failed: {0}";
+            _translations["图片下载失败: {0}"] = "Image download failed: {0}";
             _translations["生成失败: {0}"] = "Generation failed: {0}";
             _translations["生成失败: 无法从响应中提取图片URL"] = "Generation failed: cannot extract image URL from response";
-            _translations["图片下载失败: {0}"] = "Image download failed: {0}";
             _translations["未知错误"] = "Unknown error";
-            _translations["缺少可用的参考图（本地文件或图片 URL），无法继续生成侧视/背视。请确认正面已生成成功且接口返回了地址。"] = "Missing reference image (local file or URL). Cannot continue side/back view generation. Ensure the front view was generated successfully and the API returned a URL.";
-            _translations["正面图未返回可用的图片 URL，无法与后续视角对齐，已中止。"] = "Front view did not return a valid image URL. Cannot align with subsequent views. Aborted.";
-            _translations["当前视角未返回图片 URL，多视图链已中止。"] = "Current view did not return an image URL. Multi-view chain aborted.";
+            _translations["缺少可用的参考图（本地文件或图片 URL），无法继续生成侧视/背视。请确认正面已生成成功且接口返回了地址。"] =
+                "Missing reference image (local file or URL). Cannot continue side/back views. Ensure the front view succeeded and the API returned a URL.";
+            _translations["正面图未返回可用的图片 URL，无法与后续视角对齐，已中止。"] =
+                "Front view did not return a valid image URL. Cannot align subsequent views. Aborted.";
+            _translations["当前视角未返回图片 URL，多视图链已中止。"] =
+                "Current view did not return an image URL. Multi-view chain aborted.";
 
             // ---- MaterialTemplate 状态补充 ----
             _translations["等待 {0} 秒后继续..."] = "Waiting {0}s before continuing...";

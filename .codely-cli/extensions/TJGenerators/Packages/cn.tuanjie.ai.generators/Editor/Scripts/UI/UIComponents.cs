@@ -1125,45 +1125,41 @@ namespace TJGenerators.UI
         }
 
         /// <summary>
-        /// 在指定矩形内按新 UI 生成按钮底图绘制，支持自定义图标尺寸与图文间距。
+        /// 在指定矩形内绘制带前置图标的绿色主操作按钮（生成、搜索等）。
         /// </summary>
-        public static bool DrawGenerateButtonWithIconLayoutAt(
+        public static bool DrawGenerateButtonWithIconAt(
             Rect buttonRect,
             string text,
             Texture2D icon,
             bool enabled,
-            float iconSize,
-            float iconTextGap,
+            float iconSize = 16f,
+            float iconTextGap = 6f,
             bool isBusy = false)
         {
-            ResolveGenerateButtonVisuals(enabled, isBusy, out GUIStyle btnStyle, out GUIStyle labelStyle, out bool isDisabled);
+            ResolveGenerateButtonVisuals(enabled, isBusy, out GUIStyle buttonStyle, out GUIStyle labelStyle, out bool isDisabled);
 
             GUI.enabled = enabled;
             bool clicked = enabled && GUI.Button(buttonRect, GUIContent.none, GUIStyle.none);
             GUI.enabled = true;
-            DrawGenerateButtonNineSliceBackground(buttonRect, btnStyle, enabled, isDisabled);
+            DrawGenerateButtonNineSliceBackground(buttonRect, buttonStyle, enabled, isDisabled);
 
             string safeText = string.IsNullOrEmpty(text) ? TJGeneratorsL10n.L("生成") : text;
-            float textWidth = labelStyle.CalcSize(new GUIContent(safeText)).x;
+            Vector2 textSize = labelStyle.CalcSize(new GUIContent(safeText));
             float safeIconSize = Mathf.Max(0f, iconSize);
-            float safeGap = safeIconSize > 0f ? Mathf.Max(0f, iconTextGap) : 0f;
-            float groupWidth = safeIconSize > 0f ? safeIconSize + safeGap + textWidth : textWidth;
-            float startX = buttonRect.x + Mathf.Max(0f, (buttonRect.width - groupWidth) * 0.5f);
-            float centerY = buttonRect.center.y;
+            bool hasIcon = safeIconSize > 0f && icon != null;
+            float iconStride = hasIcon ? safeIconSize + Mathf.Max(0f, iconTextGap) : 0f;
+            float x = buttonRect.x + Mathf.Max(0f, (buttonRect.width - iconStride - textSize.x) * 0.5f);
+            float midY = buttonRect.center.y;
 
-            if (safeIconSize > 0f && icon != null)
+            if (hasIcon)
             {
-                Rect iconRect = new Rect(startX, centerY - safeIconSize * 0.5f, safeIconSize, safeIconSize);
-                Color previousColor = GUI.color;
-                if (isDisabled)
-                    GUI.color = new Color(1f, 1f, 1f, 0.25f);
-                GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit, true);
-                GUI.color = previousColor;
-                startX += safeIconSize + safeGap;
+                GUI.color = isDisabled ? new Color(1f, 1f, 1f, 0.25f) : GUI.color;
+                GUI.DrawTexture(new Rect(x, midY - safeIconSize * 0.5f, safeIconSize, safeIconSize), icon, ScaleMode.ScaleToFit, true);
+                GUI.color = Color.white;
+                x += iconStride;
             }
 
-            Rect textRect = new Rect(startX, centerY - 12f, textWidth + 2f, 24f);
-            GUI.Label(textRect, safeText, labelStyle);
+            GUI.Label(new Rect(x, midY - textSize.y * 0.5f, textSize.x, textSize.y), safeText, labelStyle);
             return clicked;
         }
 
@@ -1417,7 +1413,8 @@ namespace TJGenerators.UI
             int generationCost = 0,
             string idleButtonLabel = null)
         {
-            bool canClick = !isGenerating && canGenerate;
+            bool playBlocked = TJGeneratorsPlayModeGuard.IsActive;
+            bool canClick = !isGenerating && canGenerate && !playBlocked;
             string idle = string.IsNullOrEmpty(idleButtonLabel) ? TJGeneratorsL10n.L("生成") : idleButtonLabel;
             string buttonText = isGenerating ? TJGeneratorsL10n.L("生成中...") : idle;
             int safeCost = Mathf.Max(0, generationCost);

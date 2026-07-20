@@ -185,7 +185,7 @@
       ],
       "responseMapping": {
         "downloadUrlPath": "model",
-        "previewUrlPath": "rendered_image",
+        "previewUrlPath": "generated_image",
         "renderedImagePath": "rendered_image"
       },
       "postProcessing": {
@@ -375,7 +375,7 @@
         }
       ],
       "responseMapping": {
-        "downloadUrlPath": "pbr_model",
+        "downloadUrlPath": "model",
         "downloadUrlPathMultiview": "model",
         "previewUrlPath": "generated_image",
         "renderedImagePath": "rendered_image"
@@ -1218,7 +1218,7 @@
       ],
       "responseMapping": {
         "downloadUrlPath": "model",
-        "previewUrlPath": "rendered_image",
+        "previewUrlPath": "generated_image",
         "renderedImagePath": "rendered_image"
       }
     },
@@ -2207,6 +2207,329 @@
       "responseMapping": {
         "downloadUrlPath": "imageUrls"
       }
+    },
+    {
+      "id": "huoshan_seedream_pro_image",
+      "displayName": "火山 SeeDream Pro",
+      "enabled": true,
+      "outputType": "image",
+      "imageBase64FieldName": "images",
+      "imageBase64AsArray": true,
+      "imageUrlsFieldName": "imageUrls",
+      "modelSelector": {
+        "name": "火山 SeeDream Pro",
+        "description": "文生图、图生图",
+        "functionTags": [
+          "文生图",
+          "图生图"
+        ],
+        "vendorTags": [
+          "火山"
+        ],
+        "iconPath": "Packages/cn.tuanjie.ai.generators/Editor/EditorTextures/Logo/volcengine-color.png",
+        "pinned": false
+      },
+      "promptTemplateSelector": {
+        "enabled": true,
+        "title": "提示词模板",
+        "description": "可选前缀，会与下方文本提示词合并后发送",
+        "options": [
+          {
+            "id": "game_icon",
+            "name": "游戏图标",
+            "description": "透明感、易抠图",
+            "category": "游戏",
+            "prompt": "game asset icon, single centered subject, clean edges, high detail"
+          },
+          {
+            "id": "photo_real",
+            "name": "照片级",
+            "description": "写实光影",
+            "category": "写实",
+            "prompt": "photorealistic, professional photography, sharp focus, natural lighting"
+          }
+        ]
+      },
+      "endpoints": [
+        {
+          "key": "default",
+          "value": "task/huoshan-seedream-pro-async"
+        }
+      ],
+      "uiLayout": {
+        "showTextInput": true,
+        "showImageUpload": true,
+        "showMultiView": false,
+        "advancedFoldout": true,
+        "textInputLabel": "文本提示词",
+        "textInputPlaceholder": "描述你想要生成的图片...",
+        "imageUploadLabel": "参考图片",
+        "maxReferenceImages": 14,
+        "advancedLabel": "高级设置",
+        "primaryParameterIds": ["animation"]
+      },
+      "parameters": [
+        {
+          "id": "isSegmentation",
+          "type": "bool",
+          "label": "自动抠图（去除背景）",
+          "apiFieldName": "isSegmentation",
+          "tooltip": "是否自动抠图去除背景",
+          "defaultValue": "true"
+        },
+        {
+          "id": "qValue",
+          "type": "int",
+          "label": "压缩质量",
+          "apiFieldName": "qValue",
+          "tooltip": "抠图后压缩质量",
+          "defaultValue": "75",
+          "min": 1,
+          "max": 100
+        },
+        {
+          "id": "resizeWidth",
+          "type": "int",
+          "label": "裁剪宽度（像素）",
+          "apiFieldName": "resizeWidth",
+          "tooltip": "0 表示不裁剪",
+          "defaultValue": "0",
+          "min": 0,
+          "max": 4096
+        },
+        {
+          "id": "size",
+          "type": "dropdown",
+          "label": "图片尺寸",
+          "apiFieldName": "size",
+          "options": [
+            {
+              "value": "1024x1024",
+              "label": "1024×1024（1K 1:1）"
+            },
+            {
+              "value": "1152x864",
+              "label": "1152×864（1K 4:3）"
+            },
+            {
+              "value": "864x1152",
+              "label": "864×1152（1K 3:4）"
+            },
+            {
+              "value": "1312x736",
+              "label": "1312×736（1K 16:9）"
+            },
+            {
+              "value": "736x1312",
+              "label": "736×1312（1K 9:16）"
+            },
+            {
+              "value": "1248x832",
+              "label": "1248×832（1K 3:2）"
+            },
+            {
+              "value": "832x1248",
+              "label": "832×1248（1K 2:3）"
+            },
+            {
+              "value": "1568x672",
+              "label": "1568×672（1K 21:9）"
+            },
+            {
+              "value": "2048x2048",
+              "label": "2048×2048（2K 1:1）"
+            },
+            {
+              "value": "2304x1728",
+              "label": "2304×1728（2K 4:3）"
+            },
+            {
+              "value": "1728x2304",
+              "label": "1728×2304（2K 3:4）"
+            },
+            {
+              "value": "2848x1600",
+              "label": "2848×1600（2K 16:9）"
+            },
+            {
+              "value": "1600x2848",
+              "label": "1600×2848（2K 9:16）"
+            },
+            {
+              "value": "2496x1664",
+              "label": "2496×1664（2K 3:2）"
+            },
+            {
+              "value": "1664x2496",
+              "label": "1664×2496（2K 2:3）"
+            },
+            {
+              "value": "3136x1344",
+              "label": "3136×1344（2K 21:9）"
+            }
+          ],
+          "defaultValue": "2048x2048"
+        }
+      ],
+      "responseMapping": {
+        "downloadUrlPath": "image_urls"
+      }
+    },
+    {
+      "id": "frontier_lite",
+      "displayName": "Frontier Lite",
+      "enabled": true,
+      "outputType": "image",
+      "imageBase64FieldName": "images",
+      "imageBase64AsArray": true,
+      "modelSelector": {
+        "name": "Frontier Lite",
+        "description": "文生图、图生图",
+        "functionTags": [
+          "文生图",
+          "图生图"
+        ],
+        "vendorTags": [
+          "Frontier"
+        ],
+        "iconPath": "",
+        "pinned": false
+      },
+      "promptTemplateSelector": {
+        "enabled": true,
+        "title": "提示词模板",
+        "description": "可选前缀，会与下方文本提示词合并后发送",
+        "options": [
+          {
+            "id": "unity_terrain_heightmap",
+            "name": "Unity 地形高度图",
+            "description": "高度图，顶视图",
+            "category": "地形",
+            "prompt": "strict top-down orthographic view, grayscale heightmap for Unity Terrain, follow reference image layout and elevation, high precision, seamless terrain coverage, no perspective, no horizon, suitable as RAW height texture import"
+          }
+        ]
+      },
+      "endpoints": [
+        {
+          "key": "default",
+          "value": "task/frontier-lite"
+        }
+      ],
+      "uiLayout": {
+        "showTextInput": true,
+        "showImageUpload": true,
+        "showMultiView": false,
+        "advancedFoldout": false,
+        "textInputLabel": "提示词",
+        "textInputPlaceholder": "例如：a cute banana mascot, studio lighting, high detail",
+        "imageUploadLabel": "参考图片（可选）",
+        "maxReferenceImages": 14,
+        "advancedLabel": "高级设置",
+        "primaryParameterIds": ["animation"]
+      },
+      "parameters": [
+        {
+          "id": "outputFormat",
+          "type": "dropdown",
+          "label": "输出格式",
+          "apiFieldName": "outputFormat",
+          "options": [
+            {
+              "value": "png",
+              "label": "png"
+            },
+            {
+              "value": "jpeg",
+              "label": "jpeg"
+            }
+          ],
+          "defaultValue": "png",
+          "tooltip": "生成图片格式（png/jpeg）"
+        },
+        {
+          "id": "resolution",
+          "type": "dropdown",
+          "label": "分辨率",
+          "apiFieldName": "resolution",
+          "options": [
+            {
+              "value": "0.5K",
+              "label": "0.5K"
+            },
+            {
+              "value": "1K",
+              "label": "1K"
+            },
+            {
+              "value": "2K",
+              "label": "2K"
+            },
+            {
+              "value": "4K",
+              "label": "4K"
+            }
+          ],
+          "defaultValue": "1K",
+          "tooltip": "生成分辨率（0.5K/1K/2K/4K）"
+        },
+        {
+          "id": "aspectRatio",
+          "type": "dropdown",
+          "label": "宽高比",
+          "apiFieldName": "aspectRatio",
+          "options": [
+            {
+              "value": "auto",
+              "label": "auto"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9"
+            },
+            {
+              "value": "16:9",
+              "label": "16:9"
+            },
+            {
+              "value": "3:2",
+              "label": "3:2"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "5:4",
+              "label": "5:4"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1"
+            },
+            {
+              "value": "4:5",
+              "label": "4:5"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4"
+            },
+            {
+              "value": "2:3",
+              "label": "2:3"
+            },
+            {
+              "value": "9:16",
+              "label": "9:16"
+            }
+          ],
+          "defaultValue": "auto",
+          "tooltip": "生成宽高比（auto 或指定比例）"
+        }
+      ],
+      "responseMapping": {
+        "downloadUrlPath": "imageUrls"
+      }
     }
   ],
   "skyboxGenerators": [
@@ -2541,6 +2864,322 @@
         {
           "key": "default",
           "value": "task/frontier-effect"
+        }
+      ],
+      "uiLayout": {
+        "showTextInput": true,
+        "showImageUpload": true,
+        "showMultiView": false,
+        "advancedFoldout": true,
+        "textInputLabel": "提示词",
+        "textInputPlaceholder": "例如：a fantasy sword icon, studio lighting, high detail",
+        "imageUploadLabel": "参考图片（可选）",
+        "maxReferenceImages": 14,
+        "advancedLabel": "高级设置",
+        "primaryParameterIds": ["animation"]
+      },
+      "parameters": [
+        {
+          "id": "isSegmentation",
+          "type": "bool",
+          "label": "自动抠图（去除背景）",
+          "apiFieldName": "isSegmentation",
+          "tooltip": "是否自动抠图去除背景",
+          "defaultValue": "true"
+        },
+        {
+          "id": "qValue",
+          "type": "int",
+          "label": "压缩质量",
+          "apiFieldName": "qValue",
+          "tooltip": "抠图后压缩质量，100 不压缩，值越小压缩越厉害",
+          "defaultValue": "75",
+          "min": 1,
+          "max": 100
+        },
+        {
+          "id": "resizeWidth",
+          "type": "int",
+          "label": "裁剪宽度（像素）",
+          "apiFieldName": "resizeWidth",
+          "tooltip": "抠图后裁剪宽度（像素），0 表示不裁剪，等比例缩放",
+          "defaultValue": "0",
+          "min": 0,
+          "max": 4096
+        },
+        {
+          "id": "outputFormat",
+          "type": "dropdown",
+          "label": "输出格式",
+          "apiFieldName": "outputFormat",
+          "options": [
+            {
+              "value": "png",
+              "label": "png"
+            },
+            {
+              "value": "jpeg",
+              "label": "jpeg"
+            }
+          ],
+          "defaultValue": "png",
+          "tooltip": "生成图片格式（png/jpeg）"
+        },
+        {
+          "id": "resolution",
+          "type": "dropdown",
+          "label": "分辨率",
+          "apiFieldName": "resolution",
+          "options": [
+            {
+              "value": "0.5K",
+              "label": "0.5K"
+            },
+            {
+              "value": "1K",
+              "label": "1K"
+            },
+            {
+              "value": "2K",
+              "label": "2K"
+            },
+            {
+              "value": "4K",
+              "label": "4K"
+            }
+          ],
+          "defaultValue": "1K",
+          "tooltip": "生成分辨率（0.5K/1K/2K/4K）"
+        },
+        {
+          "id": "aspectRatio",
+          "type": "dropdown",
+          "label": "宽高比",
+          "apiFieldName": "aspectRatio",
+          "options": [
+            {
+              "value": "auto",
+              "label": "auto"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9"
+            },
+            {
+              "value": "16:9",
+              "label": "16:9"
+            },
+            {
+              "value": "3:2",
+              "label": "3:2"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "5:4",
+              "label": "5:4"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1"
+            },
+            {
+              "value": "4:5",
+              "label": "4:5"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4"
+            },
+            {
+              "value": "2:3",
+              "label": "2:3"
+            },
+            {
+              "value": "9:16",
+              "label": "9:16"
+            }
+          ],
+          "defaultValue": "auto",
+          "tooltip": "生成宽高比（auto 或指定比例）"
+        }
+      ],
+      "responseMapping": {
+        "downloadUrlPath": "imageUrls"
+      }
+    },
+    {
+      "id": "huoshan_seedream_pro",
+      "displayName": "火山 SeeDream Pro",
+      "enabled": true,
+      "outputType": "sprite",
+      "imageBase64FieldName": "images",
+      "imageBase64AsArray": true,
+      "imageUrlsFieldName": "imageUrls",
+      "modelSelector": {
+        "name": "火山 SeeDream Pro",
+        "description": "文生图、图生图",
+        "functionTags": [
+          "文生图",
+          "图生图"
+        ],
+        "vendorTags": [
+          "火山"
+        ],
+        "iconPath": "Packages/cn.tuanjie.ai.generators/Editor/EditorTextures/Logo/volcengine-color.png",
+        "pinned": false
+      },
+      "endpoints": [
+        {
+          "key": "default",
+          "value": "task/huoshan-seedream-pro-async"
+        }
+      ],
+      "uiLayout": {
+        "showTextInput": true,
+        "showImageUpload": true,
+        "showMultiView": false,
+        "advancedFoldout": true,
+        "textInputLabel": "文本提示词",
+        "textInputPlaceholder": "描述你想要生成的图片...",
+        "imageUploadLabel": "参考图片",
+        "maxReferenceImages": 14,
+        "advancedLabel": "高级设置",
+        "primaryParameterIds": ["animation"]
+      },
+      "parameters": [
+        {
+          "id": "isSegmentation",
+          "type": "bool",
+          "label": "自动抠图（去除背景）",
+          "apiFieldName": "isSegmentation",
+          "tooltip": "是否自动抠图去除背景",
+          "defaultValue": "true"
+        },
+        {
+          "id": "qValue",
+          "type": "int",
+          "label": "压缩质量",
+          "apiFieldName": "qValue",
+          "tooltip": "抠图后压缩质量，100 不压缩，值越小压缩越厉害",
+          "defaultValue": "75",
+          "min": 1,
+          "max": 100
+        },
+        {
+          "id": "resizeWidth",
+          "type": "int",
+          "label": "裁剪宽度（像素）",
+          "apiFieldName": "resizeWidth",
+          "tooltip": "抠图后裁剪宽度（像素），0 表示不裁剪，等比例缩放",
+          "defaultValue": "0",
+          "min": 0,
+          "max": 4096
+        },
+        {
+          "id": "size",
+          "type": "dropdown",
+          "label": "图片尺寸",
+          "apiFieldName": "size",
+          "options": [
+            {
+              "value": "1024x1024",
+              "label": "1024×1024（1K 1:1）"
+            },
+            {
+              "value": "1152x864",
+              "label": "1152×864（1K 4:3）"
+            },
+            {
+              "value": "864x1152",
+              "label": "864×1152（1K 3:4）"
+            },
+            {
+              "value": "1312x736",
+              "label": "1312×736（1K 16:9）"
+            },
+            {
+              "value": "736x1312",
+              "label": "736×1312（1K 9:16）"
+            },
+            {
+              "value": "1248x832",
+              "label": "1248×832（1K 3:2）"
+            },
+            {
+              "value": "832x1248",
+              "label": "832×1248（1K 2:3）"
+            },
+            {
+              "value": "1568x672",
+              "label": "1568×672（1K 21:9）"
+            },
+            {
+              "value": "2048x2048",
+              "label": "2048×2048（2K 1:1）"
+            },
+            {
+              "value": "2304x1728",
+              "label": "2304×1728（2K 4:3）"
+            },
+            {
+              "value": "1728x2304",
+              "label": "1728×2304（2K 3:4）"
+            },
+            {
+              "value": "2848x1600",
+              "label": "2848×1600（2K 16:9）"
+            },
+            {
+              "value": "1600x2848",
+              "label": "1600×2848（2K 9:16）"
+            },
+            {
+              "value": "2496x1664",
+              "label": "2496×1664（2K 3:2）"
+            },
+            {
+              "value": "1664x2496",
+              "label": "1664×2496（2K 2:3）"
+            },
+            {
+              "value": "3136x1344",
+              "label": "3136×1344（2K 21:9）"
+            }
+          ],
+          "defaultValue": "2048x2048"
+        }
+      ],
+      "responseMapping": {
+        "downloadUrlPath": "image_urls"
+      }
+    },
+    {
+      "id": "frontier_lite",
+      "displayName": "Frontier Lite",
+      "enabled": true,
+      "outputType": "sprite",
+      "imageBase64FieldName": "images",
+      "imageBase64AsArray": true,
+      "modelSelector": {
+        "name": "Frontier Lite",
+        "description": "文生图、图生图",
+        "functionTags": [
+          "文生图",
+          "图生图"
+        ],
+        "vendorTags": [
+          "Frontier"
+        ],
+        "iconPath": "",
+        "pinned": false
+      },
+      "endpoints": [
+        {
+          "key": "default",
+          "value": "task/frontier-lite"
         }
       ],
       "uiLayout": {
@@ -3360,6 +3999,28 @@
       },
       "parameters": [
         {
+          "id": "model",
+          "type": "dropdown",
+          "label": "模型",
+          "apiFieldName": "model",
+          "options": [
+            {
+              "value": "doubao-seedance-2-0-mini-260615",
+              "label": "Mini（默认）"
+            },
+            {
+              "value": "doubao-seedance-2-0-260128",
+              "label": "标准版"
+            },
+            {
+              "value": "doubao-seedance-2-0-fast-260128",
+              "label": "快速版"
+            }
+          ],
+          "defaultValue": "doubao-seedance-2-0-mini-260615",
+          "tooltip": "Seedance2 模型版本"
+        },
+        {
           "id": "mode",
           "type": "dropdown",
           "label": "生成模式",
@@ -3388,8 +4049,8 @@
               "label": "720p"
             },
             {
-              "value": "1080p",
-              "label": "1080p"
+              "value": "480p",
+              "label": "480p"
             }
           ],
           "defaultValue": "720p",
@@ -3533,7 +4194,141 @@
       ],
       "responseMapping": {
         "downloadUrlPath": "video_url",
-        "previewUrlPath": "image_url"
+        "previewUrlPath": "last_frame_url"
+      }
+    },
+    {
+      "id": "happyhorse_video",
+      "displayName": "HappyHorse 1.1",
+      "enabled": true,
+      "outputType": "video",
+      "imageBase64FieldName": "first_frame",
+      "modelSelector": {
+        "name": "HappyHorse 1.1",
+        "description": "文生视频、图生视频",
+        "functionTags": [
+          "文生视频",
+          "图生视频"
+        ],
+        "vendorTags": [
+          "阿里云"
+        ],
+        "iconPath": "",
+        "pinned": false
+      },
+      "endpoints": [
+        {
+          "key": "default",
+          "value": "task/happyhorse-video"
+        }
+      ],
+      "uiLayout": {
+        "showTextInput": true,
+        "showImageUpload": true,
+        "showMultiView": false,
+        "advancedFoldout": true,
+        "textInputLabel": "文本提示词",
+        "textInputPlaceholder": "描述你想要生成的视频内容...",
+        "imageUploadLabel": "首帧图片（图生视频模式）",
+        "advancedLabel": "高级设置",
+        "primaryParameterIds": ["animation"]
+      },
+      "parameters": [
+        {
+          "id": "mode",
+          "type": "dropdown",
+          "label": "生成模式",
+          "apiFieldName": "mode",
+          "options": [
+            {
+              "value": "text_to_video",
+              "label": "文生视频"
+            },
+            {
+              "value": "first_frame",
+              "label": "图生视频"
+            }
+          ],
+          "defaultValue": "text_to_video",
+          "tooltip": "文生视频：基于文本描述生成视频；图生视频：基于首帧图片生成视频。上传参考图片时自动切换为图生视频。"
+        },
+        {
+          "id": "resolution",
+          "type": "dropdown",
+          "label": "分辨率",
+          "apiFieldName": "resolution",
+          "options": [
+            {
+              "value": "720P",
+              "label": "720P"
+            },
+            {
+              "value": "1080P",
+              "label": "1080P"
+            }
+          ],
+          "defaultValue": "720P",
+          "tooltip": "视频分辨率"
+        },
+        {
+          "id": "ratio",
+          "type": "dropdown",
+          "label": "宽高比",
+          "apiFieldName": "ratio",
+          "options": [
+            {
+              "value": "16:9",
+              "label": "16:9"
+            },
+            {
+              "value": "9:16",
+              "label": "9:16"
+            },
+            {
+              "value": "1:1",
+              "label": "1:1"
+            },
+            {
+              "value": "4:3",
+              "label": "4:3"
+            },
+            {
+              "value": "3:4",
+              "label": "3:4"
+            },
+            {
+              "value": "4:5",
+              "label": "4:5"
+            },
+            {
+              "value": "5:4",
+              "label": "5:4"
+            },
+            {
+              "value": "9:21",
+              "label": "9:21"
+            },
+            {
+              "value": "21:9",
+              "label": "21:9"
+            }
+          ],
+          "defaultValue": "16:9",
+          "tooltip": "视频宽高比（仅文生视频模式支持）"
+        },
+        {
+          "id": "duration",
+          "type": "int",
+          "label": "时长(秒)",
+          "apiFieldName": "duration",
+          "defaultValue": "5",
+          "min": 3,
+          "max": 15,
+          "tooltip": "视频时长（3-15秒）"
+        }
+      ],
+      "responseMapping": {
+        "downloadUrlPath": "video_url"
       }
     }
   ],

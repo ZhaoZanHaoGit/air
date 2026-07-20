@@ -720,7 +720,7 @@ namespace UnityTcp.Editor.Tools
                 ApplyParameters(generator, parameters);
 
                 // 阶段1：同步提交任务到后端，立即获取 backendTaskId 或失败原因
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateAnimatedCharacterTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -750,7 +750,7 @@ namespace UnityTcp.Editor.Tools
 
                 // 阶段2：异步轮询（跳过提交）
                 var taskHandle = TJGeneratorsGenerationService.GenerateFromSubmittedTask(
-                    generator, context, submitResult.BackendTaskId);
+                    generator, context, submitResult.BackendTaskId, sessionId);
                 string taskId  = AnimatedCharacterTaskTracker.CreateTask(prompt, taskHandle, createdPrefabPath, sessionId);
 
                 TJLog.Log($"[GenerateAnimatedCharacterTool] 轮询已启动，task_id={taskId}, backend_task_id={submitResult.BackendTaskId}");

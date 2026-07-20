@@ -37,7 +37,9 @@ TJGenerators for Unity 是一款强大的 AI 内容生成插件，集成团结 A
 |--------|------|------|
 | **Frontier Game Design** | 文生图、图生图 | 游戏向图片，支持 prompt 模板、多种画幅与 PNG/JPEG 输出 |
 | **火山 SeeDream** | 文生图、图生图 | 通用图片生成，支持去背景等高级参数 |
+| **火山 SeeDream Pro** | 文生图、图生图 | 更高质量图片生成，支持多参考图与自动抠图等参数 |
 | **Frontier** | 文生图、图生图 | 风格化特效，支持多档分辨率与画幅 |
+| **Frontier Lite** | 文生图、图生图 | 轻量风格化图片生成 |
 
 ### 🎨 2D 精灵生成
 
@@ -45,7 +47,9 @@ TJGenerators for Unity 是一款强大的 AI 内容生成插件，集成团结 A
 |--------|------|------|
 | **Frontier Game Design** | 文生图、图生图 | 游戏向精灵，支持多种画幅与输出格式 |
 | **火山 SeeDream** | 文生图、图生图 | 支持 31 种内容类型（武器、护甲、消耗品、UI图标等）、30 种艺术风格（像素、卡通、写实等） |
+| **火山 SeeDream Pro** | 文生图、图生图 | 更高质量精灵生成，支持多参考图与自动抠图 |
 | **Frontier** | 文生图、图生图 | 风格化特效精灵 |
+| **Frontier Lite** | 文生图、图生图 | 轻量风格化精灵 |
 
 ### 🧱 表面材质生成
 
@@ -64,7 +68,8 @@ TJGenerators for Unity 是一款强大的 AI 内容生成插件，集成团结 A
 
 | 生成器 | 功能 | 特点 |
 |--------|------|------|
-| **火山 文生视频** | 文生视频 | 支持多种时长与画幅 |
+| **Seedance 2** | 文生/图生视频 | 火山 Seedance 2，可选 Mini / 标准 / 快速模型，分辨率 480p / 720p |
+| **HappyHorse 1.1** | 文生/图生视频 | 阿里云 HappyHorse，支持首帧图生视频 |
 | **特效视频（生图+生视频）** | 文生/图生特效视频 | 绿幕输出，自动抠像生成 ChromaKey 材质，可一键在场景中创建特效播放器 |
 
 ### 🌍 世界生成
@@ -85,8 +90,9 @@ TJGenerators for Unity 是一款强大的 AI 内容生成插件，集成团结 A
 - **配置驱动架构**：所有生成器通过 JSON 配置文件定义，添加新生成器无需编写 C# 代码
 - **公开 C# API**：支持在编辑器脚本中调用生成功能
 - **任务恢复机制**：编辑器意外关闭后自动恢复进行中的任务
-- **历史记录管理**：按资产隔离历史记录，支持快速复用与在 Project 中定位
-- **资产 Label 自动注册**：编辑器启动时自动写入 `TuanjieAI` / `TuanjieAI_Frontier` 标签，便于 Project 搜索过滤
+- **Play 模式保护**：Unity 播放期间禁用生成、资产搜索、下载及场景放置操作，避免退出播放后生成内容被丢弃
+- **历史记录管理**：按资产隔离历史记录，支持快速复用与在 Project 中定位；写入 `sessionId` 便于按 Agent 会话分组，可通过 `list_session_assets` CustomTool 查询
+- **资产 Label 自动注册**：编辑器启动时自动写入 `TuanjieAI` 标签；精灵表序列帧资产额外写入 `TuanjieAI_Frontier`（代码常量 `SpriteSheetLabel`），便于 Project 搜索与 Inspector 路由
 - **使用文档入口**：窗口标题栏帮助、`AI/✦ 玩转 AI 生成` 菜单，以及 Inspector「✦ AI 生成」按钮均链至官方使用指南
 - **Inspector 快捷入口**：AnimationClip、材质纹理、Prefab 等资产 Inspector 标题栏可直接打开对应 AI 生成窗口（见 `TJGeneratorsInspectorButtons.cs`）
 - **菜单与资产创建分离**：菜单项仅负责注册入口；占位资产创建逻辑集中在 `TJGeneratorsAssetCreation.cs`
@@ -291,7 +297,8 @@ TJGenerators 采用配置驱动架构，所有生成器通过 `Editor/Config/Gen
 ```
 Editor/
 ├── Config/
-│   └── GeneratorConfig.json        # 生成器配置文件
+│   ├── GeneratorConfig.json                 # 生成器配置文件
+│   └── SpriteSheetSequenceProfiles.json     # 2D 精灵表序列帧指令模板（网格规格、instructions、knowledge_refs）
 ├── CustomTool/                     # CustomTools（含特效视频等）
 ├── EditorTextures/                 # UI 图标和纹理
 └── Scripts/
@@ -309,8 +316,8 @@ Editor/
     │   ├── ConfigOptionsLoader.cs            # 配置选项加载
     │   ├── GeneratorConfigModels.cs          # 配置数据模型
     │   ├── ConfigType.cs                     # 配置类型枚举
-    │   ├── FrontierSequenceImageOrderHint.cs # 2D 精灵表序列帧图片来源提示
-    │   └── FrontierSequenceProfileConfigLoader.cs # 2D 精灵表序列帧模板加载
+    │   ├── SpriteSheetSequenceImageOrderHint.cs    # 2D 精灵表序列帧参考图顺序提示
+    │   └── SpriteSheetSequenceProfileConfigLoader.cs # 2D 精灵表序列帧模板加载
     ├── Models/                          # 共享类型与任务响应数据模型
     │   ├── TJGeneratorsSharedTypes.cs              # 共享类型
     │   ├── TJTaskResponseModels.cs            # 任务响应数据模型
@@ -320,6 +327,7 @@ Editor/
     │   ├── TJGenerators3DModelWindow.cs
     │   ├── TJGeneratorsImageSliceWindow.cs
     │   ├── TJGeneratorsImageWindow.cs
+    │   ├── TJGeneratorsSpriteSheetSequenceWindow.cs # 2D 精灵表序列帧（整图切割）
     │   ├── TJGeneratorsMaterialTemplateGenerator.cs
     │   ├── TJGeneratorsMaterialTemplateSelectorWindow.cs
     │   ├── TJGeneratorsModelSelectorWindow.cs
@@ -362,7 +370,7 @@ Editor/
 
 | 包 | 版本 | 用途 |
 |----|------|------|
-| `cn.tuanjie.codely.bridge` | 1.0.34 | Codely 桥接（提供 `Codely.Newtonsoft.Json`） |
+| `cn.tuanjie.codely.bridge` | 1.0.69 | Codely 桥接（提供 `Codely.Newtonsoft.Json`） |
 | `com.unity.modules.jsonserialize` | 1.0.0 | `JsonUtility` 序列化 |
 | `com.unity.modules.unitywebrequest` | 1.0.0 | HTTP 请求与资源下载 |
 | `com.unity.modules.video` | 1.0.0 | 视频播放与特效视频工作流 |

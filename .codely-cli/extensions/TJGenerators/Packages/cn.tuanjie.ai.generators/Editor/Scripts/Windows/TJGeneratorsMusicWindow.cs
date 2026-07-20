@@ -49,6 +49,7 @@ namespace TJGenerators
                 focus: true
             );
             window.titleContent = new GUIContent(TJGeneratorsL10n.L("TJGenerators 音频生成"));
+            FinalizeMainWindowShow(window, rect);
         }
 
         /// <summary>
@@ -65,11 +66,25 @@ namespace TJGenerators
                 () =>
                 {
                     var window = CreateInstance<TJGeneratorsMusicWindow>();
-                    SetDefaultWindowSize(window);
                     return window;
                 },
                 (w, r) => w.targetAudioAsset = r,
                 ShowWindow);
+        }
+
+        protected override void OnBootstrapWindowContent()
+        {
+            if (targetAudioAsset != null && !string.IsNullOrEmpty(targetAudioAsset.guid))
+                s_musicOpenWindows[targetAudioAsset.guid] = this;
+
+            InitializeGeneratorsFromConfig(ConfigType.Music);
+            OnRefreshWindowContent();
+        }
+
+        protected override void OnRefreshWindowContent()
+        {
+            RefreshHistory();
+            CheckAndRecoverInterruptedTasks();
         }
 
         protected override void OnDisable()
@@ -108,23 +123,8 @@ namespace TJGenerators
         {
             base.OnEnable();
             wantsMouseMove = true;
-            InitializeGeneratorsFromConfig(ConfigType.Music);
 
-            // 确保目标音频资产存在，保证历史记录使用一致的 assetGuid
-            EnsureTargetMusic();
-
-            EditorApplication.delayCall += () =>
-            {
-                if (this != null)
-                {
-                    generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(GetCurrentMusicAssetGuid());
-                    Repaint();
-                }
-            };
             EditorCoroutineUtility.StartCoroutineOwnerless(UserInfoHelper.GetUserInfoCoroutine(ConfigManager.GetUserInfoUrl(), OnUserInfoLoaded));
-
-            // 检查是否有可恢复的任务
-            CheckAndRecoverInterruptedTasks();
         }
 
         private string GetCurrentMusicAssetGuid() => targetAudioAsset?.guid ?? "";

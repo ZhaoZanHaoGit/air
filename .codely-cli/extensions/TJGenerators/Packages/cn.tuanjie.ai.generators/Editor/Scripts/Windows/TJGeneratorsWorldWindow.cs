@@ -51,6 +51,7 @@ namespace TJGenerators
                 focus: true
             );
             window.titleContent = new GUIContent(TJGeneratorsL10n.L("TJGenerators 世界生成"));
+            FinalizeMainWindowShow(window, rect);
         }
 
         /// <summary>
@@ -66,11 +67,27 @@ namespace TJGenerators
                 () =>
                 {
                     var window = CreateInstance<TJGeneratorsWorldWindow>();
-                    SetDefaultWindowSize(window);
                     return window;
                 },
                 (w, r) => w.targetWorldAsset = r,
                 ShowWindow);
+        }
+
+        protected override void OnBootstrapWindowContent()
+        {
+            if (targetWorldAsset != null && !string.IsNullOrEmpty(targetWorldAsset.guid))
+                worldOpenWindows[targetWorldAsset.guid] = this;
+
+            InitializeGeneratorsFromConfig(ConfigType.World);
+            OnRefreshWindowContent();
+        }
+
+        protected override void OnRefreshWindowContent()
+        {
+            if (targetWorldAsset == null || !targetWorldAsset.IsValid())
+                EnsureTargetWorld();
+            RefreshHistory();
+            CheckAndRecoverInterruptedTasks();
         }
 
         // ========== 生命周期 ==========
@@ -79,22 +96,8 @@ namespace TJGenerators
         {
             base.OnEnable();
             wantsMouseMove = true;
-            InitializeGeneratorsFromConfig(ConfigType.World);
-
-            EnsureTargetWorld();
-
-            EditorApplication.delayCall += () =>
-            {
-                if (this != null)
-                {
-                    generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(GetCurrentWorldAssetGuid());
-                    Repaint();
-                }
-            };
 
             EditorCoroutineUtility.StartCoroutineOwnerless(UserInfoHelper.GetUserInfoCoroutine(ConfigManager.GetUserInfoUrl(), OnUserInfoLoaded));
-
-            CheckAndRecoverInterruptedTasks();
         }
 
         protected override void OnDisable()
@@ -312,94 +315,14 @@ namespace TJGenerators
 
         private void DrawHistoryPanel(float panelWidth)
         {
-            float historyPanelHeight = isVerticalLayout ? position.height * 0.45f : position.height;
-
-            UIComponents.BeginHistoryPanel(panelWidth, historyPanelHeight, isVerticalLayout);
-
-            Texture2D historyPreviewTex = null;
-            bool showHistoryPreview = false;
-            if (selectedHistoryIndex >= 0 && selectedHistoryIndex < generationHistory.Count)
+            DrawStandardHistoryPanel(panelWidth, new StandardHistoryPanelOptions
             {
-                var selectedItem = generationHistory[selectedHistoryIndex];
-                if (!selectedItem.isGenerating)
-                {
-                    showHistoryPreview = true;
-                    historyPreviewTex = GetPreviewTextureForHistoryItem(selectedItem);
-                }
-            }
-
-            float previewBlockHeight = UIComponents.DrawHistoryTexturePreview(
-                historyPreviewTex,
-                showHistoryPreview,
-                isVerticalLayout,
-                panelWidth,
-                historyPanelHeight
-            );
-
-            float scrollHeight = historyPanelHeight - previewBlockHeight - 100f;
-            historyScrollPosition = GUILayout.BeginScrollView(
-                historyScrollPosition,
-                GUIStyle.none,
-                GUI.skin.verticalScrollbar,
-                GUILayout.Height(scrollHeight));
-
-            if (generationHistory.Count == 0)
-            {
-                UIComponents.DrawHistoryEmptyState();
-            }
-            else
-            {
-                DrawHistoryGrid();
-            }
-
-            GUILayout.EndScrollView();
-            DrawHistoryActions();
-            UIComponents.EndHistoryPanel();
-        }
-
-        private void DrawHistoryGrid()
-        {
-            float tileWidth = currentHistoryTileSize;
-            float labelHeight = currentHistoryTileSize >= 100f ? 40f : 32f;
-            float tileHeight = tileWidth + labelHeight;
-            int itemsPerRow = ComputeHistoryItemsPerRow(CommonStyles.HistoryScrollViewLayoutWidth(currentHistoryPanelWidth), tileWidth);
-
-            for (int i = 0; i < generationHistory.Count; i += itemsPerRow)
-            {
-                GUILayout.BeginHorizontal();
-                for (int j = 0; j < itemsPerRow && (i + j) < generationHistory.Count; j++)
-                {
-                    int index = i + j;
-                    var item = generationHistory[index];
-                    bool isSelected = (selectedHistoryIndex == index);
-
-                    GUILayout.BeginVertical(GetScaledHistoryTileStyle(isSelected),
-                        GUILayout.Width(tileWidth), GUILayout.Height(tileHeight));
-
-                    float previewSize = GetScaledHistoryPreviewSize(tileWidth);
-                    Rect previewRect = GUILayoutUtility.GetRect(previewSize, previewSize);
-                    DrawWorldHistoryPreview(previewRect, item);
-
-                    if (!item.isGenerating && Event.current.type == EventType.MouseDown && previewRect.Contains(Event.current.mousePosition))
-                    {
-                        selectedHistoryIndex = index;
-                        Event.current.Use();
-                        Repaint();
-                    }
-                    if (!item.isGenerating && Event.current.type == EventType.ContextClick && previewRect.Contains(Event.current.mousePosition))
-                    {
-                        ShowHistoryContextMenu(index);
-                        Event.current.Use();
-                    }
-
-                    GUILayout.Label(item.GetDisplayName(), CommonStyles.HistoryLabelStyle);
-                    string modelLabel = GetModelDisplayLabelFromIndex(item.modelVersion);
-                    GUILayout.Label(modelLabel, CommonStyles.SmallGreyCenterLabelStyle);
-
-                    GUILayout.EndVertical();
-                }
-                GUILayout.EndHorizontal();
-            }
+                GetLargePreviewTexture = GetPreviewTextureForHistoryItem,
+                DrawTilePreview = DrawWorldHistoryPreview,
+                GetModelLabel = item => GetModelDisplayLabelFromIndex(item.modelVersion),
+                ShowContextMenu = ShowHistoryContextMenu,
+                DrawHistoryActions = DrawHistoryActions,
+            });
         }
 
         /// <summary>

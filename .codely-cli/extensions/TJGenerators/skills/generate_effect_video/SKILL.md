@@ -1,3 +1,4 @@
+---
 name: unity-effect-video-generation
 description: Generate effect videos (image + green-screen VFX video) in Unity using AI from text descriptions. Use this skill whenever the user wants to create a VFX effect video — for example fire explosion effects, magic glow effects, smoke effects, particle effects, energy effects, lightning effects (特效视频, 绿幕特效, 火焰特效, 魔法特效, 烟雾特效, 粒子特效, 能量特效, 闪电特效) — even if they just say "帮我生成一个特效", "生成特效视频", "生成绿幕特效", "make an effect video", "generate a VFX", "create a fire effect". The backend automatically: 1) generates original art with green-screen background (user doesn't need to specify "green screen" in prompt), 2) generates a green-screen effect video. Unity automatically: 3) creates a ChromaKey material — use with VideoPlayer + RenderTexture for real-time transparent playback.
 ---

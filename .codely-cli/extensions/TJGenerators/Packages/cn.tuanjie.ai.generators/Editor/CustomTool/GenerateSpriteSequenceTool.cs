@@ -359,7 +359,7 @@ namespace UnityTcp.Editor.Tools
                 generator.SetParameter("loop", loop);
 
                 // 阶段1：同步提交任务到后端，立即获取 backendTaskId 或失败原因
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateSpriteSequenceTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -380,7 +380,7 @@ namespace UnityTcp.Editor.Tools
                     AutoCreateTargetPrefab = false
                 };
                 var handle = TJGeneratorsGenerationService.GenerateFromSubmittedTask(
-                    generator, context, submitResult.BackendTaskId);
+                    generator, context, submitResult.BackendTaskId, sessionId);
 
                 // Create tracked task; subscribes to handle events internally for progress updates
                 string taskId = SpriteSequenceTaskTracker.CreateTask(generatorId, imagePath, animationType, fps, loop, handle, sessionId, submitResult.BackendTaskId);

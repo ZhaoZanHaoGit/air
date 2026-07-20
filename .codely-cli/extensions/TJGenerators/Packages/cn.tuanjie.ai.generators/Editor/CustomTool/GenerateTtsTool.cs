@@ -86,7 +86,7 @@ namespace UnityTcp.Editor.Tools
                 ApplyTtsParameters(generator, parameters);
 
                 // 阶段1：同步提交任务到后端
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateTtsTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -136,7 +136,7 @@ namespace UnityTcp.Editor.Tools
                     });
 
                 // 阶段2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Music);
+                var pipeline = new GenerationPipeline(host, ConfigType.Music, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
@@ -354,30 +354,9 @@ namespace UnityTcp.Editor.Tools
             }
 
             // Create a blank MP3 placeholder so AI Agent can assign it immediately
-            CreateBlankMp3Clip(audioPath);
+            TJGeneratorsAudioUtils.CreateBlankMp3Clip(audioPath);
 
             return (audioPath, audioPath);
-        }
-
-        private static void CreateBlankMp3Clip(string assetPath)
-        {
-            string absolutePath = Path.GetFullPath(assetPath);
-            string dir = Path.GetDirectoryName(absolutePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.WriteAllBytes(absolutePath, CreateShortestValidMp3());
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-        }
-
-        private static byte[] CreateShortestValidMp3()
-        {
-            var frame = new byte[417];
-            frame[0] = 0xFF;
-            frame[1] = 0xFB;
-            frame[2] = 0x90;
-            frame[3] = 0xC4;
-            return frame;
         }
 
         private static void EnsureAssetDatabaseFolder(string folderPath)

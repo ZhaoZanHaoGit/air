@@ -158,7 +158,7 @@ namespace TJGenerators
 
     public static class TJGeneratorsGenerationService
     {
-        public static TJGeneratorsTaskHandle Generate(ModelGeneratorBase generator, TJGeneratorsGenerationContext context = null)
+        public static TJGeneratorsTaskHandle Generate(ModelGeneratorBase generator, TJGeneratorsGenerationContext context = null, string sessionId = "")
         {
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
@@ -178,7 +178,7 @@ namespace TJGenerators
                 case "model":           configType = ConfigType.Generator; break;
                 default:                configType = ConfigType.Skybox; break;
             }
-            var pipeline = new GenerationPipeline(host, configType);
+            var pipeline = new GenerationPipeline(host, configType, GenerationRequestOrigin.Agent, sessionId);
             var assetGuid = targetAsset?.guid ?? "";
 
             EditorCoroutineUtility.StartCoroutineOwnerless(pipeline.StartGeneration(generator, assetGuid, taskHandle));
@@ -187,12 +187,12 @@ namespace TJGenerators
 
         public static TJGeneratorsTaskHandle Generate(ModelGeneratorBase generator, string targetAssetPath)
         {
-            return Generate(generator, TJGeneratorsGenerationContext.ForAssetPath(targetAssetPath));
+            return Generate(generator, TJGeneratorsGenerationContext.ForAssetPath(targetAssetPath), "");
         }
 
         public static TJGeneratorsTaskHandle GenerateForGuid(ModelGeneratorBase generator, string targetAssetGuid)
         {
-            return Generate(generator, TJGeneratorsGenerationContext.ForAssetGuid(targetAssetGuid));
+            return Generate(generator, TJGeneratorsGenerationContext.ForAssetGuid(targetAssetGuid), "");
         }
 
         /// <summary>
@@ -202,7 +202,8 @@ namespace TJGenerators
         public static TJGeneratorsTaskHandle GenerateFromSubmittedTask(
             ModelGeneratorBase generator,
             TJGeneratorsGenerationContext context,
-            string backendTaskId)
+            string backendTaskId,
+            string sessionId = "")
         {
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
@@ -224,7 +225,7 @@ namespace TJGenerators
                 case "model":           configType = ConfigType.Generator; break;
                 default:                configType = ConfigType.Skybox; break;
             }
-            var pipeline  = new GenerationPipeline(host, configType);
+            var pipeline  = new GenerationPipeline(host, configType, GenerationRequestOrigin.Agent, sessionId);
             var assetGuid = targetAsset?.guid ?? "";
 
             EditorCoroutineUtility.StartCoroutineOwnerless(
@@ -237,8 +238,18 @@ namespace TJGenerators
         /// 使用 HttpClient 阻塞式请求，不依赖 Unity player loop，编辑器会短暂冻结。
         /// 所有 CustomTool 应调用此方法替代 pipeline.StartGeneration() 的提交阶段。
         /// </summary>
-        public static TJGeneratorsSubmitResult SubmitTaskSync(ModelGeneratorBase generator)
+        public static TJGeneratorsSubmitResult SubmitTaskSync(ModelGeneratorBase generator, string sessionId = "")
         {
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                return new TJGeneratorsSubmitResult
+                {
+                    Success = false,
+                    ErrorCode = "PLAY_MODE",
+                    Message = TJGeneratorsPlayModeGuard.Message
+                };
+            }
+
             // 1. 鉴权检查
             string token = UnityConnectSession.instance.GetAccessToken();
             if (string.IsNullOrEmpty(token))
@@ -267,6 +278,8 @@ namespace TJGenerators
                     client.DefaultRequestHeaders.Add("source", "codely");
                     // SubmitTaskSync 仅由 custom tool 调用，固定标记为 agent 来源
                     client.DefaultRequestHeaders.Add(GenerationRequestOrigin.HeaderName, GenerationRequestOrigin.Agent);
+                    if (!string.IsNullOrEmpty(sessionId))
+                        client.DefaultRequestHeaders.Add(GenerationRequestOrigin.SessionIdHeaderName, sessionId);
 
                     HttpResponseMessage response;
                     if (requestData is MultipartRequestData multipart)

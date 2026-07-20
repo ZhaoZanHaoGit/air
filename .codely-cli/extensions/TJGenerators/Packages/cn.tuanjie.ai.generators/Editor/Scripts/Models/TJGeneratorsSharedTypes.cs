@@ -51,6 +51,11 @@ namespace TJGenerators
         /// </summary>
         public string promptTemplateId;
 
+        /// <summary>
+        /// Agent 会话 ID，用于按 session 分组查询。
+        /// </summary>
+        public string sessionId;
+
         public string GetUserFacingPrompt()
         {
             if (!string.IsNullOrWhiteSpace(userPrompt))
@@ -126,7 +131,7 @@ namespace TJGenerators
             hasMigrated = true;
         }
 
-        private static List<TJGeneratorsGenerationHistoryItem> LoadAllHistory()
+        private static List<TJGeneratorsGenerationHistoryItem> LoadAllHistory(bool filterMissingModelFiles = false)
         {
             MigrateFromLegacyKey(); // 确保迁移
 
@@ -139,7 +144,17 @@ namespace TJGenerators
             try
             {
                 var wrapper = JsonUtility.FromJson<HistoryWrapper>(json);
-                wrapper.items.RemoveAll(item => !item.isGenerating && !string.IsNullOrEmpty(item.modelPath) && !DoesModelFileExist(item.modelPath));
+                if (wrapper?.items == null)
+                    return new List<TJGeneratorsGenerationHistoryItem>();
+
+                if (filterMissingModelFiles)
+                {
+                    wrapper.items.RemoveAll(item =>
+                        !item.isGenerating
+                        && !string.IsNullOrEmpty(item.modelPath)
+                        && !DoesModelFileExist(item.modelPath));
+                }
+
                 return wrapper.items;
             }
             catch
@@ -164,12 +179,12 @@ namespace TJGenerators
 
         public static List<TJGeneratorsGenerationHistoryItem> LoadHistory()
         {
-            return LoadAllHistory();
+            return LoadAllHistory(filterMissingModelFiles: false);
         }
 
         public static List<TJGeneratorsGenerationHistoryItem> LoadHistoryForAsset(string assetGuid)
         {
-            var allHistory = LoadAllHistory();
+            var allHistory = LoadAllHistory(filterMissingModelFiles: true);
             var targetGuid = assetGuid ?? "";
             var result = allHistory.Where(h =>
                 (h.assetGuid ?? "") == targetGuid
@@ -257,7 +272,8 @@ namespace TJGenerators
             string modelVersion,
             bool isTextToModel,
             string assetGuid,
-            string userDisplayPrompt = null
+            string userDisplayPrompt = null,
+            string sessionId = ""
         )
         {
             var history = LoadHistory();
@@ -293,7 +309,8 @@ namespace TJGenerators
                 isTextToModel = isTextToModel,
                 isGenerating = true,
                 taskId = taskId,
-                assetGuid = targetGuid
+                assetGuid = targetGuid,
+                sessionId = sessionId ?? ""
             };
 
             history.Insert(0, item);
@@ -410,7 +427,8 @@ namespace TJGenerators
                     isGenerating = false,
                     taskId = "",
                     assetGuid = placeholder.assetGuid,
-                    promptTemplateId = promptTemplateId
+                    promptTemplateId = promptTemplateId,
+                    sessionId = placeholder.sessionId
                 });
             }
 
@@ -472,21 +490,25 @@ namespace TJGenerators
         /// <summary>
         /// 目标资源从 .wav 占位变为 .mp4 / .mp3 等时 GUID 会变，将已有关联的历史条目的 assetGuid 迁移到新 GUID，避免面板历史丢失。
         /// </summary>
-        public static void RewriteAssetGuid(string oldGuid, string newGuid)
+        /// <param name="filter">可选过滤谓词，仅当返回 true 时才迁移该条目。传 null 表示迁移所有匹配条目。</param>
+        public static void RewriteAssetGuid(string oldGuid, string newGuid,
+            Predicate<TJGeneratorsGenerationHistoryItem> filter = null)
         {
-            if (string.IsNullOrEmpty(oldGuid) || string.IsNullOrEmpty(newGuid)
-                || string.Equals(oldGuid, newGuid, StringComparison.Ordinal))
+            // oldGuid may be empty string: migrates items with assetGuid=="" to a newly bound asset.
+            if (string.IsNullOrEmpty(newGuid)
+                || string.Equals(oldGuid ?? "", newGuid, StringComparison.Ordinal))
                 return;
 
             var history = LoadAllHistory();
             bool changed = false;
             foreach (var h in history)
             {
-                if (string.Equals(h.assetGuid ?? "", oldGuid, StringComparison.Ordinal))
-                {
-                    h.assetGuid = newGuid;
-                    changed = true;
-                }
+                if (!string.Equals(h.assetGuid ?? "", oldGuid, StringComparison.Ordinal))
+                    continue;
+                if (filter != null && !filter(h))
+                    continue;
+                h.assetGuid = newGuid;
+                changed = true;
             }
 
             if (changed)

@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.13] - 2026-07-17
+
+### Added
+
+- 新增 Unity Play 模式防护：生成、资产搜索、下载及场景放置入口在播放期间统一禁用并显示本地化提示，避免退出播放后资产丢失
+
+### Fixed
+
+- 视频 CustomTool 未传入 `mode` 时可根据参考图自动识别文生视频或图生视频模式
+- 3D 模型生成器下载响应路径由错误的 `pbr_model` 修正为 `model`
+
+### Changed
+
+- 参考图生成逻辑抽取为可无界面复用的服务，空白 MP3 创建统一由音频工具处理
+
+## [1.0.12] - 2026-07-14
+
+### Added
+
+- 视频：火山 Seedance 2 支持 Mini / 标准 / 快速模型选择，分辨率调整为 480p / 720p；新增阿里云 HappyHorse 1.1 文生/图生视频
+- 图片与精灵：新增火山 SeeDream Pro、Frontier Lite 等生成器选项
+- 生成历史写入 `sessionId`，新增 `list_session_assets` CustomTool，可按 Agent 会话列出已生成资产
+- Editor 程序集补充 `System.IO.Compression` 引用，支持压缩包读写
+
+### Fixed
+
+- Domain Reload 后窗口重复创建、同会话历史占位误清理、模型预览丢失等生命周期问题
+- 特效视频预览 URL 由 `image_url` 修正为 `last_frame_url`；3D 模型预览路径同步修正
+- Unity 6000.5+ 下 `FindObjectsByType` 兼容；空白视频占位移至 `Resources~`，避免启动时 VideoClipImporter 报错
+- 音乐/视频窗口刷新时不再自动创建孤儿占位资产
+
+### Changed
+
+- 统一生成窗口 Bootstrap / Refresh 生命周期与标准历史面板；2D 精灵表序列帧拆分为独立窗口
+- CustomTool asmdef 改为按程序集名称引用
+- `cn.tuanjie.codely.bridge` 升级至 1.0.69，`NotifyAll` 按 `CODELY_BRIDGE_HAS_NOTIFY_ALL` 条件编译
+- 生成操作按钮布局与绘制逻辑优化
+
 ## [1.0.11] - 2026-07-07
 
 ### Added

@@ -89,7 +89,7 @@ namespace UnityTcp.Editor.Tools
                 ApplySfxParameters(generator, parameters);
 
                 // 阶段1：同步提交任务到后端，立即获取 backendTaskId 或失败原因
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateSoundEffectTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -138,7 +138,7 @@ namespace UnityTcp.Editor.Tools
                     });
 
                 // 阶段2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Music);
+                var pipeline = new GenerationPipeline(host, ConfigType.Music, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
@@ -359,44 +359,9 @@ namespace UnityTcp.Editor.Tools
             }
 
             // Create a blank MP3 placeholder so AI Agent can assign it immediately
-            CreateBlankMp3Clip(audioPath);
+            TJGeneratorsAudioUtils.CreateBlankMp3Clip(audioPath);
 
             return (audioPath, audioPath);
-        }
-
-        /// <summary>
-        /// Creates a minimal valid silent MP3 file at <paramref name="assetPath"/> and imports it.
-        /// One MPEG1 Layer3 frame: 44100 Hz, 128 kbps, mono, 417 bytes.
-        /// Header: FF FB 90 C4  (sync + MPEG1 + Layer3 + noCRC | 128kbps + 44100Hz + noPad | mono + original)
-        /// All side-info and main-data bytes are zero → silent frame.
-        /// </summary>
-        private static void CreateBlankMp3Clip(string assetPath)
-        {
-            string absolutePath = Path.GetFullPath(assetPath);
-            string dir = Path.GetDirectoryName(absolutePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.WriteAllBytes(absolutePath, CreateShortestValidMp3());
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-        }
-
-        private static byte[] CreateShortestValidMp3()
-        {
-            // MPEG1 Layer3 frame: 44100 Hz, 128 kbps, mono, no padding → 417 bytes
-            // Byte 0: 0xFF         sync[11:4]
-            // Byte 1: 0xFB = 1111 1011  sync[3:0]=1111 | MPEG1=11 | Layer3=01 | noCRC=1
-            // Byte 2: 0x90 = 1001 0000  128kbps=1001 | 44100Hz=00 | noPad=0 | private=0
-            // Byte 3: 0xC4 = 1100 0100  mono=11 | modeExt=00 | copyright=0 | original=1 | emphasis=00
-            // Bytes 4–20: side info (17 bytes for mono), all zeros → silent granules
-            // Bytes 21–416: main data, all zeros → silence
-            var frame = new byte[417];
-            frame[0] = 0xFF;
-            frame[1] = 0xFB;
-            frame[2] = 0x90;
-            frame[3] = 0xC4;
-            // remaining bytes are already zero (silence)
-            return frame;
         }
 
         private static void EnsureAssetDatabaseFolder(string folderPath)

@@ -326,7 +326,7 @@ namespace UnityTcp.Editor.Tools
                 ApplySpriteParameters(generator, parameters);
 
                 // 阶段1：同步提交任务到后端，立即获取 backendTaskId 或失败原因
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateSpriteTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -377,7 +377,7 @@ namespace UnityTcp.Editor.Tools
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
 
                 // 阶段2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Sprite);
+                var pipeline = new GenerationPipeline(host, ConfigType.Sprite, GenerationRequestOrigin.Agent, sessionId);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));
 

@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
-using UnityEditor;
 
 namespace TJGenerators.Utils
 {
@@ -90,53 +89,24 @@ namespace TJGenerators.Utils
 
         private static byte[] GetTemplateBytes()
         {
-            string templatePath = ResolveTemplateAssetPath();
-            if (!string.IsNullOrEmpty(templatePath))
-            {
-                string absolute = PathUtils.ToAbsoluteAssetPath(templatePath);
-                if (File.Exists(absolute))
-                    return File.ReadAllBytes(absolute);
-            }
+            string absolute = ResolveTemplateAbsolutePath();
+            if (!string.IsNullOrEmpty(absolute))
+                return File.ReadAllBytes(absolute);
 
             return Convert.FromBase64String(ShortestBlackMp4Base64);
         }
 
-        private static string ResolveTemplateAssetPath()
+        /// <summary>
+        /// 模板放在 Editor/Resources~（Unity 不导入），避免包启动时 VideoClipImporter 报 Error while reading movie。
+        /// </summary>
+        private static string ResolveTemplateAbsolutePath()
         {
             string packageRoot = PathUtils.TryGetTjGeneratorsPackageRoot();
-            if (!string.IsNullOrEmpty(packageRoot))
-            {
-                string packageRelative = Path.Combine(
-                        packageRoot,
-                        "Editor",
-                        "Resources",
-                        TemplateFileName)
-                    .Replace('\\', '/');
-                if (File.Exists(packageRelative))
-                    return PathUtils.TryGetAssetsRelativePathFromAbsolute(packageRelative)
-                        ?? ToPackagesRelativePath(packageRoot, packageRelative);
-            }
-
-            string[] guids = AssetDatabase.FindAssets(Path.GetFileNameWithoutExtension(TemplateFileName));
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (path.EndsWith(TemplateFileName, StringComparison.OrdinalIgnoreCase))
-                    return path;
-            }
-
-            return null;
-        }
-
-        private static string ToPackagesRelativePath(string packageRoot, string absolutePath)
-        {
-            absolutePath = Path.GetFullPath(absolutePath).Replace('\\', '/');
-            packageRoot = Path.GetFullPath(packageRoot).Replace('\\', '/');
-            if (!absolutePath.StartsWith(packageRoot, StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(packageRoot))
                 return null;
 
-            string tail = absolutePath.Substring(packageRoot.Length).TrimStart('/');
-            return "Packages/cn.tuanjie.ai.generators/" + tail;
+            string path = Path.Combine(packageRoot, "Editor", "Resources~", TemplateFileName);
+            return File.Exists(path) ? path : null;
         }
 
         // 64x64 纯黑 H.264 单帧 MP4（约 1.5 KB），BT.709 色彩空间，由 FFmpeg 生成

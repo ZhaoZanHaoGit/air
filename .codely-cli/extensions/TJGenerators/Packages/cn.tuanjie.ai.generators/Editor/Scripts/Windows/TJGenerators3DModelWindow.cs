@@ -76,6 +76,7 @@ namespace TJGenerators
                 focus: true
             );
             window.titleContent = new GUIContent(TJGeneratorsL10n.L("TJGenerators 3D模型"));
+            FinalizeMainWindowShow(window, rect);
         }
         
         public static void OpenForAsset(string assetPath)
@@ -88,7 +89,6 @@ namespace TJGenerators
                 () =>
                 {
                     var window = CreateInstance<TJGenerators3DModelWindow>();
-                    SetDefaultWindowSize(window);
                     return window;
                 },
                 (w, r) => w.targetAsset = r,
@@ -99,32 +99,35 @@ namespace TJGenerators
         
         // ========== 生命周期 ==========
         
+        protected override void OnBootstrapWindowContent()
+        {
+            // Re-register after domain reload so OpenForAsset finds this window instead of creating a duplicate.
+            if (targetAsset != null && !string.IsNullOrEmpty(targetAsset.guid))
+                openWindows[targetAsset.guid] = this;
+
+            EnsureModelPreview();
+            InitializeGenerators();
+            OnRefreshWindowContent();
+        }
+
+        protected override void OnRefreshWindowContent()
+        {
+            generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(GetCurrentAssetGuid());
+            CheckAndRecoverInterruptedTasks();
+            Repaint();
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
+            // Bootstrap is skipped when already ready; still recreate preview after OnDisable disposed it.
+            EnsureModelPreview();
             wantsMouseMove = true;
-            InitializeGenerators();
-            
-            _modelPreview = new Model3DPreview();
 
-            // 延迟加载历史记录
-            EditorApplication.delayCall += () =>
-            {
-                if (this != null)
-                {
-                    generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(GetCurrentAssetGuid());
-                    Repaint();
-                }
-            };
-            
-            // 初始化时获取用户信息
             EditorCoroutineUtility.StartCoroutineOwnerless(
                 UserInfoHelper.GetUserInfoDetailCoroutine(
                     ConfigManager.GetUserInfoUrl(),
                     OnUserDetailInfoLoaded));
-            
-            // 检查是否有可恢复的任务
-            CheckAndRecoverInterruptedTasks();
         }
         
         protected override void OnDisable()
@@ -140,7 +143,14 @@ namespace TJGenerators
             ConfigManager.OnConfigUpdated -= OnConfigUpdatedByType;
 
             _modelPreview?.Dispose();
+            _modelPreview = null;
             ClearPreviewCaches();
+        }
+
+        private void EnsureModelPreview()
+        {
+            if (_modelPreview == null)
+                _modelPreview = new Model3DPreview();
         }
         
         private void InitializeGenerators()
@@ -405,9 +415,12 @@ namespace TJGenerators
                     {
                         if (TryGetGeneratorByModelVersion(selectedItem.modelVersion, out var gen) && gen != null)
                         {
-                            previewRotation = gen.GetPipelineSettings().GetModelRotation();
+                            var settings = gen.GetPipelineSettings();
+                            if (settings != null)
+                                previewRotation = settings.GetModelRotation();
                         }
                     }
+                    EnsureModelPreview();
                     _modelPreview.Draw(selectedItem.modelPath, CommonStyles.HistoryPanelInnerWidth(currentHistoryPanelWidth), previewRotation, Repaint);
                     GUILayout.Space(12);
                 }
@@ -1148,6 +1161,8 @@ namespace TJGenerators
         {
             if (targetAsset != null && targetAsset.IsValid())
                 return;
+
+            string previousGuid = targetAsset?.guid ?? "";
             
             if (!AssetDatabase.IsValidFolder("Assets/TJGenerators"))
             {
@@ -1169,6 +1184,10 @@ namespace TJGenerators
             if (!string.IsNullOrEmpty(targetAsset.guid))
             {
                 openWindows[targetAsset.guid] = this;
+                if (string.IsNullOrEmpty(previousGuid))
+                    TJGeneratorsHistoryManager.RewriteAssetGuid("", targetAsset.guid,
+                        item => string.IsNullOrEmpty(item.modelPath)
+                             || item.modelPath.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase));
             }
             
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -1181,7 +1200,8 @@ namespace TJGenerators
                     Selection.activeObject = instance;
                 }
             }
-            
+
+            RefreshHistory();
             Repaint();
         }
         

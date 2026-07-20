@@ -185,6 +185,14 @@ namespace TJGenerators.AssetSearch
             var entry = AssetImportQueue.PeekImportQueue();
             if (entry == null) return;
 
+            // Unity 禁止 Play 模式下 ImportPackage：保留队首，退出 Play 后再导入。
+            if (TJGeneratorsPlayModeGuard.IsActive)
+            {
+                EnsureResumeImportAfterPlayMode();
+                TJLog.Log($"{LogTag} Play 模式中，推迟 ImportPackage，task={entry.TaskId}");
+                return;
+            }
+
             if (entry.HasScripts && AssetDownloadTracker.GetInFlight() > 0)
             {
                 // 等待所有下载完成后再次触发
@@ -330,6 +338,25 @@ namespace TJGenerators.AssetSearch
                 if (p.EndsWith(".rsp",     StringComparison.OrdinalIgnoreCase)) return true;
             }
             return false;
+        }
+
+        static bool s_resumeImportHooked;
+
+        static void EnsureResumeImportAfterPlayMode()
+        {
+            if (s_resumeImportHooked)
+                return;
+            s_resumeImportHooked = true;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChangedForImport;
+        }
+
+        static void OnPlayModeStateChangedForImport(PlayModeStateChange state)
+        {
+            if (state != PlayModeStateChange.EnteredEditMode)
+                return;
+            s_resumeImportHooked = false;
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChangedForImport;
+            EditorApplication.delayCall += ProcessImportQueue;
         }
     }
 

@@ -264,11 +264,12 @@ public class TraniningPanel : BaseUI
             // 1. 生成按钮预制体
             GameObject btnObj = Instantiate(caseButtonPrefab, buttonContainer);
             // 2. 设置按钮显示的文本 (如需要，可使用 Casname)
-            btnObj.GetComponent<caseBtn>().UpdateBtnDData("TASK·" + (index + 1).ToString(), trainingCase.Casname);
+            btnObj.GetComponent<caseBtn>().UpdateBtnDData("任务·" + (index + 1).ToString(), trainingCase.Casname);
             // 3. 绑定点击事件，注意解决 Lambda 闭包问题
             Button btn = btnObj.GetComponent<Button>();
             PneumaticTrainingCase cachedCase = trainingCase; // 缓存局部变量
             btn.onClick.AddListener(() => OnCaseButtonClicked(cachedCase));
+            index++;
         }
     }/// <summary>
      /// 按钮点击响应逻辑
@@ -514,6 +515,14 @@ public class TraniningPanel : BaseUI
     protected override void OnBtnRelease(GameObject listener, object eventData, params object[] args)
     {
         startTraining = false;
+
+        // ★ 在清理之前捕获评估数据（连接信息、元器件领取信息）
+        PneumaticEvaluator evaluator = ItemManager.Instance?.Pneumatic;
+        if (evaluator != null && TrainType != trainType.None)
+        {
+            evaluator.CaptureUploadData();
+        }
+
         SimulationLoop.Instance.DeleteAllValves();
         Debug.Log("TraniningPanel OnBtnRelease");
         //CloseUIToBeOpenUI(EnumUIType.CognitiveMenuPanel);
@@ -524,7 +533,7 @@ public class TraniningPanel : BaseUI
 
             if (AppController.Instance.loginUser.Usertype == (int)UserType.学生 && TrainType == trainType.test)
             {
-                Debug.Log("上传认知数据");
+                Debug.Log("上传练习数据");
                 SoftwareLearningData softwareLearningData = new SoftwareLearningData
                 {
                     SoftID = (int)Defines.softInfo,
@@ -538,20 +547,29 @@ public class TraniningPanel : BaseUI
                     CourseName = AppController.Instance.pOTSType.ToString(),
                     LearnTime = (int)m_Timer,
                     Score = "100",
-                    WorkOrder = "",
-                    OperationContent = ""
+                    // WorkOrder 和 OperationContent 由 StartUploadAndSubmit 填充
                 };
-                _ = NetHelper.Instance.AddSoftLearningData(softwareLearningData, code =>
+
+                if (evaluator != null)
                 {
-                    if (code == -1)
+                    evaluator.StartUploadAndSubmit(softwareLearningData);
+                    m_Timer = 0;
+                }
+                else
+                {
+                    // 无评估器，直接提交（WorkOrder/OperationContent 为空）
+                    _ = NetHelper.Instance.AddSoftLearningData(softwareLearningData, code =>
                     {
-                        UIManager.Instance.OpenMessageBoxUI("提示", "发送数据失败！", 0, EnumMessageBoxType.OK);
-                    }
-                    else
-                    {
-                        m_Timer = 0;
-                    }
-                });
+                        if (code == -1)
+                        {
+                            UIManager.Instance.OpenMessageBoxUI("提示", "发送数据失败！", 0, EnumMessageBoxType.OK);
+                        }
+                        else
+                        {
+                            m_Timer = 0;
+                        }
+                    });
+                }
             }
             currentTrainingCase = null;
             TrainType = trainType.None;

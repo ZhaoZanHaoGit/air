@@ -53,6 +53,7 @@ namespace TJGenerators
                 focus: true
             );
             window.titleContent = new GUIContent(TJGeneratorsL10n.L("TJGenerators 天空盒生成"));
+            FinalizeMainWindowShow(window, rect);
         }
         
         /// <summary>
@@ -68,11 +69,27 @@ namespace TJGenerators
                 () =>
                 {
                     var window = CreateInstance<TJGeneratorsSkyboxWindow>();
-                    SetDefaultWindowSize(window);
                     return window;
                 },
                 (w, r) => w.targetSkyboxAsset = r,
                 ShowWindow);
+        }
+
+        protected override void OnBootstrapWindowContent()
+        {
+            if (targetSkyboxAsset != null && !string.IsNullOrEmpty(targetSkyboxAsset.guid))
+                skyboxOpenWindows[targetSkyboxAsset.guid] = this;
+
+            InitializeGeneratorsFromConfig(ConfigType.Skybox);
+            OnRefreshWindowContent();
+        }
+
+        protected override void OnRefreshWindowContent()
+        {
+            if (targetSkyboxAsset == null || !targetSkyboxAsset.IsValid())
+                EnsureTargetSkybox();
+            RefreshHistory();
+            CheckAndRecoverInterruptedTasks();
         }
         
         // ========== 生命周期 ==========
@@ -81,26 +98,8 @@ namespace TJGenerators
         {
             base.OnEnable();
             wantsMouseMove = true;
-            InitializeGeneratorsFromConfig(ConfigType.Skybox);
 
-            // 确保目标天空盒资产存在，保证历史记录使用一致的 assetGuid
-            EnsureTargetSkybox();
-
-            // 延迟加载历史记录
-            EditorApplication.delayCall += () =>
-            {
-                if (this != null)
-                {
-                    generationHistory = TJGeneratorsHistoryManager.LoadHistoryForAsset(GetCurrentSkyboxAssetGuid());
-                    Repaint();
-                }
-            };
-
-            // 初始化时获取用户信息
             EditorCoroutineUtility.StartCoroutineOwnerless(UserInfoHelper.GetUserInfoCoroutine(ConfigManager.GetUserInfoUrl(), OnUserInfoLoaded));
-            
-            // 检查是否有可恢复的任务
-            CheckAndRecoverInterruptedTasks();
         }
         
         protected override void OnDisable()
@@ -392,96 +391,14 @@ namespace TJGenerators
         
         private void DrawHistoryPanel(float panelWidth)
         {
-            float historyPanelHeight = isVerticalLayout ? position.height * 0.45f : position.height;
-            
-            UIComponents.BeginHistoryPanel(panelWidth, historyPanelHeight, isVerticalLayout);
-
-            Texture2D historyPreviewTex = null;
-            bool showHistoryPreview = false;
-            if (selectedHistoryIndex >= 0 && selectedHistoryIndex < generationHistory.Count)
+            DrawStandardHistoryPanel(panelWidth, new StandardHistoryPanelOptions
             {
-                var selectedItem = generationHistory[selectedHistoryIndex];
-                if (!selectedItem.isGenerating)
-                {
-                    showHistoryPreview = true;
-                    historyPreviewTex = GetPreviewTextureForHistoryItem(selectedItem);
-                }
-            }
-
-            // 使用通用的历史纹理预览绘制逻辑：单列时高度为 historyPanelHeight 的一半
-            float previewBlockHeight = UIComponents.DrawHistoryTexturePreview(
-                historyPreviewTex,
-                showHistoryPreview,
-                isVerticalLayout,
-                panelWidth,
-                historyPanelHeight
-            );
-
-            float scrollHeight = historyPanelHeight - previewBlockHeight - 100f;
-            historyScrollPosition = GUILayout.BeginScrollView(
-                historyScrollPosition,
-                GUIStyle.none,
-                GUI.skin.verticalScrollbar,
-                GUILayout.Height(scrollHeight));
-            
-            if (generationHistory.Count == 0)
-            {
-                UIComponents.DrawHistoryEmptyState();
-            }
-            else
-            {
-                DrawHistoryGrid();
-            }
-            
-            GUILayout.EndScrollView();
-            DrawHistoryActions();
-            UIComponents.EndHistoryPanel();
-        }
-        
-        private void DrawHistoryGrid()
-        {
-            // 与 main 窗口一致：固定长宽（GUILayout.Width/Height），不随面板自适应变长
-            float tileWidth = currentHistoryTileSize;
-            float labelHeight = currentHistoryTileSize >= 100f ? 40f : 32f;
-            float tileHeight = tileWidth + labelHeight;
-            int itemsPerRow = ComputeHistoryItemsPerRow(CommonStyles.HistoryScrollViewLayoutWidth(currentHistoryPanelWidth), tileWidth);
-            
-            for (int i = 0; i < generationHistory.Count; i += itemsPerRow)
-            {
-                GUILayout.BeginHorizontal();
-                for (int j = 0; j < itemsPerRow && (i + j) < generationHistory.Count; j++)
-                {
-                    int index = i + j;
-                    var item = generationHistory[index];
-                    bool isSelected = (selectedHistoryIndex == index);
-                    
-                    GUILayout.BeginVertical(GetScaledHistoryTileStyle(isSelected),
-                        GUILayout.Width(tileWidth), GUILayout.Height(tileHeight));
-                    
-                    float previewSize = GetScaledHistoryPreviewSize(tileWidth);
-                    Rect previewRect = GUILayoutUtility.GetRect(previewSize, previewSize);
-                    DrawSkyboxHistoryPreview(previewRect, item);
-                    
-                    if (!item.isGenerating && Event.current.type == EventType.MouseDown && previewRect.Contains(Event.current.mousePosition))
-                    {
-                        selectedHistoryIndex = index;
-                        Event.current.Use();
-                        Repaint();
-                    }
-                    if (!item.isGenerating && Event.current.type == EventType.ContextClick && previewRect.Contains(Event.current.mousePosition))
-                    {
-                        ShowHistoryContextMenu(index);
-                        Event.current.Use();
-                    }
-                    
-                    GUILayout.Label(item.GetDisplayName(), CommonStyles.HistoryLabelStyle);
-                    string modelLabel = GetSkyboxModelDisplayLabel(item.modelVersion);
-                    GUILayout.Label(modelLabel, CommonStyles.SmallGreyCenterLabelStyle);
-                    
-                    GUILayout.EndVertical();
-                }
-                GUILayout.EndHorizontal();
-            }
+                GetLargePreviewTexture = GetPreviewTextureForHistoryItem,
+                DrawTilePreview = DrawSkyboxHistoryPreview,
+                GetModelLabel = item => GetSkyboxModelDisplayLabel(item.modelVersion),
+                ShowContextMenu = ShowHistoryContextMenu,
+                DrawHistoryActions = DrawHistoryActions,
+            });
         }
         
         /// <summary>

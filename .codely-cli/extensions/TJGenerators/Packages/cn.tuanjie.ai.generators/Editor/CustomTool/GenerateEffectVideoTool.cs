@@ -270,7 +270,7 @@ namespace UnityTcp.Editor.Tools
                 generator.SetTextPrompt(prompt);
                 GenerateVideoTool.ApplyVideoParametersInternal(generator, generatorId, parameters);
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateEffectVideoTool] Submit failed [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -342,7 +342,7 @@ namespace UnityTcp.Editor.Tools
                     }
                 );
 
-                var pipeline = new GenerationPipeline(host, ConfigType.Video);
+                var pipeline = new GenerationPipeline(host, ConfigType.Video, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));

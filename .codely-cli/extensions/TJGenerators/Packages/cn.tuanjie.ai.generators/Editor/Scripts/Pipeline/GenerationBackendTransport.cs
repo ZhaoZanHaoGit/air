@@ -18,8 +18,9 @@ namespace TJGenerators.Pipeline
     internal static class GenerationBackendTransportFactory
     {
         /// <param name="fromMethod">请求来源标识（"ui" / "agent"），通过 fromMethod 头上报。</param>
-        public static IGenerationBackendTransport Create(string fromMethod = GenerationRequestOrigin.Agent)
-            => new ProductionBackendTransport(fromMethod);
+        /// <param name="sessionId">Agent 会话 ID，通过 X-Session-Id 头上报（可为空）。</param>
+        public static IGenerationBackendTransport Create(string fromMethod = GenerationRequestOrigin.Agent, string sessionId = "")
+            => new ProductionBackendTransport(fromMethod, sessionId);
     }
 
     /// <summary>
@@ -37,11 +38,13 @@ namespace TJGenerators.Pipeline
     {
         private readonly string _fromMethod;
         private readonly string _packageVersion;
+        private readonly string _sessionId;
 
-        public ProductionBackendTransport(string fromMethod = GenerationRequestOrigin.Agent)
+        public ProductionBackendTransport(string fromMethod = GenerationRequestOrigin.Agent, string sessionId = "")
         {
             _fromMethod = string.IsNullOrEmpty(fromMethod) ? GenerationRequestOrigin.Agent : fromMethod;
             _packageVersion = GenerationRequestOrigin.GetPackageVersion();
+            _sessionId = sessionId ?? "";
         }
 
         public IEnumerator CreateTask(string url, byte[] postData, Action<TJTaskResponse> onSuccess, Action<string> onError)
@@ -58,6 +61,8 @@ namespace TJGenerators.Pipeline
                 uwr.SetRequestHeader(GenerationRequestOrigin.HeaderName, _fromMethod);
                 if (!string.IsNullOrEmpty(_packageVersion))
                     uwr.SetRequestHeader(GenerationRequestOrigin.PackageVersionHeaderName, _packageVersion);
+                if (!string.IsNullOrEmpty(_sessionId))
+                    uwr.SetRequestHeader(GenerationRequestOrigin.SessionIdHeaderName, _sessionId);
 
 #if TJGENERATORS_DEBUG
                 string requestBody = System.Text.Encoding.UTF8.GetString(postData);
@@ -153,6 +158,8 @@ namespace TJGenerators.Pipeline
                     uwr.SetRequestHeader(GenerationRequestOrigin.HeaderName, _fromMethod);
                     if (!string.IsNullOrEmpty(_packageVersion))
                         uwr.SetRequestHeader(GenerationRequestOrigin.PackageVersionHeaderName, _packageVersion);
+                    if (!string.IsNullOrEmpty(_sessionId))
+                        uwr.SetRequestHeader(GenerationRequestOrigin.SessionIdHeaderName, _sessionId);
 
                     TJLog.Log($"[Transport] POST Multipart {url}");
 
@@ -216,6 +223,8 @@ namespace TJGenerators.Pipeline
             uwr.SetRequestHeader(GenerationRequestOrigin.HeaderName, _fromMethod);
             if (!string.IsNullOrEmpty(_packageVersion))
                 uwr.SetRequestHeader(GenerationRequestOrigin.PackageVersionHeaderName, _packageVersion);
+            if (!string.IsNullOrEmpty(_sessionId))
+                uwr.SetRequestHeader(GenerationRequestOrigin.SessionIdHeaderName, _sessionId);
 
 #if TJGENERATORS_DEBUG
             TJLog.Log($"[Transport] GET {url}");

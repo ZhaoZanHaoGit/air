@@ -58,6 +58,11 @@ namespace TJGenerators.Pipeline
         private readonly string _packageVersion;
 
         /// <summary>
+        /// 当前 Agent 会话 ID，通过 X-Session-Id 头上报（可为空）。
+        /// </summary>
+        private readonly string _sessionId;
+
+        /// <summary>
         /// 当前占用本 Pipeline 的生成任务所属生成器（与 UI 中选中的模型实例可能不一致）。
         /// </summary>
         private ModelGeneratorBase _pipelineBusyGenerator;
@@ -87,12 +92,13 @@ namespace TJGenerators.Pipeline
         }
 
         public GenerationPipeline(IGenerationPipelineHost host, ConfigType configType,
-            string fromMethod = GenerationRequestOrigin.Agent)
+            string fromMethod = GenerationRequestOrigin.Agent, string sessionId = "")
         {
             _host = host;
             _configType = configType;
             _fromMethod = string.IsNullOrEmpty(fromMethod) ? GenerationRequestOrigin.Agent : fromMethod;
             _packageVersion = GenerationRequestOrigin.GetPackageVersion();
+            _sessionId = sessionId ?? "";
         }
 
         /// <summary>
@@ -118,7 +124,7 @@ namespace TJGenerators.Pipeline
         private void EnsureTransport(ModelGeneratorBase generator)
         {
             if (_transport != null) return;
-            _transport = GenerationBackendTransportFactory.Create(_fromMethod);
+            _transport = GenerationBackendTransportFactory.Create(_fromMethod, _sessionId);
         }
         
         // ========== 启动生成任务 ==========
@@ -132,6 +138,16 @@ namespace TJGenerators.Pipeline
         {
             _pipelineSettings = generator.GetPipelineSettings();
             _activeTaskHandle = taskHandle;
+
+            if (TJGeneratorsPlayModeGuard.TryBlock(_host))
+            {
+                if (_activeTaskHandle != null)
+                {
+                    _activeTaskHandle.MarkFailed("PLAY_MODE", TJGeneratorsPlayModeGuard.Message);
+                    _activeTaskHandle = null;
+                }
+                yield break;
+            }
 
             // 验证输入
             if (!generator.ValidateInputs(out string errorMessage))
@@ -152,7 +168,8 @@ namespace TJGenerators.Pipeline
                 generator.GetModelVersion(),
                 generator.IsTextToModel(),
                 assetGuid,
-                generator.GetHistoryDisplayPrompt()
+                generator.GetHistoryDisplayPrompt(),
+                _sessionId
             );
             
             if (_activeTaskHandle != null)
@@ -225,6 +242,16 @@ namespace TJGenerators.Pipeline
             _pipelineSettings = generator.GetPipelineSettings();
             _activeTaskHandle = taskHandle;
 
+            if (TJGeneratorsPlayModeGuard.TryBlock(_host))
+            {
+                if (_activeTaskHandle != null)
+                {
+                    _activeTaskHandle.MarkFailed("PLAY_MODE", TJGeneratorsPlayModeGuard.Message);
+                    _activeTaskHandle = null;
+                }
+                yield break;
+            }
+
             // 创建历史占位符（与 StartGeneration 保持一致）
             generator.CurrentGeneratingTaskId = TJGeneratorsHistoryManager.AddGeneratingPlaceholder(
                 generator.GetPrompt(),
@@ -232,7 +259,8 @@ namespace TJGenerators.Pipeline
                 generator.GetModelVersion(),
                 generator.IsTextToModel(),
                 assetGuid,
-                generator.GetHistoryDisplayPrompt()
+                generator.GetHistoryDisplayPrompt(),
+                _sessionId
             );
 
             if (_activeTaskHandle != null)

@@ -299,7 +299,7 @@ namespace UnityTcp.Editor.Tools
                 ApplySkyboxParameters(generator, generatorId, parameters);
 
                 // 阶段1：同步提交任务到后端，立即获取 backendTaskId 或失败原因
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[GenerateSkyboxTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -360,7 +360,7 @@ namespace UnityTcp.Editor.Tools
                     });
 
                 // 阶段2：异步轮询（跳过提交）
-                var pipeline = new GenerationPipeline(host, ConfigType.Skybox);
+                var pipeline = new GenerationPipeline(host, ConfigType.Skybox, GenerationRequestOrigin.Agent, sessionId);
                 string historyAssetGuid = CustomToolHistoryBindings.HistoryGuidFromPlaceholderAssetPath(placeholderPath);
                 EditorCoroutineUtility.StartCoroutineOwnerless(
                     pipeline.StartFromSubmittedTask(generator, historyAssetGuid, submitResult.BackendTaskId));

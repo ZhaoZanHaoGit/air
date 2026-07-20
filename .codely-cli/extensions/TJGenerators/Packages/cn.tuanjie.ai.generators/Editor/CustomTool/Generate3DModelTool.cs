@@ -54,6 +54,7 @@ namespace UnityTcp.Editor.Tools
             public string   modelVersion;
             public string   imagePath;
             public string[] multiviewImagePaths;
+            public string   sessionId;
         }
 
         public class StaticModelTaskInfo
@@ -74,6 +75,7 @@ namespace UnityTcp.Editor.Tools
             public string    ModelVersion        { get; set; }
             public string    ImagePath           { get; set; }
             public string[]  MultiviewImagePaths { get; set; }
+            public string    SessionId           { get; set; }
         }
 
         // ── Session persistence helpers ───────────────────────────────────────
@@ -96,7 +98,8 @@ namespace UnityTcp.Editor.Tools
                 generatorType       = info.GeneratorType ?? "",
                 modelVersion        = info.ModelVersion ?? "",
                 imagePath           = info.ImagePath ?? "",
-                multiviewImagePaths = info.MultiviewImagePaths ?? new string[0]
+                multiviewImagePaths = info.MultiviewImagePaths ?? new string[0],
+                sessionId           = info.SessionId ?? ""
             };
             SessionState.SetString(string.Format(SessionKeyFmt, info.TaskId), JsonUtility.ToJson(p));
 
@@ -139,7 +142,8 @@ namespace UnityTcp.Editor.Tools
                 GeneratorType       = p.generatorType,
                 ModelVersion        = p.modelVersion,
                 ImagePath           = p.imagePath,
-                MultiviewImagePaths = p.multiviewImagePaths ?? new string[0]
+                MultiviewImagePaths = p.multiviewImagePaths ?? new string[0],
+                SessionId           = p.sessionId ?? ""
             };
 
             if (info.Status == "initializing" || info.Status == "generating" || info.Status == "recovering" ||
@@ -192,7 +196,8 @@ namespace UnityTcp.Editor.Tools
                 GeneratorType       = generatorType ?? "",
                 ModelVersion        = modelVersion ?? "",
                 ImagePath           = imagePath ?? "",
-                MultiviewImagePaths = multiviewPaths ?? new string[0]
+                MultiviewImagePaths = multiviewPaths ?? new string[0],
+                SessionId           = sessionId ?? ""
             };
 
             _activeTasks[taskId] = taskInfo;
@@ -483,7 +488,7 @@ namespace UnityTcp.Editor.Tools
                     backendTaskId: _backendTaskId,
                     extraData: new JObject
                     {
-                        ["session_id"]       = "",
+                        ["session_id"]       = notifyTask.SessionId ?? "",
                         ["generator_type"]   = notifyTask.GeneratorType ?? "",
                         ["prompt"]           = notifyTask.Prompt ?? "",
                         ["image_path"]       = notifyTask.ImagePath ?? "",
@@ -520,7 +525,7 @@ namespace UnityTcp.Editor.Tools
                         errorMessage:  friendlyError.TechnicalMessage,
                         extraData: new JObject
                         {
-                            ["session_id"]     = "",
+                            ["session_id"]     = trackerTask.SessionId ?? "",
                             ["generator_type"] = trackerTask.GeneratorType ?? "",
                             ["prompt"]         = trackerTask.Prompt ?? ""
                         });
@@ -667,7 +672,7 @@ namespace UnityTcp.Editor.Tools
 
                 ApplyParameters(generator, parameters);
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     TJLog.LogError($"[Generate3DModelTool] 任务提交失败 [{submitResult.ErrorCode}]: {submitResult.Message}");
@@ -695,7 +700,7 @@ namespace UnityTcp.Editor.Tools
                 };
 
                 var taskHandle = TJGeneratorsGenerationService.GenerateFromSubmittedTask(
-                    generator, context, submitResult.BackendTaskId);
+                    generator, context, submitResult.BackendTaskId, sessionId);
                 string taskId = StaticModelTaskTracker.CreateTask(
                     prompt ?? "", GeneratorId, taskHandle, createdPrefabPath, resolvedImagePath, sessionId: sessionId);
 
@@ -1004,6 +1009,11 @@ namespace UnityTcp.Editor.Tools
             }
         }
 
+        internal static void ApplyParametersInternal(DynamicGenerator generator, JObject parameters)
+        {
+            ApplyParameters(generator, parameters);
+        }
+
         internal static string ResolveImagePath(string imagePath)
         {
             if (string.IsNullOrEmpty(imagePath)) return null;
@@ -1157,7 +1167,7 @@ namespace UnityTcp.Editor.Tools
                 if (parameters["orientation"] != null)
                     generator.SetParameter("orientation", parameters["orientation"].ToString());
 
-                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator);
+                var submitResult = TJGeneratorsGenerationService.SubmitTaskSync(generator, sessionId);
                 if (!submitResult.Success)
                 {
                     return new Dictionary<string, object>
@@ -1182,7 +1192,7 @@ namespace UnityTcp.Editor.Tools
                 };
 
                 var taskHandle = TJGeneratorsGenerationService.GenerateFromSubmittedTask(
-                    generator, context, submitResult.BackendTaskId);
+                    generator, context, submitResult.BackendTaskId, sessionId);
 
                 string modelVersion = parameters["model_version"]?.ToString() ?? DefaultModelVersion;
                 string taskId = StaticModelTaskTracker.CreateTask(
@@ -1377,6 +1387,11 @@ namespace UnityTcp.Editor.Tools
                 if (parameters["generate_parts"] != null)
                     generator.SetParameter("generateParts", parameters["generate_parts"].ToObject<bool>());
             }
+        }
+
+        internal static void ApplyTripoParametersInternal(DynamicGenerator generator, JObject parameters)
+        {
+            ApplyTripoParameters(generator, parameters);
         }
 
         private static void TryUpdateFromHistory(StaticModelTaskTracker.StaticModelTaskInfo task)
