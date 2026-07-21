@@ -176,8 +176,8 @@ MonoBehaviour:
   - {fileID: 8797372350781575289}
   valveType: 0
   debounceDuration: 0.05
-  electricityPortA: {fileID: 0}
-  electricityPortB: {fileID: 0}
+  electricityPortA: {fileID: 2265031388445087611}
+  electricityPortB: {fileID: 8498586631533145153}
 --- !u!114 &7838411597081704042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,6 +467,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8930010043158623952, guid: 271b6ba14182c294093881874703fe21, type: 3}
   m_PrefabInstance: {fileID: 1969129536857990334}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8498586631533145153 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7972157912439900415, guid: 271b6ba14182c294093881874703fe21, type: 3}
+  m_PrefabInstance: {fileID: 1969129536857990334}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2059ab7b5a4e84daa634c7d958a05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5423926299680749711
 PrefabInstance:
   m_ObjectHideFlags: 0

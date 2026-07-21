@@ -21,8 +21,10 @@ public class casesPart2Answer : MonoBehaviour
 
     public List<List<caseportData>> allCases = new List<List<caseportData>>();
 
-    // Start is called before the first frame update
-    void Start()
+    // 记录当前已订阅的 currentPostsData 实例，用于防止重复订阅和正确退订
+    private CustomList<caseportData> _subscribedPostsData;
+
+    void Awake()
     {
         allCases.Add(case1);
         allCases.Add(case2);
@@ -32,20 +34,56 @@ public class casesPart2Answer : MonoBehaviour
         allCases.Add(case6);
         allCases.Add(case7);
         allCases.Add(case8);
-        if (SimulationLoop.Instance != null && SimulationLoop.Instance.currentPostsData != null)
-        {
-            SimulationLoop.Instance.currentPostsData.OnItemAdded += onportchange;
-            SimulationLoop.Instance.currentPostsData.OnItemRemoved += onportchange;
-        }
-
     }
+
+    void OnEnable()
+    {
+        SimulationLoop.OnInstanceCreated += HandleSimulationLoopReady;
+        // SimulationLoop 可能已经就绪，立即尝试订阅
+        TrySubscribePostsData();
+    }
+
+    void OnDisable()
+    {
+        SimulationLoop.OnInstanceCreated -= HandleSimulationLoopReady;
+        UnsubscribePostsData();
+    }
+
     private void OnDestroy()
     {
-        if (SimulationLoop.Instance != null && SimulationLoop.Instance.currentPostsData != null)
+        UnsubscribePostsData();
+    }
+
+    private void HandleSimulationLoopReady()
+    {
+        TrySubscribePostsData();
+    }
+
+    private void TrySubscribePostsData()
+    {
+        var target = SimulationLoop.Instance != null ? SimulationLoop.Instance.currentPostsData : null;
+        if (target == null) return;
+        // 已经订阅了同一实例，跳过
+        if (_subscribedPostsData == target) return;
+
+        // 如果之前订阅了旧实例，先退订
+        if (_subscribedPostsData != null)
         {
-            SimulationLoop.Instance.currentPostsData.OnItemAdded -= onportchange;
-            SimulationLoop.Instance.currentPostsData.OnItemRemoved -= onportchange;
+            _subscribedPostsData.OnItemAdded -= onportchange;
+            _subscribedPostsData.OnItemRemoved -= onportchange;
         }
+
+        target.OnItemAdded += onportchange;
+        target.OnItemRemoved += onportchange;
+        _subscribedPostsData = target;
+    }
+
+    private void UnsubscribePostsData()
+    {
+        if (_subscribedPostsData == null) return;
+        _subscribedPostsData.OnItemAdded -= onportchange;
+        _subscribedPostsData.OnItemRemoved -= onportchange;
+        _subscribedPostsData = null;
     }
     void onportchange(caseportData data)
     {

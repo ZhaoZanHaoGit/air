@@ -1,10 +1,18 @@
 using Hypertonic.GridPlacement;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SimulationLoop : MonoBehaviour
 {
     public static SimulationLoop Instance;
+
+    /// <summary>
+    /// 在 Awake 中 Instance 赋值后触发，供外部组件安全订阅。
+    /// 解决跨脚本 Awake/Start 执行顺序不确定导致 Instance 为 null 的问题。
+    /// </summary>
+    public static event Action OnInstanceCreated;
+
     public List<BaseValve> allValves = new List<BaseValve>();
     public List<PortBase> mainSources = new List<PortBase>();
     public List<GameObject> gridInScene = new List<GameObject>();
@@ -32,7 +40,11 @@ public class SimulationLoop : MonoBehaviour
     }
     private readonly List<WireEntry> _wireRegistry = new List<WireEntry>();
 
-    void Awake() => Instance = this;
+    void Awake()
+    {
+        Instance = this;
+        OnInstanceCreated?.Invoke();
+    }
 
     void Update()
     {

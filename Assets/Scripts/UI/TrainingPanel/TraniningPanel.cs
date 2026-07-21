@@ -14,7 +14,7 @@ public class TraniningPanel : BaseUI
     public GameObject testPanel, selectpanel, toolPanel;
     [Header("JSON 文件名")]
     public string jsonFileName = "cases.json";
-
+    public List<GameObject> testchildUIs;
     // 存储解析后的所有气路训练案例
     public List<PneumaticTrainingCase> trainingCases = new List<PneumaticTrainingCase>();
 
@@ -40,7 +40,7 @@ public class TraniningPanel : BaseUI
     [Header("当前状态")]
     // 存储当前点击的按钮所对应的信息
     public PneumaticTrainingCase currentTrainingCase;
-    private trainType trainType;
+    private trainType trainType= trainType.None;
     public UIManager_qidong uIManager_qidong;
 
     public trainType TrainType
@@ -514,6 +514,7 @@ public class TraniningPanel : BaseUI
     #region release 
     protected override void OnBtnRelease(GameObject listener, object eventData, params object[] args)
     {
+
         startTraining = false;
 
         // ★ 在清理之前捕获评估数据（连接信息、元器件领取信息）
@@ -524,12 +525,16 @@ public class TraniningPanel : BaseUI
         }
 
         SimulationLoop.Instance.DeleteAllValves();
-        Debug.Log("TraniningPanel OnBtnRelease");
+        Debug.Log("TraniningPanel OnBtnRelease"+ TrainType);
         //CloseUIToBeOpenUI(EnumUIType.CognitiveMenuPanel);
         if (TrainType == trainType.None)
         { CloseUIToBeOpenUI(EnumUIType.LoadingUI, true, EnumUIType.MainMenu, EnumSceneType.GameStart); }
         else
         {
+            foreach (GameObject childUI in testchildUIs)
+            {
+                childUI.SetActive(false);
+            }
 
             if (AppController.Instance.loginUser.Usertype == (int)UserType.学生 && TrainType == trainType.test)
             {
