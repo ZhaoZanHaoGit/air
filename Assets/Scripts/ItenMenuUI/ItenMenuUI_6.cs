@@ -12,13 +12,15 @@ public class ItenMenuUI_6 : ItenMenuUIBase
     public List<ToggleGroup> toggleGroups;
     public Button confirmButton;
     public Slider Slider;
+    public TMP_InputField sliderInputField;
     TimeDelayValve timeDelay;
-    public TextMeshProUGUI delayTimeText;
+    //public TextMeshProUGUI delayTimeText;
 
     private void Start()
     {
         confirmButton.onClick.AddListener(OnConfirm);
-        Slider.onValueChanged.AddListener((value) => { delayTimeText.text =((float)Math.Round(value, 2)).ToString(); });
+        LinkSliderToInputField(Slider, sliderInputField);
+        //Slider.onValueChanged.AddListener((value) => { delayTimeText.text =((float)Math.Round(value, 2)).ToString(); });
         // useButton.onClick.AddListener(OnUse);
     }
 

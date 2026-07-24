@@ -11,34 +11,40 @@ public class ItenMenuUI_2 : ItenMenuUIBase
 
     public Slider singal1SliderUI, singal2SliderUI;
     public Slider singal1Sliderthreshold, singal2Sliderthreshold;
-    public TextMeshProUGUI UIsignal1percent, signal2percentUI;
-    public TextMeshProUGUI UIsignal1threshold, signal2threshold;
+    public TMP_InputField singal1SliderInputField, singal2SliderInputField;
+    public TMP_InputField singal1ThresholdInputField, singal2ThresholdInputField;
+    //public TextMeshProUGUI UIsignal1percent, signal2percentUI;
+    //public TextMeshProUGUI UIsignal1threshold, signal2threshold;
     CylinderSignalSource signal1Source, signal2Source;
 
     private void Start()
     {
         confirmButton.onClick.AddListener(OnConfirm);
+        LinkSliderToInputField(singal1SliderUI, singal1SliderInputField);
+        LinkSliderToInputField(singal2SliderUI, singal2SliderInputField);
+        LinkSliderToInputField(singal1Sliderthreshold, singal1ThresholdInputField);
+        LinkSliderToInputField(singal2Sliderthreshold, singal2ThresholdInputField);
         // useButton.onClick.AddListener(OnUse);
-        singal1SliderUI.onValueChanged.AddListener(
-            (float a) =>
-            {
-                UIsignal1percent.text = ((int)(a * 100)).ToString() + "%";
-            });
-        singal2SliderUI.onValueChanged.AddListener(
-            (float a) =>
-            {
-                signal2percentUI.text = ((int)(a * 100)).ToString() + "%";
-            });
-        singal1Sliderthreshold.onValueChanged.AddListener(
-            (float a) =>
-            {
-                UIsignal1threshold.text ="±" +a.ToString("F2") ;
-            });
-        singal2Sliderthreshold.onValueChanged.AddListener(
-            (float a) =>
-            {
-                signal2threshold.text = "±"+a.ToString("F2");
-            });
+        //singal1SliderUI.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        UIsignal1percent.text = ((int)(a * 100)).ToString() + "%";
+        //    });
+        //singal2SliderUI.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        signal2percentUI.text = ((int)(a * 100)).ToString() + "%";
+        //    });
+        //singal1Sliderthreshold.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        UIsignal1threshold.text ="±" +a.ToString("F2") ;
+        //    });
+        //singal2Sliderthreshold.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        signal2threshold.text = "±"+a.ToString("F2");
+        //    });
     }
     public override void InitItenMenu()
     {

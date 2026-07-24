@@ -15,7 +15,7 @@ public class ManualValve24 : BaseValve
     [Tooltip("通过外部按钮或手柄动画直接切换此枚举值")]
     public ValveState currentState = ValveState.Center;
 
-    private void Start()
+    protected override void Start()
     {
         base.Start();
 

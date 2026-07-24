@@ -10,14 +10,17 @@ using UnityEngine.UI;
 public class TraniningPanel : BaseUI
 {
 
-    public GameObject window1, window2, window3, window4, window5, window6;
-    public GameObject testPanel, selectpanel, toolPanel;
+    public GameObject window1, window2, window3, window4, window5, window6, window7, window8;
+    public GameObject testPanel, selectpanel, toolPanel,loadbtnContent;
     [Header("JSON 文件名")]
     public string jsonFileName = "cases.json";
     public List<GameObject> testchildUIs;
     // 存储解析后的所有气路训练案例
     public List<PneumaticTrainingCase> trainingCases = new List<PneumaticTrainingCase>();
 
+
+    private TrainingSaveSystem _trainingSave;
+    
 
     [Header("列表按钮生成区")]
     public Transform buttonContainer;       // 按钮的父节点 (通常是 ScrollView -> Content)
@@ -57,6 +60,8 @@ public class TraniningPanel : BaseUI
                     window4.SetActive(false);
                     window5.SetActive(false);
                     window6.SetActive(false);
+                    window7.SetActive(true);
+                    window8.SetActive(true);
                     if (SimulationLoop.Instance)
                     {
                         SimulationLoop.Instance.InitTrainType(currentTrainingCase, trainType);
@@ -68,6 +73,8 @@ public class TraniningPanel : BaseUI
                     window4.SetActive(true);
                     window5.SetActive(true);
                     window6.SetActive(false);
+                    window7.SetActive(false);
+                    window8.SetActive(false);
                     if (SimulationLoop.Instance)
                     {
                         SimulationLoop.Instance.InitTrainType(currentTrainingCase, trainType);
@@ -79,6 +86,8 @@ public class TraniningPanel : BaseUI
                     window4.SetActive(false);
                     window5.SetActive(false);
                     window6.SetActive(true);
+                    window7.SetActive(false);
+                    window8.SetActive(false);
                     if (SimulationLoop.Instance)
                     {
                         SimulationLoop.Instance.InitTrainType(currentTrainingCase, trainType);
@@ -299,17 +308,6 @@ public class TraniningPanel : BaseUI
 
 
         // 将任务书内的不同部分拼接显示，若部分字段为空则自动忽略
-        string content = "";
-        /*
-        if (!string.IsNullOrEmpty(doc.TaskRequirements))
-            content += $"<b>任务要求：</b>\n{doc.TaskRequirements}\n\n";
-
-        if (!string.IsNullOrEmpty(doc.TechnicalDocumentation))
-            content += $"<b>技术资料：</b>\n{doc.TechnicalDocumentation}\n\n";
-
-        if (!string.IsNullOrEmpty(doc.TaskImplementation))
-            content += $"<b>任务实施：</b>\n{doc.TaskImplementation}";
-        */
         if (!string.IsNullOrEmpty(doc.TaskRequirements))
             taskDocumentText1.text = doc.TaskRequirements;
         if (!string.IsNullOrEmpty(doc.TechnicalDocumentation))
@@ -472,10 +470,125 @@ public class TraniningPanel : BaseUI
     public void toggleObj(GameObject obj)
     { obj.SetActive(!obj.activeSelf); }
 
+    #region 存档/读档
+
+    /// <summary>
+    /// 确保 _trainingSave 不为空，为空则从场景中查找
+    /// </summary>
+    private TrainingSaveSystem EnsureSaveSystem()
+    {
+        if (_trainingSave == null)
+        {
+            _trainingSave = TrainingSaveSystem.Instance;
+            if (_trainingSave == null)
+                _trainingSave = FindObjectOfType<TrainingSaveSystem>();
+        }
+        return _trainingSave;
+    }
+
+    /// <summary>
+    /// 保存当前实训状态（存档名自动为保存时间）
+    /// </summary>
+    public void SaveTraining()
+    {
+        var sys = EnsureSaveSystem();
+        if (sys == null)
+        {
+            Debug.LogError("[TraniningPanel] TrainingSaveSystem 未找到，无法保存！");
+            return;
+        }
+        sys.SaveGame();
+    }
+
+    /// <summary>
+    /// 加载指定存档
+    /// </summary>
+    public void LoadTraining(string fileName)
+    {
+        var sys = EnsureSaveSystem();
+        if (sys == null)
+        {
+            Debug.LogError("[TraniningPanel] TrainingSaveSystem 未找到，无法读档！");
+            return;
+        }
+        sys.LoadGame(fileName);
+    }
+
+    /// <summary>
+    /// 获取所有存档文件信息列表
+    /// </summary>
+    public List<SaveFileInfo> GetTrainingSaveFiles()
+    {
+        var sys = EnsureSaveSystem();
+        if (sys == null) return new List<SaveFileInfo>();
+        return sys.GetSaveFiles();
+    }
+
+    /// <summary>
+    /// 删除指定存档
+    /// </summary>
+    public void DeleteTrainingSave(string fileName)
+    {
+        var sys = EnsureSaveSystem();
+        if (sys == null) return;
+        sys.DeleteSave(fileName);
+        // 刷新存档列表
+        InitializeLoadButtons();
+    }
+
+    /// <summary>
+    /// 在 loadbtnContent 下生成存档列表按钮
+    /// </summary>
+    public void InitializeLoadButtons()
+    {
+        if (loadbtnContent == null)
+        {
+            Debug.LogWarning("[TraniningPanel] loadbtnContent 未赋值！");
+            return;
+        }
+
+        // 清空旧按钮
+        for (int i = loadbtnContent.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(loadbtnContent.transform.GetChild(i).gameObject);
+        }
+
+        // 加载预制体
+        GameObject btnPrefab = Resources.Load<GameObject>("UIPrefab/loadUIBtn");
+        if (btnPrefab == null)
+        {
+            Debug.LogError("[TraniningPanel] 未找到预制体: Resources/UIPrefab/loadUIBtn");
+            return;
+        }
+
+        // 获取存档列表
+        List<SaveFileInfo> saves = GetTrainingSaveFiles();
+        if (saves.Count == 0)
+        {
+            Debug.Log("[TraniningPanel] 没有存档文件");
+            return;
+        }
+
+        foreach (var save in saves)
+        {
+            GameObject btnObj = Instantiate(btnPrefab, loadbtnContent.transform);
+            btnObj.name = save.fileName;
+
+            // 用 LoadData 组件初始化按钮信息
+            var loadData = btnObj.GetComponent<LoadData>();
+            if (loadData != null)
+            {
+                loadData.InitSaveData(this, save);
+            }
+        }
+    }
+
+    #endregion
+
 
     public void ExamUIFinish()
     {
-        SimulationLoop.Instance.DeleteAllLines();
+        SimulationLoop.Instance.DeleteAllValves();
         currentTrainingCase = null;
         TrainType = trainType.None;
         AppController.Instance.courseType = CourseType.None;
@@ -483,6 +596,11 @@ public class TraniningPanel : BaseUI
         testPanel.gameObject.SetActive(false);
         toolPanel.gameObject.SetActive(false);
         uIManager_qidong.clearButtonData();
+        ItemManager.Instance.ClearAllItemData();
+        foreach (GameObject childUI in testchildUIs)
+        {
+            childUI.SetActive(false);
+        }
     }
 
     #region setting

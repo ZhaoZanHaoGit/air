@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public enum NodeType
@@ -16,13 +17,17 @@ public class DynamicNode : MonoBehaviour
     [Header("运行时状态 (由管理器计算)")]
     public int currentLevel = -1;    // 拓扑级数（-1为未通电，0为电源）
     public NodeType currentPowerStatus = NodeType.Normal; // 被染色的极性
-
+    public TextMeshPro pointName;
     private void Start()
     {
         // 如果没有手动命名，默认使用物体名字
         if (string.IsNullOrEmpty(nodeName))
         {
             nodeName = gameObject.name;
+        }
+        if(pointName != null)
+        {
+            pointName.text = nodeName;
         }
 
         // 动态注册到电路拓扑管理器

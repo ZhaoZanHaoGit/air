@@ -8,16 +8,18 @@ using TMPro;
 public class ItenMenuUI_12 : ItenMenuUIBase
 {
     public Slider slider;
+    public TMP_InputField sliderInputField;
     public Button confirmButton;
-    public TextMeshProUGUI percentText;
+    //public TextMeshProUGUI percentText;
     // Start is called before the first frame update
     void Start()
     {
         confirmButton.onClick.AddListener(OnConfirm);
-        slider.onValueChanged.AddListener((value) =>
-        {
-            percentText.text = $"{(int)(value * 100)}%";
-        });
+        LinkSliderToInputField(slider, sliderInputField);
+        //slider.onValueChanged.AddListener((value) =>
+        //{
+        //    percentText.text = $"{(int)(value * 100)}%";
+        //});
     }
     public override void InitItenMenu()
     {
@@ -27,7 +29,7 @@ public class ItenMenuUI_12 : ItenMenuUIBase
             slider.value = itemIns.GetComponent<SequenceCheckValve>().opening;
         }
     }
-    void OnConfirm()
+    public override void OnConfirm()
     {
         if (itemIns != null)
         {

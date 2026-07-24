@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "cn.tuanjie.ai.generators": "file:../.codely-cli/extensions/TJGenerators/Packages/cn.tuanjie.ai.generators",
+    "cn.tuanjie.codely.bridge": "1.0.72",
     "com.gamedesigner.network": "file:../GameDesigner-master/GameDesigner",
     "com.github.kou-yeung": "https://github.com/kou-yeung/WebGLInput.git?path=Assets/WebGLSupport",
     "com.unity.2d.sprite": "1.0.0",
@@ -16,7 +18,7 @@
     "com.unity.timeline": "1.7.6",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualeffectgraph": "14.0.11",
-    "com.unity.visualscripting": "1.9.4",
+    "com.unity.visualscripting": "1.9.11",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -47,8 +49,6 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "cn.tuanjie.codely.bridge": "1.0.71",
-    "cn.tuanjie.ai.generators": "file:../.codely-cli/extensions/TJGenerators/Packages/cn.tuanjie.ai.generators"
+    "com.unity.modules.xr": "1.0.0"
   }
 }

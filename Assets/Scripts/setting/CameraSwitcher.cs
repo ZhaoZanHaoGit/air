@@ -6,7 +6,6 @@ public class CameraSwitcher : MonoBehaviour
 {
     public Camera vrCamera; // VR摄像机
     public Camera desktopCamera; // 桌面显示摄像机
-    private bool isShowingDesktopCamera = true;
     public float movementSpeed = 5.0f; // 控制移动速度
     public float mouseSensitivity = 100.0f; // 控制鼠标旋转灵敏度
 

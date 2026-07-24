@@ -7,17 +7,19 @@ using UnityEngine.UI;
 public class ItenMenuUI_0 : ItenMenuUIBase
 {
     public Toggle toggle;
-    public TextMeshProUGUI percent;
+    //public TextMeshProUGUI percent;
     public Slider slider;
+    public TMP_InputField sliderInputField;
     public Button confirmButton;
     // Start is called before the first frame update
     void Start()
     {
         confirmButton.onClick.AddListener(OnConfirm);
-        slider.onValueChanged.AddListener((value) =>
-        {
-            percent.text = (value ).ToString("F2") ;
-        });
+        LinkSliderToInputField(slider, sliderInputField);
+        //slider.onValueChanged.AddListener((value) =>
+        //{
+        //    percent.text = (value ).ToString("F2") ;
+        //});
     }
     public override void InitItenMenu()
     {

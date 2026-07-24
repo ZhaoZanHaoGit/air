@@ -77,6 +77,6 @@ public class portandvalve
 
     public string GetPortAndValveInfo()
     {
-        return $" Valve: {valve},Port: {port}";
+        return $" {valve}__{port}";
     }
 }

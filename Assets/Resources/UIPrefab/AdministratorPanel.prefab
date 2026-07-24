@@ -31850,7 +31850,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6C14\u52A8\u865A\u62DF\u4EFF\u771F\u5B9E\u8BAD\u7CFB\u7EDF"
+  m_text: "\u6C14\u538B\u4F20\u52A8\u865A\u62DF\u4EFF\u771F\u5B9E\u8BAD\u7CFB\u7EDF"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8963fbcde327fd342871eef124792747, type: 2}
   m_sharedMaterial: {fileID: 7059626431685932972, guid: 8963fbcde327fd342871eef124792747, type: 2}

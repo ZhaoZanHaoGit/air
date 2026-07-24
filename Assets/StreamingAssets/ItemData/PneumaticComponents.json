@@ -12,14 +12,14 @@
       "Specification": ""
     },
     {
-      "name": "单电控二位三通电磁阀（常闭）",
+      "name": "单电控二位三通电磁阀(常闭)",
       "type": "3V210-08-NC-DC24V",
       "category": "控制阀类",
-      "iconName": "单电控二位三通电磁阀（常闭）",
+      "iconName": "单电控二位三通电磁阀(常闭)",
       "describeText": "电磁式二位三通换向阀（常闭），弹簧复位。初始位置，进气口P口截止，A口与R口相通。电磁铁得电有控制信号时，进气口P口与A口相通，R口截止。\n二位三通换向阀具有三个气接口，电磁驱动。此外，气接口可用堵头关闭或为排气口。",
       "describeImageName": "单电控二位三通电磁阀_常闭",
       "describeVideoName": "",
-      "prefabName": "单电控二位三通电磁阀（常闭）。",
+      "prefabName": "单电控二位三通电磁阀(常闭)",
       "Specification": ""
     },
     {
@@ -382,7 +382,7 @@
       "describeText": "在压缩空气作用下，单作用气缸活塞杆回缩，当无压缩空气时，其在弹簧作用下伸出。\n",
       "describeImageName": "单作用气缸",
       "describeVideoName": "",
-      "prefabName": "SC100X20S",
+      "prefabName": "单作用气缸",
       "Specification": ""
     },
     {
@@ -393,7 +393,7 @@
       "describeText": "按下操纵按钮，阀芯动作，P口与A口接通，R口截止。释放按钮后，在复位弹簧作用下，阀芯复位，P口关闭截止，A口与R口接通。\n二位三通换向阀具有三个气接口，手动按钮驱动。此外，气接口可用堵头关闭或为排气口。",
       "describeImageName": "按钮式二位三通换向阀（常闭）",
       "describeVideoName": "",
-      "prefabName": "",
+      "prefabName": "按钮式二位三通换向阀（常闭）",
       "Specification": ""
     },
     {
@@ -404,7 +404,7 @@
       "describeText": "按下操纵按钮，阀芯动作，P口与B口接通，A口与R口相通。释放按钮后，在复位弹簧作用下，阀芯复位，P口与A口相通，B口与S口接通。",
       "describeImageName": "按钮式二位五通换向阀",
       "describeVideoName": "",
-      "prefabName": "",
+      "prefabName": "按钮式二位五通换向阀",
       "Specification": ""
     },
     {
@@ -415,7 +415,7 @@
       "describeText": "按下杠杆（通过凸轮），驱动滚轮杠杆阀动作A口与R口接通，P口截止。释放杠杆后，在复位弹簧作用下，滚轮杠杆阀复位，即R口关闭截止，P口与A口接通。\n二位三通换向阀具有三个气接口，杠杆驱动。此外，气接口可用堵头关闭或为排气口。",
       "describeImageName": "机械式二位三通行程阀（常开）",
       "describeVideoName": "",
-      "prefabName": "SC100X20S",
+      "prefabName": "机械式二位三通行程阀（常开）",
       "Specification": ""
     }
   ]

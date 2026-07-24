@@ -83,7 +83,7 @@ public class ItenMenuUI_11 : ItenMenuUIBase
         }
     }
 
-    void OnConfirm()
+    public override void OnConfirm()
     {
         base.OnConfirm();
         RefreshDropdown(signalDropdown1);

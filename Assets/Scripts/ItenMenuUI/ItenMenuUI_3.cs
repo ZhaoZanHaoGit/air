@@ -25,7 +25,7 @@ public class ItenMenuUI_3 : ItenMenuUIBase
         }
     }
 
-    void OnConfirm()
+    public override void OnConfirm()
     {
         base.OnConfirm();
         for (int i = 0; i < toggleGroups.Count; i++)

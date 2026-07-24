@@ -72,7 +72,7 @@ public class DynamicWire : CircuitEdge
         HandleSelectionLogic();
         UpdateWireVisualEffect();
     }
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         base.OnDestroy();
         // ---> [新增] 销毁管线时，从 SimulationLoop 中移除连接数据 <---

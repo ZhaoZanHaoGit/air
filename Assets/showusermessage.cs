@@ -6,7 +6,8 @@ using TMPro;
 public class showusermessage : MonoBehaviour
 {
     // Start is called before the first frame update
-    public TextMeshProUGUI name, department, id, phonenumber;
+    public new TextMeshProUGUI name;
+    public TextMeshProUGUI department, id, phonenumber;
 
 
     // Update is called once per frame

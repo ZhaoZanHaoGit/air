@@ -5,24 +5,24 @@ public class ToggleSwitchButton : MonoBehaviour
 {
     public Transform buttonIns;
     public Vector3 upPos, downPos;
-    public DynamicSwitch Switch;
+    public DynamicSwitch Switch1, Switch2;
 
     private void Start()
     {
         // 根据 DynamicSwitch 的初始闸刀状态，同步按钮视觉位置
-        if (Switch != null && buttonIns != null)
+        if (Switch1 != null && buttonIns != null)
         {
-            buttonIns.localPosition = Switch.IsClosed ? downPos : upPos;
+            buttonIns.localPosition = Switch1.IsClosed ? downPos : upPos;
         }
     }
 
     private void OnMouseUp()
     {
-        if (Switch == null) return;
+        if (Switch1 == null) return;
 
-        Switch.SetSwitchState(!Switch.IsClosed);
+        Switch1.SetSwitchState(!Switch1.IsClosed);
 
-        if (Switch.IsClosed)
+        if (Switch1.IsClosed)
         {
             buttonIns.DOLocalMove(downPos, 0.2f);
         }
@@ -30,5 +30,7 @@ public class ToggleSwitchButton : MonoBehaviour
         {
             buttonIns.DOLocalMove(upPos, 0.2f);
         }
+        if (Switch2 == null) return;
+        Switch2.SetSwitchState(!Switch2.IsClosed);
     }
 }

@@ -8,12 +8,60 @@ public class tuzhi : MonoBehaviour
     [Header("回路图显示区")]
     public Transform schematicContainer;    // 生成图片的父节点
     public GameObject schematicImagePrefab; // 带有 Image 组件的预制体
-                                            // Start is called before the first frame update
+
+    [Header("缩放控制")]
+    public Button zoomInButton;            // 放大按钮
+    public Button zoomOutButton;           // 缩小按钮
+
+    private float currentScale = 1f;       // 当前缩放比例
+    private readonly float scaleStep = 0.5f; // 每次缩放步长
+    private readonly float minScale = 0.5f; // 最小缩放
+    private readonly float maxScale = 5f;   // 最大缩放
+
+    // 记录每张图片的原始尺寸，用于缩放计算
+    private List<Vector2> baseImageSizes = new List<Vector2>();
 
     private void OnEnable()
     {
         List<string> names = SimulationLoop.Instance.CurrentCase.CircuitSchematicNames;
         UpdateCircuitSchematicsUI(names);
+    }
+
+    private void Start()
+    {
+        if (zoomInButton != null)
+            zoomInButton.onClick.AddListener(() => Zoom(scaleStep));
+        if (zoomOutButton != null)
+            zoomOutButton.onClick.AddListener(() => Zoom(-scaleStep));
+    }
+
+    /// <summary>
+    /// 缩放所有回路图图片，并同步更新 ScrollRect 布局
+    /// </summary>
+    /// <param name="delta">缩放增量（正数放大，负数缩小）</param>
+    public void Zoom(float delta)
+    {
+        currentScale = Mathf.Clamp(currentScale + delta, minScale, maxScale);
+        ApplyScale();
+    }
+
+    private void ApplyScale()
+    {
+        int index = 0;
+        foreach (Transform child in schematicContainer)
+        {
+            if (index >= baseImageSizes.Count) break;
+            Image img = child.GetComponent<Image>();
+            if (img != null)
+            {
+                img.rectTransform.sizeDelta = baseImageSizes[index] * currentScale;
+            }
+            index++;
+        }
+
+        // 强制重建布局，使 ContentSizeFitter / LayoutGroup 重新计算容器尺寸
+        // 这样 ScrollRect 才能正确更新滚动条和拖动范围
+        LayoutRebuilder.ForceRebuildLayoutImmediate(schematicContainer as RectTransform);
     }
     /// <summary>
     /// 更新回路图 UI (CircuitSchematicNames)
@@ -21,6 +69,8 @@ public class tuzhi : MonoBehaviour
     private void UpdateCircuitSchematicsUI(List<string> schematicNames)
     {
         // 每次点击新案例时，清空之前生成的旧图片
+        baseImageSizes.Clear();
+        currentScale = 1f;
         foreach (Transform child in schematicContainer)
         {
             Destroy(child.gameObject);
@@ -49,6 +99,8 @@ public class tuzhi : MonoBehaviour
                 RectTransform rect = img.rectTransform;
                 rect.sizeDelta = new Vector2(rect.sizeDelta.x * 0.5f, rect.sizeDelta.y * 0.5f);
 
+                // 记录原始尺寸，供缩放使用
+                baseImageSizes.Add(rect.sizeDelta);
             }
             else
             {

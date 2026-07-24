@@ -13,7 +13,7 @@
       }
     },
     "cn.tuanjie.codely.bridge": {
-      "version": "1.0.71",
+      "version": "1.0.72",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -307,7 +307,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.4",
+      "version": "1.9.11",
       "depth": 0,
       "source": "registry",
       "dependencies": {

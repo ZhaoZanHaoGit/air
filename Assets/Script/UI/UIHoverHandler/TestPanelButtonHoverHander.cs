@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class TestPanelButtonHoverHander : UIHoverHandler
 {
-    private Transform transform;
+    private new Transform transform;
     private void Awake()
     {
         transform = GetComponent<Transform>();

@@ -12,7 +12,7 @@ public class PilotValve52 : BaseValve
     public float debounceDuration = 0.05f;
     private float filterTimer = 0f;
     private bool internalPressedState = false;
-    private void Start()
+    protected override void Start()
     {
         base.Start();
         ports[0].state = PortState.Conduct;

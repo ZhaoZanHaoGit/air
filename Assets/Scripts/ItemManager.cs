@@ -82,7 +82,7 @@ public class ItemManager : SingletonMono2<ItemManager>
     /// <summary>
     ///添加到背包
     /// </summary>
-    void Cinfirm_Rreceipt()
+    public void Cinfirm_Rreceipt()
     {
         int count = 0;
         clearBagUI();

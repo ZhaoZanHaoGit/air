@@ -11,7 +11,8 @@ public class ItemSprite_factory : MonoBehaviour
     public int count;
     Button button;
     public ItemManager manager;
-    public TextMeshProUGUI name,model, num; 
+    public new TextMeshProUGUI name;
+    public TextMeshProUGUI model, num;
     void Start()
     {
         button = GetComponent<Button>();

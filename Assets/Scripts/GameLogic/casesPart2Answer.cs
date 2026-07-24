@@ -277,7 +277,7 @@ public class casesPart2Answer : MonoBehaviour
         // 2. 遍历结束后，unmatchedStandard 中剩下的就是玩家遗漏的回路
         foreach (var missingItem in unmatchedStandard)
         {
-            sb.AppendLine($"回路 [{FormatGroup(missingItem)}] : <color=#FFAA00>遗漏 (标准答案中有但未连接)</color>");
+            sb.AppendLine($"<gradient=\"fontcolor1\">回路</gradient> [{FormatGroup(missingItem)}] : <color=#FFAA00>遗漏 (标准答案中有但未连接)</color>");
             errorCount++;
         }
 
@@ -375,7 +375,7 @@ public class casesPart2Answer : MonoBehaviour
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < group.nodes.Count; i++)
         {
-            if (i > 0) sb.Append(" | ");
+            if (i > 0) sb.Append(" <gradient=\"fontcolor1\">与</gradient> ");
             sb.Append(FormatPort(group.nodes[i]));
         }
         return sb.ToString();

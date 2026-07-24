@@ -11,23 +11,26 @@ public class ItenMenuUI_10 : ItenMenuUIBase
     public Button confirmButton;
 
     public Slider singal1SliderUI, singal2SliderUI;
-    public TextMeshProUGUI UIsignal1percent, signal2percentUI;
+    public TMP_InputField singal1SliderInputField, singal2SliderInputField;
+    //public TextMeshProUGUI UIsignal1percent, signal2percentUI;
     CylinderSignalSource signal1Source, signal2Source;
 
     private void Start()
     {
         confirmButton.onClick.AddListener(OnConfirm);
+        LinkSliderToInputField(singal1SliderUI, singal1SliderInputField);
+        LinkSliderToInputField(singal2SliderUI, singal2SliderInputField);
         // useButton.onClick.AddListener(OnUse);
-        singal1SliderUI.onValueChanged.AddListener(
-            (float a) =>
-            {
-                UIsignal1percent.text = ((int)(a*100)).ToString() + "%";
-            });
-        singal2SliderUI.onValueChanged.AddListener(
-            (float a) =>
-            {
-                signal2percentUI.text = ((int)(a * 100)).ToString() + "%";
-            });
+        //singal1SliderUI.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        UIsignal1percent.text = ((int)(a*100)).ToString() + "%";
+        //    });
+        //singal2SliderUI.onValueChanged.AddListener(
+        //    (float a) =>
+        //    {
+        //        signal2percentUI.text = ((int)(a * 100)).ToString() + "%";
+        //    });
     }
     public override void InitItenMenu()
     {

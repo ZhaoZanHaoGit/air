@@ -94,7 +94,7 @@ public class MainMenu : BaseUI
         EventTriggerListener.Get(shixun_btn).SetEventHandle(EnumTouchEventType.OnClick, onshixunClick, null); //用户信息
     }
 
-    public virtual void InitUserInfo()
+    public override void InitUserInfo()
     {
         UserName.text = AppController.Instance.loginUser.Username;
         ID.text = "ID:" + AppController.Instance.loginUser.Account;

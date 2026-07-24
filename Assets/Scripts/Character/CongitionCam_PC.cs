@@ -5,7 +5,7 @@ using UnityEngine;
 public class CongitionCam_PC : simpleMouseLook
 {
     public GameObject CameraTarget;
-    private void Awake()
+    private new void Awake()
     {
 
     }

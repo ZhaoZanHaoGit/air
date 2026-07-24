@@ -8,7 +8,7 @@ public class WirePort : PortBase
     public BaseValve parentValve;     // 所属阀门
    
 
-    private void Awake()
+    private new void Awake()
     {
         base.Awake();
        

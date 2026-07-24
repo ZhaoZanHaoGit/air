@@ -15,6 +15,13 @@ public class ElecPLCControl : MonoBehaviour
     ActUtlType64 plc;
     public int plcOpenstate = -1;
     public TextMeshProUGUI plcLinkText;
+
+    [Header("========= 电路拓扑桥梁映射 =========")]
+    [Tooltip("将 PLC 的 X 寄存器名称（如 X0）映射到场景中对应的虚拟节点组件")]
+    public Dictionary<string, DynamicNode> plcXNodeMapping = new Dictionary<string, DynamicNode>();
+
+    [Tooltip("将 PLC 的 Y 寄存器名称（如 Y0）映射到场景中对应的虚拟节点组件")]
+    public Dictionary<string, DynamicNode> plcYNodeMapping = new Dictionary<string, DynamicNode>();
     public int plcOpenState
     {
         get { return plcOpenstate; }
@@ -177,24 +184,24 @@ public class ElecPLCControl : MonoBehaviour
 
     private void Update()
     {
-
+        // ==========================================
+        // 1. PLC 连接状态 UI 刷新 (保留您原有的逻辑)
+        // ==========================================
         if (plcOpenState == 0 && ioPanel.transform.parent.gameObject.activeSelf)
         {
             LinkImage.color = Color.green;
-            plcLinkText.text = "已连接到plc";
+            plcLinkText.text = "已连接到PLC";
         }
         else if (ioPanel.transform.parent.gameObject.activeSelf)
         {
             LinkImage.color = Color.red;
-            string text = "";
-
-            text = "未连接到PLC" + plcOpenState;
-
-
+            string text = "未连接到PLC" + plcOpenState;
             plcLinkText.text = text;
         }
 
-        //        Debug.Log(plcOpenState);
+        // ==========================================
+        // 2. 输入 X 状态灯显示 (保留您原有的逻辑)
+        // ==========================================
         if (resultCodeX == 0 && ioPanel.activeSelf)
         {
             for (int i = 0; i < xImages.Length; i++)
@@ -206,14 +213,14 @@ public class ElecPLCControl : MonoBehaviour
                 }
                 else
                 {
-                    //Debug.Log(i+"x为"+(InputX[0] & (1 << i)));
                     xImages[i].sprite = LightOff;
                 }
             }
-
-
         }
 
+        // ==========================================
+        // 3. 输出 Y 状态灯显示 (保留您原有的逻辑)
+        // ==========================================
         if (resultCodeY == 0 && ioPanel.activeSelf)
         {
             for (int i = 0; i < yImages.Length; i++)
@@ -227,6 +234,54 @@ public class ElecPLCControl : MonoBehaviour
                 {
                     yImages[i].sprite = LightOff;
                 }
+            }
+        }
+
+        // ==========================================
+        // 4. 新增：PLC Y点输出 转换为 场景电路电源源头
+        // ==========================================
+        if (plcOpenState == 0 && resultCodeY == 0)
+        {
+            bool topologyNeedsRefresh = false;
+
+            // 遍历所有注册到映射字典里的 Y 点节点
+            foreach (var kvp in plcYNodeMapping)
+            {
+                string yRegisterName = kvp.Key;       // 例如 "Y0", "Y1"
+                DynamicNode virtualNode = kvp.Value;  // 对应的场景接线柱节点
+
+                if (virtualNode == null) continue;
+
+                // 解析寄存器编号 (如从 "Y0" 中提取出整数 0)
+                int yIndex = 0;
+                if (int.TryParse(yRegisterName.Replace("Y", "").Replace("y", ""), out yIndex))
+                {
+                    // 从 OutputY[0] 的位图中判断当前 Y 寄存器是否输出高电平 (1)
+                    bool isYOn = (OutputY[0] & (1 << yIndex)) != 0;
+
+                    // 根据接线图（COM接+24V），Y 点导通时向外吐出 +24V 电压
+                    // 导通时节点类型设为 Positive（正极源头），断开时还原为 Normal（普通节点）
+                    NodeType targetType = isYOn ? NodeType.Positive : NodeType.Normal;
+
+                    // 状态发生切换时才修改节点，避免频繁触发重构
+                    if (virtualNode.type != targetType)
+                    {
+                        virtualNode.type = targetType;
+
+                        // 动态更新源头属性
+                        virtualNode.currentPowerStatus = targetType;
+                        virtualNode.currentLevel = isYOn ? 0 : -1;
+
+                        // 标记电路拓扑发生改变
+                        topologyNeedsRefresh = true;
+                    }
+                }
+            }
+
+            // 如果本帧内有 Y 点输出状态切换，通知全局电路大脑在帧末重新计算并洗牌拓扑
+            if (topologyNeedsRefresh && DynamicCircuitManager.Instance != null)
+            {
+                DynamicCircuitManager.Instance.MarkTopologyDirty();
             }
         }
     }
