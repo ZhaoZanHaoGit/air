@@ -417,7 +417,7 @@ public class TraniningPanel : BaseUI
         testPanel.gameObject.SetActive(true);
 
         TrainType = trainType.exam;
-        int num = currentTrainingCase.CaseNamber + 200;
+        int num = currentTrainingCase.CaseNamber + 300;
         AppController.Instance.eVSType = (EVSType)Enum.Parse(typeof(EVSType), num.ToString());
         startTraining = true;
     }
@@ -429,7 +429,7 @@ public class TraniningPanel : BaseUI
         testPanel.gameObject.SetActive(true);
         TrainType = trainType.test;
         AppController.Instance.courseType = CourseType.实训;
-        int num = currentTrainingCase.CaseNamber + 300;
+        int num = currentTrainingCase.CaseNamber + 200;
         AppController.Instance.pOTSType = (POTSType)Enum.Parse(typeof(POTSType), num.ToString());
         startTraining = true;
     }
@@ -668,11 +668,12 @@ public class TraniningPanel : BaseUI
                     CourseType = (int)AppController.Instance.courseType,
                     CourseID = (int)AppController.Instance.pOTSType,
                     CourseName = AppController.Instance.pOTSType.ToString(),
+                   
                     LearnTime = (int)m_Timer,
                     Score = "100",
                     // WorkOrder 和 OperationContent 由 StartUploadAndSubmit 填充
                 };
-
+                Debug.Log("上传练习数据" + softwareLearningData.CourseName + "  " + softwareLearningData.CourseID);
                 if (evaluator != null)
                 {
                     evaluator.StartUploadAndSubmit(softwareLearningData);

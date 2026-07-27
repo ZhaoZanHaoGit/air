@@ -359,7 +359,10 @@ public class TrainingSaveSystem : MonoBehaviour
         yield return new WaitForEndOfFrame();
         yield return null;
 
-        // —— 2. 放置元器件 ——
+        // —— 2. 先还原背包/物品状态（初始化 UI_TestPanelItemBTN，供后续 LinkItemUI 查找）——
+        RestoreInventory(data.items);
+
+        // —— 3. 放置元器件 ——
         var valveIdMap = new Dictionary<int, GameObject>();
         var gridManager = GridManagerAccessor.GridManager;
 
@@ -408,7 +411,7 @@ public class TrainingSaveSystem : MonoBehaviour
         yield return null;
         yield return new WaitForEndOfFrame();
 
-        // —— 3. 重建线缆 ——
+        // —— 4. 重建线缆 ——
         foreach (var wsd in data.wires)
         {
             if (!valveIdMap.TryGetValue(wsd.valveAId, out var goA) ||
@@ -432,9 +435,6 @@ public class TrainingSaveSystem : MonoBehaviour
 
             CreateWire(wsd.wireType, portA, portB);
         }
-
-        // —— 4. 还原背包/物品状态 ——
-        RestoreInventory(data.items);
 
         Debug.Log("[读档] 加载完成");
         OnLoadComplete?.Invoke(true, data.saveTime);
@@ -546,19 +546,19 @@ public class TrainingSaveSystem : MonoBehaviour
         return null;
     }
 
-    private GameObject FindPrefab(string prefabName)
+    private GameObject FindPrefab(string itemName)
     {
-        // 优先从库存查找
+        // 优先从库存查找（按 itemName 匹配）
         if (ItemManager.Instance != null)
         {
             foreach (var kvp in ItemManager.Instance.inventory)
             {
-                if (kvp.Key.prefab != null && kvp.Key.prefab.name == prefabName)
+                if (kvp.Key.itemName == itemName && kvp.Key.prefab != null)
                     return kvp.Key.prefab;
             }
             foreach (var itemUI in ItemManager.Instance.itemListGet_scripts)
             {
-                if (itemUI.item != null && itemUI.item.prefab != null && itemUI.item.prefab.name == prefabName)
+                if (itemUI.item != null && itemUI.item.itemName == itemName && itemUI.item.prefab != null)
                     return itemUI.item.prefab;
             }
         }
@@ -567,14 +567,14 @@ public class TrainingSaveSystem : MonoBehaviour
         var btns = FindObjectsByType<UI_TestPanelItemBTN>(FindObjectsSortMode.None);
         foreach (var btn in btns)
         {
-            if (btn.itemins != null && btn.itemins.prefab != null && btn.itemins.prefab.name == prefabName)
+            if (btn.itemins != null && btn.itemins.itemName == itemName && btn.itemins.prefab != null)
                 return btn.itemins.prefab;
         }
 
         return null;
     }
 
-    private void LinkItemUI(GameObject go, string prefabName)
+    private void LinkItemUI(GameObject go, string itemName)
     {
         var item3d = go.GetComponent<Item3D>();
         if (item3d == null) return;
@@ -582,10 +582,11 @@ public class TrainingSaveSystem : MonoBehaviour
         var btns = FindObjectsByType<UI_TestPanelItemBTN>(FindObjectsSortMode.None);
         foreach (var btn in btns)
         {
-            if (btn.itemins != null && btn.itemins.prefab != null && btn.itemins.prefab.name == prefabName)
+            if (btn.itemins != null && btn.itemins.itemName == itemName)
             {
                 item3d.itemUI = btn;
                 item3d.itemSelf = btn.itemins;
+                item3d.hasCreate = true; // 标记为已放置，防止 HandleObjectPlacedOnGrid 重复扣减
                 break;
             }
         }

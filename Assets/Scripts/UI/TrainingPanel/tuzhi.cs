@@ -14,8 +14,8 @@ public class tuzhi : MonoBehaviour
     public Button zoomOutButton;           // 缩小按钮
 
     private float currentScale = 1f;       // 当前缩放比例
-    private readonly float scaleStep = 0.5f; // 每次缩放步长
-    private readonly float minScale = 0.5f; // 最小缩放
+    private readonly float scaleStep = 0.1f; // 每次缩放步长
+    private readonly float minScale = 0.8f; // 最小缩放
     private readonly float maxScale = 5f;   // 最大缩放
 
     // 记录每张图片的原始尺寸，用于缩放计算

@@ -346,7 +346,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portandvalve.port
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 970767400895950224, guid: b3fe51c1cd57d434f950284cbe36e82b, type: 3}
       propertyPath: portandvalve.valve

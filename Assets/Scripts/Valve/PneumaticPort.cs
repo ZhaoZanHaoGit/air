@@ -57,7 +57,7 @@ public class PneumaticPort : PortBase
     {
         if (internalConnectTo != null)
         {
-            inPressure = internalConnectTo.pressure * Pressurepercent;
+            inPressure = Mathf.Max(0.1f, internalConnectTo.pressure * Pressurepercent);
             InFlow     = Mathf.Min(internalConnectTo.inFlowRate, inFlowpercent);
             outFlow    = Mathf.Min(internalConnectTo.outFlowRate, outFlowpercent);
         }

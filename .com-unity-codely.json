@@ -1,10 +1,10 @@
 {
-  "unity_port": -1,
-  "stream_port": 64994,
+  "unity_port": 64444,
+  "stream_port": 64500,
   "created_date": "2026-07-09T01:53:15.2956486Z",
   "project_path": "D:/UnityProject/air1/Assets",
   "reloading": false,
-  "reason": "unity_quit",
-  "seq": 62034,
-  "last_heartbeat": "2026-07-23T09:51:38.936Z"
+  "reason": "ready",
+  "seq": 10136,
+  "last_heartbeat": "2026-07-27T02:29:43.119Z"
 }

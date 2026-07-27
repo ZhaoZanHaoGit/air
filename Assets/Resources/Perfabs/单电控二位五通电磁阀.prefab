@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: tinckElec
       objectReference: {fileID: 0}
+    - target: {fileID: 2099181133549998663, guid: 271b6ba14182c294093881874703fe21, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3842572590429931752, guid: 271b6ba14182c294093881874703fe21, type: 3}
       propertyPath: chanel
       value: 2
@@ -841,6 +845,10 @@ PrefabInstance:
     - target: {fileID: 1437616322213480916, guid: 271b6ba14182c294093881874703fe21, type: 3}
       propertyPath: m_TagString
       value: tinckElec
+      objectReference: {fileID: 0}
+    - target: {fileID: 2099181133549998663, guid: 271b6ba14182c294093881874703fe21, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3842572590429931752, guid: 271b6ba14182c294093881874703fe21, type: 3}
       propertyPath: chanel
